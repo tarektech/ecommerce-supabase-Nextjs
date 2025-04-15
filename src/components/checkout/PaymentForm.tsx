@@ -86,6 +86,7 @@ export const PaymentForm = ({
       await clearCart();
 
       toast.success('Order placed successfully!');
+      console.log('Order placed successfully!');
       onSubmit(); // Only call onSubmit after everything is successful
     } catch (error) {
       console.error('Error placing order:', error);

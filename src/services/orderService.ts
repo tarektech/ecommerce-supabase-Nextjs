@@ -21,7 +21,7 @@ export const orderService = {
             quantity,
             price,
             product:products!product_id (
-              id,
+              product_id,
               title,
               image
             )
@@ -54,7 +54,7 @@ export const orderService = {
             quantity,
             price,
             product:products!product_id (
-              id,
+              product_id,
               title,
               image
             )
@@ -92,7 +92,7 @@ export const orderService = {
             quantity,
             price,
             product:products!product_id (
-              id,
+              product_id,
               title,
               image
             )
