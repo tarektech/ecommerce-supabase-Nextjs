@@ -98,7 +98,7 @@ export default function ShoppingCart() {
                     <div className="flex items-center mt-4">
                       <Button
                         type="button"
-                        className="h-9 w-9 rounded-md p-0 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground"
+                        className="h-9 w-9 rounded-md p-0 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground cursor-pointer"
                         onClick={(e) => {
                           e.preventDefault();
                           updateQuantity(item.product_id, -1);
@@ -109,7 +109,7 @@ export default function ShoppingCart() {
                       <span className="mx-3">{item.quantity}</span>
                       <Button
                         type="button"
-                        className="h-9 w-9 rounded-md p-0 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground"
+                        className="h-9 w-9 rounded-md p-0 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground cursor-pointer"
                         onClick={(e) => {
                           e.preventDefault();
                           updateQuantity(item.product_id, 1);
@@ -119,7 +119,7 @@ export default function ShoppingCart() {
                       </Button>
                       <Button
                         type="button"
-                        className="ml-4 text-destructive hover:bg-accent hover:text-accent-foreground"
+                        className="ml-4 text-destructive hover:bg-accent hover:text-accent-foreground cursor-pointer"
                         onClick={(e) => {
                           e.preventDefault();
                           removeFromCart(item.product_id);
@@ -157,7 +157,9 @@ export default function ShoppingCart() {
               </CardContent>
               <CardFooter>
                 <Link to="/checkout">
-                  <Button className="w-full">Proceed to Checkout</Button>
+                  <Button className="w-full cursor-pointer">
+                    Proceed to Checkout
+                  </Button>
                 </Link>
               </CardFooter>
             </Card>

@@ -17,12 +17,12 @@ export const productService = {
     }
   },
 
-  async getProductById(id: number): Promise<ProductType | null> {
+  async getProductById(productId: string): Promise<ProductType | null> {
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('id', id)
+        .eq('product_id', productId)
         .single();
 
       if (error) {
@@ -31,7 +31,7 @@ export const productService = {
 
       return data;
     } catch (error) {
-      console.error(`Error fetching product with id ${id}:`, error);
+      console.error(`Error fetching product with id ${productId}:`, error);
       return null;
     }
   },

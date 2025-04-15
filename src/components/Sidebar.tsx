@@ -14,7 +14,13 @@ const categoryIcons: Record<string, React.ElementType> = {
   Electronics: Smartphone,
 };
 
-export function Sidebar() {
+export function Sidebar({
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
+}: {
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
+}) {
   const { user } = useAuth();
   const location = useLocation();
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -40,7 +46,7 @@ export function Sidebar() {
     { name: 'All', icon: Home, href: '/' },
     ...categories.map((category) => ({
       name: category.name,
-      icon: categoryIcons[category.name] || Smartphone, // Default to Smartphone icon if not found
+      icon: categoryIcons[category.name] || Smartphone,
       href: `/${category.name.toLowerCase()}`,
     })),
   ];
@@ -49,48 +55,62 @@ export function Sidebar() {
   const displayCategories = user
     ? categoryItems
     : categoryItems.filter((category) =>
-        ['All', 'Clothing'].includes(category.name)
+        ['All', 'Electronics'].includes(category.name)
       );
 
   return (
-    <aside
-      className={cn(
-        'w-64 h-screen p-4',
-        'bg-background border-r border-border',
-        'transition-colors duration-300'
-      )}
-    >
-      <h2 className="text-xl font-bold mb-4 text-foreground">Categories</h2>
-      {loading ? (
-        <div className="animate-pulse space-y-2">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="h-10 bg-muted rounded"></div>
-          ))}
+    <>
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-40 w-64 bg-background border-r border-border transition-transform duration-300 ease-in-out',
+          'sm:translate-x-0 sm:static',
+          !isMobileMenuOpen && '-translate-x-full'
+        )}
+      >
+        <div className="p-4">
+          <h2 className="text-xl font-bold mb-4 text-foreground">Categories</h2>
+          {loading ? (
+            <div className="animate-pulse space-y-2">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="h-10 bg-muted rounded"></div>
+              ))}
+            </div>
+          ) : (
+            <ul>
+              {displayCategories.map((category) => {
+                const isActive = location.pathname === category.href;
+                return (
+                  <li key={category.name} className="mb-2">
+                    <Link
+                      to={category.href}
+                      className={cn(
+                        'flex items-center p-2 rounded-md',
+                        'transition-colors duration-200',
+                        isActive
+                          ? 'text-foreground font-medium bg-muted'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      )}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <category.icon className="mr-2" size={20} />
+                      {category.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
-      ) : (
-        <ul>
-          {displayCategories.map((category) => {
-            const isActive = location.pathname === category.href;
-            return (
-              <li key={category.name} className="mb-2 p-2">
-                <Link
-                  to={category.href}
-                  className={cn(
-                    'flex items-center',
-                    'transition-colors duration-200',
-                    isActive
-                      ? 'text-foreground font-medium bg-muted rounded-md p-1'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  <category.icon className="mr-2" size={20} />
-                  {category.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+      </aside>
+
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 sm:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
       )}
-    </aside>
+    </>
   );
 }

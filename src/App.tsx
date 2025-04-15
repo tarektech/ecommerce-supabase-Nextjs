@@ -7,7 +7,9 @@ import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import Home from '@/pages/Home';
 import ProfilePage from '@/pages/ProfilePage';
+import ProductDetails from '@/pages/ProductDetails';
 import { Toaster } from 'sonner';
+import CheckOutPage from '@/pages/CheckOutPage';
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -20,6 +22,8 @@ function App() {
     return 'light';
   });
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
@@ -30,15 +34,25 @@ function App() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <Sidebar />
+      <Sidebar
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+      />
       <div className="flex-1 flex flex-col">
-        <Navbar theme={theme} toggleTheme={toggleTheme} />
+        <Navbar
+          theme={theme}
+          toggleTheme={toggleTheme}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
         <Routes>
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/product/:productId" element={<ProductDetails />} />
           <Route path="/" element={<Home />} />
+          <Route path="/checkout" element={<CheckOutPage />} />
         </Routes>
       </div>
       <Toaster richColors position="bottom-right" />

@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Moon, Sun, LogOut } from 'lucide-react';
+import { ShoppingCart, User, Moon, Sun, LogOut, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -8,9 +8,16 @@ import { useState } from 'react';
 interface NavbarProps {
   theme: string;
   toggleTheme: () => void;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
 }
 
-export function Navbar({ theme, toggleTheme }: NavbarProps) {
+export function Navbar({
+  theme,
+  toggleTheme,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
+}: NavbarProps) {
   const { totalItems } = useCart();
   const { user, loading, signOut } = useAuth();
   const [refreshCounter, setRefreshCounter] = useState(0);
@@ -45,21 +52,22 @@ export function Navbar({ theme, toggleTheme }: NavbarProps) {
   return (
     <nav className="bg-background shadow-md p-4">
       <div className="flex justify-between items-center">
-        <Link to="/">
-          <h1 className="text-2xl font-bold">ShopClone</h1>
-        </Link>
-        <div className="flex items-center space-x-2">
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={forceRefresh}
-            className="mr-2"
-          >
-            <RefreshCw className="h-4 w-4 mr-1" />
-            Refresh ({authStatus})
-          </Button> */}
+        <div className="flex items-center gap-2">
           <Button
-            className="hover:bg-accent hover:text-accent-foreground"
+            variant="ghost"
+            size="icon"
+            className="sm:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+          <Link to="/" className="flex items-center">
+            <h1 className="text-2xl font-bold">ShopClone</h1>
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
             onClick={toggleTheme}
           >
             {theme === 'dark' ? (
@@ -69,7 +77,7 @@ export function Navbar({ theme, toggleTheme }: NavbarProps) {
             )}
           </Button>
           <Link to="/cart">
-            <Button className="hover:bg-accent hover:text-accent-foreground relative">
+            <Button className="hover:bg-accent hover:text-accent-foreground relative cursor-pointer">
               <ShoppingCart className="mr-2" size={20} />
               Cart
               {totalItems > 0 && (
@@ -80,7 +88,7 @@ export function Navbar({ theme, toggleTheme }: NavbarProps) {
             </Button>
           </Link>
           <Link to={user ? '/profile' : '/sign-in'}>
-            <Button className="hover:bg-accent hover:text-accent-foreground">
+            <Button className="hover:bg-accent hover:text-accent-foreground cursor-pointer">
               <User className="mr-2" size={20} />
               {user ? 'Profile' : 'Sign In'}
             </Button>
@@ -88,7 +96,7 @@ export function Navbar({ theme, toggleTheme }: NavbarProps) {
           {user && (
             <Button
               variant="destructive"
-              className="hover:bg-red-600"
+              className="hover:bg-red-600 cursor-pointer"
               onClick={handleSignOut}
             >
               <LogOut className="mr-2" size={20} />

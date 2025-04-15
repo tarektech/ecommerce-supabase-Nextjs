@@ -17,8 +17,10 @@ export const orderService = {
           `
           *,
           order_items (
-            *,
-            product: product_id (
+            id,
+            quantity,
+            price,
+            product:products!product_id (
               id,
               title,
               image
@@ -48,8 +50,10 @@ export const orderService = {
           `
           *,
           order_items (
-            *,
-            product: product_id (
+            id,
+            quantity,
+            price,
+            product:products!product_id (
               id,
               title,
               image
@@ -75,13 +79,26 @@ export const orderService = {
     order: Omit<OrderType, 'id'>,
     orderItems: Omit<OrderItemType, 'id' | 'order_id'>[]
   ): Promise<OrderType | null> {
-    // Start a transaction by using a single supabase call
     try {
       // Insert the order first
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert(order)
-        .select()
+        .select(
+          `
+          *,
+          order_items (
+            id,
+            quantity,
+            price,
+            product:products!product_id (
+              id,
+              title,
+              image
+            )
+          )
+        `
+        )
         .single();
 
       if (orderError) {

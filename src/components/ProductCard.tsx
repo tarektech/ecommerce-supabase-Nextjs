@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductType } from '@/types';
 import { useCart } from '@/context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   product: ProductType;
@@ -9,9 +10,22 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  const handleProductClick = () => {
+    navigate(`/product/${product.product_id}`);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation when clicking the add to cart button
+    addToCart(product);
+  };
 
   return (
-    <Card className="overflow-hidden">
+    <Card
+      className="overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
+      onClick={handleProductClick}
+    >
       <CardHeader className="p-0">
         {product.image ? (
           <img
@@ -37,7 +51,8 @@ export function ProductCard({ product }: ProductCardProps) {
           <Button
             size="sm"
             variant="default"
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
+            disabled={product.stock === 0}
           >
             Add to Cart
           </Button>

@@ -35,7 +35,7 @@ export function OrderCard({ order }: OrderCardProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-4">
+      <CardContent>
         <div className="space-y-4">
           {order.order_items?.map((item: OrderItemType) => (
             <div
