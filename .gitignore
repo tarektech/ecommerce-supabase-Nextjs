@@ -23,6 +23,16 @@ dist-ssr
 *.sln
 *.sw?
 
+# Next.js
+# ...
+.next
+next-env.d.ts
+dist
+
+# Supabase
 *supabase
 .cursor
 .env
+
+
+.utils/supabase.ts

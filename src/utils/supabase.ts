@@ -1,7 +1,8 @@
+// import { createClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Log environment variable state (remove in production)
 // console.log('Supabase URL defined:', !!supabaseUrl);
@@ -27,7 +28,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
   },
-});
+}) ;
 
 // Export auth specifically for auth operations
 export const supabaseAuth = supabase.auth;

@@ -1,5 +1,6 @@
+'use client'
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { ProductType } from '@/types';
 import { productService } from '@/services/productService';
 import { useCart } from '@/context/CartContext';

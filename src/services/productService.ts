@@ -1,4 +1,6 @@
-import { supabase } from '../utils/supabase';
+
+
+import { supabase } from '@/utils/supabase';
 import { ProductType } from '@/types';
 
 export const productService = {

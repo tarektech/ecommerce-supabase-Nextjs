@@ -1,14 +1,14 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Skeleton } from "./ui/skeleton";
 
 export default function ShoppingSkeleton() {
     return (
         <div className="container mx-auto p-4">
         <div className="flex items-center mb-6">
-          <Link to="/" className="flex items-center text-primary">
+          <Link href="/" className="flex items-center text-primary">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Shopping
           </Link>

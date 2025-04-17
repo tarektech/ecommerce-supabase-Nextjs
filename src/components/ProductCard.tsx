@@ -1,8 +1,9 @@
+'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductType } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   product: ProductType;
@@ -10,10 +11,10 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleProductClick = () => {
-    navigate(`/product/${product.product_id}`);
+    router.push(`/product/${product.product_id}`);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {

@@ -1,5 +1,6 @@
+'use client'
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 interface AuthFormState {
@@ -27,7 +28,7 @@ interface UseAuthFormReturn {
 export function useAuthForm({
   isSignUp = false,
 }: UseAuthFormProps = {}): UseAuthFormReturn {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { signIn, signUp } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +83,7 @@ export function useAuthForm({
       } else {
         await signIn(formData.email, formData.password);
       }
-      navigate('/');
+      router.push('/');
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error

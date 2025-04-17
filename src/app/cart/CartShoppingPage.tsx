@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+'use client';
+
+import Link from 'next/link';
+
 import {
   Card,
   CardContent,
@@ -9,25 +11,27 @@ import {
 } from '@/components/ui/card';
 import { Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { useAuth } from '@/context/AuthContext';
 import ShoppingSkeleton from '@/components/ShoppingSkeleton';
-
-export default function ShoppingCart() {
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+export default function CartShoppingPage() {
   const { cartItems, removeFromCart, updateQuantity, subtotal, isLoading } =
     useCart();
-  const { user } = useAuth();
 
-  // Show a loader while fetching cart data
   if (isLoading) {
     return <ShoppingSkeleton />;
   }
+
+  const { user } = useAuth();
+
+  // Show a loader while fetching cart data
 
   // Show login prompt if user is not authenticated
   if (!user) {
     return (
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-6">
-          <Link to="/" className="flex items-center text-primary">
+          <Link href="/" className="flex items-center text-primary">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Shopping
           </Link>
@@ -39,14 +43,14 @@ export default function ShoppingCart() {
           </CardHeader>
           <CardContent>
             <p className="mb-4">You need to be logged in to view your cart.</p>
-            <Link to="/sign-in">
+            <Link href="/signin">
               <Button className="w-full">Log In</Button>
             </Link>
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground">
               Don't have an account?{' '}
-              <Link to="/register" className="text-primary hover:underline">
+              <Link href="/signup" className="text-primary hover:underline">
                 Sign up
               </Link>
             </p>
@@ -59,7 +63,7 @@ export default function ShoppingCart() {
   return (
     <div className="container mx-auto p-4">
       <div className="flex items-center mb-6">
-        <Link to="/" className="flex items-center text-primary">
+        <Link href="/" className="flex items-center text-primary">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Shopping
         </Link>
@@ -69,7 +73,7 @@ export default function ShoppingCart() {
       {cartItems.length === 0 ? (
         <div className="text-center p-8">
           <h2 className="text-xl mb-4">Your cart is empty</h2>
-          <Link to="/">
+          <Link href="/">
             <Button>Continue Shopping</Button>
           </Link>
         </div>
@@ -156,7 +160,7 @@ export default function ShoppingCart() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Link to="/checkout">
+                <Link href="/checkout">
                   <Button className="w-full cursor-pointer">
                     Proceed to Checkout
                   </Button>

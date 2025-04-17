@@ -1,106 +1,106 @@
+'use client';
 import { ShoppingCart, User, Moon, Sun, LogOut, Menu } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import DarkTheme from './dark-theme';
+import { useTheme } from 'next-themes';
+import { useSidebar } from '@/context/SidebarContext';
 
-interface NavbarProps {
-  theme: string;
-  toggleTheme: () => void;
-  isMobileMenuOpen: boolean;
-  setIsMobileMenuOpen: (open: boolean) => void;
-}
-
-export function Navbar({
-  theme,
-  toggleTheme,
-  isMobileMenuOpen,
-  setIsMobileMenuOpen,
-}: NavbarProps) {
+export function Navbar() {
   const { totalItems } = useCart();
   const { user, loading, signOut } = useAuth();
-  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useSidebar();
 
-  // Force a component re-render for testing
-  const forceRefresh = () => {
-    setRefreshCounter((prev) => prev + 1);
-    console.log('Forced refresh, auth state:', {
-      user,
-      isAuthenticated: !!user,
-      loading,
-      refreshCounter: refreshCounter + 1,
-    });
-  };
+  // Handle mounting state
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      console.log('Signed out successfully, user state:', {
-        user,
-        isAuthenticated: !!user,
-      });
-      // Force a refresh after signout
-      forceRefresh();
+      console.log('Signed out successfully');
     } catch (error) {
       console.error('Failed to sign out:', error);
     }
   };
 
-  // const authStatus = user ? 'Signed In' : 'Signed Out';
+  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
+  if (!mounted) {
+    return null; // Return null on first render to avoid hydration mismatch
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <nav className="bg-background shadow-md p-4">
-      <div className="flex justify-between items-center">
+    <nav className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className=" flex h-16 items-center">
+        
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
-            size="icon"
-            className="sm:hidden"
+            className="mr-2 px-2 sm:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle menu</span>
           </Button>
-          <Link to="/" className="flex items-center">
+          <DarkTheme />
+          <Link href="/" className="flex items-center">
             <h1 className="text-2xl font-bold">ShopClone</h1>
           </Link>
         </div>
-        <div className="flex items-center space-x-2">
+
+        <div className="flex flex-1 items-center justify-end space-x-2">
           <Button
-            className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
-            onClick={toggleTheme}
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           >
             {theme === 'dark' ? (
               <Sun className="h-[1.2rem] w-[1.2rem]" />
             ) : (
               <Moon className="h-[1.2rem] w-[1.2rem]" />
             )}
+            <span className="sr-only">Toggle theme</span>
           </Button>
-          <Link to="/cart">
-            <Button className="hover:bg-accent hover:text-accent-foreground relative cursor-pointer">
-              <ShoppingCart className="mr-2" size={20} />
-              Cart
+
+          <Link href="/cart">
+            <Button variant="ghost" size="icon" className="relative h-9 w-9">
+              <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-primary text-[11px] font-medium text-primary-foreground flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
+              <span className="sr-only">Shopping cart</span>
             </Button>
           </Link>
-          <Link to={user ? '/profile' : '/sign-in'}>
-            <Button className="hover:bg-accent hover:text-accent-foreground cursor-pointer">
-              <User className="mr-2" size={20} />
-              {user ? 'Profile' : 'Sign In'}
+
+          <Link href={user ? '/profile' : '/signin'}>
+            <Button variant="ghost" size="icon" className="h-9 w-9">
+              <User className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">{user ? 'Profile' : 'Sign in'}</span>
             </Button>
           </Link>
+
           {user && (
             <Button
-              variant="destructive"
-              className="hover:bg-red-600 cursor-pointer"
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900"
               onClick={handleSignOut}
             >
-              <LogOut className="mr-2" size={20} />
-              Sign Out
+              <LogOut className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">Sign out</span>
             </Button>
           )}
         </div>
