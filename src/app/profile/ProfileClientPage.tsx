@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { User } from '@supabase/supabase-js';
 import { OrderType, ProfileType } from '@/types';
+import { orderServerService } from '@/services/order/orderServerService';
 
 interface ProfileClientPageProps {
   initialProfile: ProfileType | null;
@@ -91,6 +92,7 @@ export default function ProfileClientPage({
 
   // Subscribe to realtime order updates
   useEffect(() => {
+    // Subscribe to orders
     const orderSubscription = supabase
       .channel('orders')
       .on(
@@ -103,17 +105,45 @@ export default function ProfileClientPage({
         },
         async (payload) => {
           // Fetch updated orders
-          const { data } = await supabase
-            .from('orders')
-            .select('*')
-            .eq('user_id', user.id);
-          if (data) setOrders(data as OrderType[]);
+          if (payload.new) {
+            const order = payload.new as OrderType;
+            setOrders((prevOrders) => [...prevOrders, order]);
+          }
+          if (payload.old) {
+            const order = payload.old as OrderType;
+            setOrders((prevOrders) =>
+              prevOrders.filter((o) => o.id !== order.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Subscribe to profile updates
+    const profileSubscription = supabase
+      .channel('profiles')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `profile_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          if (payload.new) {
+            const profile = payload.new as ProfileType;
+            setUsername(profile.username || '');
+            setEmail(profile.email || '');
+            setAvatarUrl(profile.avatar_url || '');
+          }
         }
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(orderSubscription);
+      supabase.removeChannel(profileSubscription);
     };
   }, [user.id]);
 
