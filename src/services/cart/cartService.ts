@@ -1,19 +1,20 @@
-import { supabase } from '../utils/supabase';
-import { ProductType, CartItemType, CartType, CartStatus } from '../types';
+import { supabase } from '@/lib/supabase/client';
+import { ProductType, CartItemType, CartType, CartStatus } from '../../types';
 import { toast } from 'sonner';
+import { getClientUser } from '@/lib/supabase/clientUtils';
 
 // Get the active cart for the current user
 export async function getActiveCart() {
   try {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
+    const user = await getClientUser();
+    if (!user) {
       return null;
     }
 
     const { data, error } = await supabase
       .from('carts')
       .select('*')
-      .eq('user_id', user.user.id)
+      .eq('user_id', user.id)
       .eq('status', 'active')
       .single();
 
@@ -34,15 +35,15 @@ export async function getActiveCart() {
 // Create a new cart for the current user
 export async function createCart() {
   try {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
+    const user = await getClientUser();
+    if (!user) {
       throw new Error('User not authenticated');
     }
 
     const { data, error } = await supabase
       .from('carts')
       .insert({
-        user_id: user.user.id,
+        user_id: user.id,
         status: 'active' as CartStatus,
       })
       .select('*')
@@ -256,7 +257,7 @@ export async function clearCart(cartId: number) {
   }
 }
 
-// Find a cart item by product ID
+// Find cart item by product ID
 export async function findCartItemByProductId(
   cartId: number,
   productId: string
@@ -271,12 +272,14 @@ export async function findCartItemByProductId(
 
     if (error && error.code !== 'PGRST116') {
       console.error('Error finding cart item:', error);
+      toast.error('Failed to find cart item');
       return null;
     }
 
     return data as CartItemType | null;
   } catch (error) {
     console.error('Error in findCartItemByProductId:', error);
+    toast.error('Something went wrong');
     return null;
   }
 }

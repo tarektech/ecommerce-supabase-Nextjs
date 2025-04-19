@@ -6,7 +6,7 @@ import { cn } from '@/utils';
 import Link from 'next/link';
 
 import { useAuth } from '@/context/AuthContext';
-import { categoryService } from '@/services/categoryService';
+import { categoryService } from '@/services/category/categoryService';
 import { CategoryType } from '@/types';
 import { useSidebar } from '@/context/SidebarContext';
 import { usePathname } from 'next/navigation';
@@ -20,7 +20,7 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 export function Sidebar() {
-  const { isMobileMenuOpen, setIsMobileMenuOpen } = useSidebar();
+  const { isMobileMenuOpen, setIsMobileMenuOpen, hideSidebar } = useSidebar();
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -48,7 +48,7 @@ export function Sidebar() {
     }
   }, [mounted]);
 
-  if (!mounted) {
+  if (!mounted || hideSidebar) {
     return null;
   }
 

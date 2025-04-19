@@ -1,9 +1,9 @@
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/utils/supabase';
+import { supabase } from '@/lib/supabase/client';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { profileService } from '@/services/profileService'; // Import profileService
-import { authService } from '@/services/authService'; // Import authService
+import { profileService } from '@/services/profile/profileService'; // Import profileService
+import { authService } from '@/services/auth/authService'; // Import authService
 
 export function useSupabaseAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -69,43 +69,44 @@ export function useSupabaseAuth() {
         .eq('profile_id', user.id)
         .single();
 
-      // Create profile if it doesn't exist yet
-      if (!existingProfile || checkError) {
-        // Use profileService instead
-        const newProfile = await profileService.createProfile({
+      // Create profile directly with Supabase
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert({
           profile_id: user.id,
           username: '',
           avatar_url: '',
-          email: userEmail, // Use email from auth
+          email: userEmail,
           created_at: new Date().toISOString(),
-        });
+        })
+        .select()
+        .single();
 
-        if (!newProfile) {
-          // Check if this is a duplicate key error (which means the profile was already created)
-          // This helps prevent console errors when multiple auth events try to create the same profile
+      if (createError) {
+        // Check if this is a duplicate key error (which means the profile was already created)
+        // This helps prevent console errors when multiple auth events try to create the same profile
+        console.log(
+          'Profile creation returned null - checking if profile exists anyway'
+        );
+        const { data: checkAgain } = await supabase
+          .from('profiles')
+          .select('profile_id')
+          .eq('profile_id', user.id)
+          .single();
+
+        if (!checkAgain) {
+          console.error('Error creating user profile - profile does not exist');
+        } else {
           console.log(
-            'Profile creation returned null - checking if profile exists anyway'
+            'Profile already exists despite error, proceeding normally'
           );
-          const { data: checkAgain } = await supabase
-            .from('profiles')
-            .select('profile_id')
-            .eq('profile_id', user.id)
-            .single();
-
-          if (!checkAgain) {
-            console.error(
-              'Error creating user profile - profile does not exist'
-            );
-          } else {
-            console.log(
-              'Profile already exists despite error, proceeding normally'
-            );
-          }
         }
       } else if (existingProfile && !existingProfile.email && userEmail) {
         // Update profile with email if it's missing but we have it from auth
         console.log('Updating profile with email from auth:', userEmail);
-        await profileService.updateProfile(user.id, { email: userEmail });
+        await profileService.updateProfile(user.id, {
+          email: userEmail,
+        });
       }
     } catch (error) {
       console.error('Error in ensureUserProfile:', error);

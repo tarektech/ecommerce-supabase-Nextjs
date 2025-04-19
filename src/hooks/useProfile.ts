@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { OrderType } from '@/types';
 import { toast } from 'sonner';
-import { profileService } from '@/services/profileService';
-import { authService } from '@/services/authService';
-import { orderService } from '@/services/orderService';
+import { profileService } from '@/services/profile/profileService';
+import { authService } from '@/services/auth/authService';
+import { orderService } from '@/services/order/orderService';
 import {
   isProfileAccessError,
   handleCommonErrors,
 } from '@/utils/errorHandling';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { PostgrestError } from '@supabase/supabase-js';
 import { ProfileType } from '@/types';
+import { profileServerService } from '@/services/profile/profileServerService';
 
 // Types for auth user update data
 type AuthUpdateData = {
@@ -47,14 +48,14 @@ export function useProfile(user: User | null): ProfileData {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     if (!user) return;
 
     fetchUserData(user);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, navigate]);
+  }, [user, router]);
 
   // Fetch user's email either from user object or auth service
   const fetchUserEmail = async (user: User): Promise<string> => {
@@ -92,8 +93,8 @@ export function useProfile(user: User | null): ProfileData {
 
   // Fetch user orders
   const fetchUserOrders = async (userId: string) => {
-    const { data: orderData, error: orderError } =
-      await orderService.getUserOrders(userId);
+    const orderData = await orderService.getOrders(userId);
+    const orderError = null;
 
     if (orderError) {
       handleCommonErrors(orderError, {
@@ -123,7 +124,7 @@ export function useProfile(user: User | null): ProfileData {
 
       // Handle profile not found or RLS error
       if (profileError && isProfileAccessError(profileError)) {
-        const newProfile = await profileService.createProfile({
+        const newProfile = await profileServerService.createProfile({
           profile_id: user.id,
           username: '',
           avatar_url: '',
@@ -132,7 +133,7 @@ export function useProfile(user: User | null): ProfileData {
         });
 
         if (!newProfile) {
-          navigate('/sign-in');
+          router.push('/signin');
           return;
         }
 

@@ -65,7 +65,7 @@ export function SignInForm({ message }: { message: string | null }) {
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground"
+              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
             >
@@ -82,12 +82,12 @@ export function SignInForm({ message }: { message: string | null }) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col">
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full cursor-pointer hover:bg-primary/90" disabled={loading}>
           {loading ? 'Signing in...' : 'Sign In'}
         </Button>
         <div className="mt-4 text-center text-sm">
           Don't have an account?{' '}
-          <Link href="/signup" className="text-primary underline">
+          <Link href="/signup" className="text-primary underline cursor-pointer  hover:text-primary/90">
             Sign up
           </Link>
         </div>

@@ -54,7 +54,7 @@ export default function SignUpForm() {
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground"
+              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
             >
@@ -82,7 +82,7 @@ export default function SignUpForm() {
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground"
+              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
               onClick={toggleConfirmPasswordVisibility}
               tabIndex={-1}
             >
@@ -101,12 +101,12 @@ export default function SignUpForm() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col">
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full cursor-pointer hover:bg-primary/90" disabled={loading}>
           {loading ? 'Creating account...' : 'Sign Up'}
         </Button>
         <div className="mt-4 text-center text-sm">
           Already have an account?{' '}
-          <Link href="/signin" className="text-primary underline">
+          <Link href="/signin" className="text-primary underline cursor-pointer hover:text-primary/90">
             Sign in
           </Link>
         </div>

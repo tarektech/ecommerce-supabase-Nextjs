@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { useCart } from '@/context/CartContext';
-import { orderService } from '@/services/orderService';
-import { addressService } from '@/services/addressService';
+import { orderService } from '@/services/order/orderService';
+import { addressService } from '@/services/address/addressService';
 
 interface PaymentFormProps {
   onBack: () => void;
@@ -46,13 +46,18 @@ export const PaymentForm = ({
 
     try {
       // 1. Create shipping address using addressService
-      const newAddress = await addressService.createAddress({
-        user_id: user.id,
-        street: shippingAddress.street,
-        city: shippingAddress.city,
-        zip_code: shippingAddress.zipCode,
-        country: shippingAddress.country,
-        is_default: false,
+      const newAddress = await addressService.saveAddress({
+        address: {
+          id: 0,
+          user_id: user.id,
+          street: shippingAddress.street,
+          city: shippingAddress.city,
+          zip_code: shippingAddress.zipCode,
+          country: shippingAddress.country,
+          state: '',
+          is_default: false,
+        },
+        userId: user.id,
       });
 
       if (!newAddress) {
@@ -66,17 +71,13 @@ export const PaymentForm = ({
         price: parseFloat(item.price.toFixed(2)),
       }));
 
-      const order = await orderService.createOrder(
-        {
-          user_id: user.id,
-          status: 'pending',
-          total: cartTotal,
-          shipping_address_id: newAddress.id,
-          payment_method: 'credit_card',
-          payment_id: `DEMO-${Date.now()}`, // In a real app, this would come from a payment processor
-        },
-        orderItems
-      );
+      const order = await orderService.createOrder({
+        userId: user.id,
+        items: orderItems,
+        shippingAddress: newAddress,
+        totalAmount: cartTotal,
+        paymentIntentId: `DEMO-${Date.now()}`, // In a real app, this would come from a payment processor
+      });
 
       if (!order) {
         throw new Error('Failed to create order');
@@ -86,7 +87,6 @@ export const PaymentForm = ({
       await clearCart();
 
       toast.success('Order placed successfully!');
-      console.log('Order placed successfully!');
       onSubmit(); // Only call onSubmit after everything is successful
     } catch (error) {
       console.error('Error placing order:', error);
@@ -134,69 +134,56 @@ export const PaymentForm = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="cardNumber">Card Number</Label>
           <Input
-            type="text"
             id="cardNumber"
             ref={cardNumberRef}
             placeholder="1234 5678 9012 3456"
-            required
             onKeyUp={handleCardNumber}
+            required
           />
         </div>
-
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="cardHolder">Card Holder</Label>
           <Input
-            type="text"
             id="cardHolder"
             ref={cardHolderRef}
             placeholder="John Doe"
             required
           />
         </div>
-
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="expiryDate">Expiry Date</Label>
             <Input
-              type="text"
               id="expiryDate"
               ref={expiryDateRef}
               placeholder="MM/YY"
-              required
-              maxLength={5}
               onKeyUp={handleExpireDate}
+              required
             />
           </div>
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="cvv">CVV</Label>
             <Input
-              type="text"
               id="cvv"
               ref={cvvRef}
-              maxLength={3}
               placeholder="123"
+              maxLength={3}
               required
             />
           </div>
         </div>
       </div>
-
-      <div className="flex gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          className="w-1/2"
-          onClick={onBack}
-        >
+      <div className="flex justify-between pt-4">
+        <Button type="button" variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button type="submit" className="w-1/2">
-          Complete Order
+        <Button type="submit" className="cursor-pointer">
+          Place Order
         </Button>
       </div>
     </form>

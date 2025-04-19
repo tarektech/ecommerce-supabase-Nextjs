@@ -4,6 +4,15 @@
 
 This document outlines the architecture and code organization of our e-commerce application built with React, Vite, and Supabase.
 
+## Documentation Structure
+
+Our documentation is organized into several key files:
+
+- `README.md`: Project overview and getting started guide
+- `architecture.md` (this file): System architecture and code organization
+- `schema.md`: Database schema, relationships, and security policies
+- `api.md`: API endpoints, data flow, and error handling
+
 ## Technology Stack
 
 - **Frontend Framework**: React with TypeScript

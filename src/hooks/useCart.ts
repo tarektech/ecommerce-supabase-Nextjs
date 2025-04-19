@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { getOrCreateCart, addItemToCart } from '@/services/cartService';
+import { getOrCreateCart, addItemToCart } from '@/services/cart/cartService';
 import { ProductType } from '@/types';
 
 export function useCart() {

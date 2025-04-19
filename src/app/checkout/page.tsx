@@ -1,6 +1,8 @@
-'use client'
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  createServerSupabase,
+  getAuthenticatedUser,
+} from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import {
   Card,
   CardHeader,
@@ -8,101 +10,37 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
-import { useAuth } from '@/context/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
-import { ShippingForm } from '@/components/checkout/ShippingForm';
-import { PaymentForm } from '@/components/checkout/PaymentForm';
-import { ConfirmationStep } from '@/components/checkout/ConfirmationStep';
-import { StepIndicator } from '@/components/checkout/StepIndicator';
+import CheckoutClientPage from '@/app/checkout/CheckoutClientPage';
 
-type CheckoutStep = 'shipping' | 'payment' | 'confirmation';
+// This is a Server Component by default, no need for 'use client'
+export default async function CheckoutPage() {
+  // Get authenticated user (server-side)
+  const user = await getAuthenticatedUser();
 
-interface ShippingAddress {
-  street: string;
-  city: string;
-  zipCode: string;
-  country: string;
-}
+  // Redirect to sign-in if not authenticated
+  if (!user) {
+    redirect('/signin');
+  }
 
-const CheckOutPage = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { username, email } = useProfile(user);
-  const [currentStep, setCurrentStep] =
-    React.useState<CheckoutStep>('shipping');
-  const [shippingAddress, setShippingAddress] =
-    useState<ShippingAddress | null>(null);
+  // Get Supabase client for server-side data fetching
+  const supabase = await createServerSupabase();
 
-  const handleShippingSubmit = (address: ShippingAddress) => {
-    setShippingAddress(address);
-    setCurrentStep('payment');
-  };
+  // Fetch user profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username, email')
+    .eq('id', user.id)
+    .single();
 
-  const handlePaymentSubmit = () => {
-    setCurrentStep('confirmation');
-  };
+  // Use profile data if available, otherwise fallback to auth data
+  const username = profile?.username || null;
+  const email = profile?.email || user.email;
 
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-md mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Checkout</CardTitle>
-            <CardDescription>Complete your purchase</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-8">
-              <div className="flex items-center justify-between relative mb-8">
-                <StepIndicator
-                  step={1}
-                  label="Shipping"
-                  isActive={currentStep === 'shipping'}
-                  isCompleted={
-                    currentStep === 'payment' || currentStep === 'confirmation'
-                  }
-                />
-                <div className="absolute left-[20%] right-[20%] top-4 h-0.5 bg-border -z-10" />
-                <StepIndicator
-                  step={2}
-                  label="Payment"
-                  isActive={currentStep === 'payment'}
-                  isCompleted={currentStep === 'confirmation'}
-                />
-                <div className="absolute left-[60%] right-[20%] top-4 h-0.5 bg-border -z-10" />
-                <StepIndicator
-                  step={3}
-                  label="Confirmation"
-                  isActive={currentStep === 'confirmation'}
-                  isCompleted={false}
-                />
-              </div>
-            </div>
-
-            {currentStep === 'shipping' && (
-              <ShippingForm
-                username={username}
-                email={email}
-                onSubmit={handleShippingSubmit}
-              />
-            )}
-            {currentStep === 'payment' && shippingAddress && (
-              <PaymentForm
-                onBack={() => setCurrentStep('shipping')}
-                onSubmit={handlePaymentSubmit}
-                shippingAddress={shippingAddress}
-              />
-            )}
-            {currentStep === 'confirmation' && (
-              <ConfirmationStep
-                email={email}
-                onReturnHome={() => navigate('/')}
-              />
-            )}
-          </CardContent>
-        </Card>
+        <CheckoutClientPage username={username} email={email} />
       </div>
     </div>
   );
-};
-
-export default CheckOutPage;
+}

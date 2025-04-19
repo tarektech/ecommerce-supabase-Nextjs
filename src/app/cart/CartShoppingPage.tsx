@@ -14,17 +14,15 @@ import { useCart } from '@/context/CartContext';
 import ShoppingSkeleton from '@/components/ShoppingSkeleton';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+
 export default function CartShoppingPage() {
   const { cartItems, removeFromCart, updateQuantity, subtotal, isLoading } =
     useCart();
+  const { user } = useAuth();
 
   if (isLoading) {
     return <ShoppingSkeleton />;
   }
-
-  const { user } = useAuth();
-
-  // Show a loader while fetching cart data
 
   // Show login prompt if user is not authenticated
   if (!user) {

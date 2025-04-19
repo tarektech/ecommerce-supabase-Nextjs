@@ -4,6 +4,40 @@
 
 This document outlines the database schema for our e-commerce application. We use Supabase (PostgreSQL) as our database provider.
 
+## Common Queries
+
+### Get all products in a category
+```sql
+SELECT * FROM products WHERE category_id = [category_id];
+```
+
+### Get all orders for a user
+```sql
+SELECT * FROM orders WHERE user_id = [user_id];
+```
+
+### Get all items in an order with product details
+```sql
+SELECT oi.*, p.title, p.image 
+FROM order_items oi
+JOIN products p ON oi.product_id = p.product_id
+WHERE oi.order_id = [order_id];
+```
+
+### Get all reviews for a product
+```sql
+SELECT r.*, p.username
+FROM reviews r
+JOIN profiles p ON r.user_id = p.profile_id
+WHERE r.product_id = [product_id];
+```
+
+### Get user's default shipping address
+```sql
+SELECT * FROM addresses
+WHERE user_id = [user_id] AND is_default = true;
+```
+
 ## Tables
 
 ### profiles

@@ -35,9 +35,9 @@ export default function RootLayout({
             >
               <SidebarProvider>
                 <Navbar />
-                <div className='flex'>
-                <Sidebar />
-                <main className='flex-1'>{children}</main>
+                <div className="flex">
+                  <Sidebar />
+                  <main className="flex-1">{children}</main>
                 </div>
               </SidebarProvider>
             </ThemeProvider>

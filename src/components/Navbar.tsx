@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import DarkTheme from './dark-theme';
 import { useTheme } from 'next-themes';
 import { useSidebar } from '@/context/SidebarContext';
 
@@ -41,8 +40,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className=" flex h-16 items-center">
-        
+      <div className="mx-4 flex h-16 items-center">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -52,8 +50,7 @@ export function Navbar() {
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle menu</span>
           </Button>
-          <DarkTheme />
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center cursor-pointer">
             <h1 className="text-2xl font-bold">ShopClone</h1>
           </Link>
         </div>
@@ -62,7 +59,7 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9"
+            className="h-9 w-9 cursor-pointer"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           >
             {theme === 'dark' ? (
@@ -74,7 +71,11 @@ export function Navbar() {
           </Button>
 
           <Link href="/cart">
-            <Button variant="ghost" size="icon" className="relative h-9 w-9">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative h-9 w-9 cursor-pointer"
+            >
               <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
               {totalItems > 0 && (
                 <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-primary text-[11px] font-medium text-primary-foreground flex items-center justify-center">
@@ -86,7 +87,11 @@ export function Navbar() {
           </Link>
 
           <Link href={user ? '/profile' : '/signin'}>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 cursor-pointer"
+            >
               <User className="h-[1.2rem] w-[1.2rem]" />
               <span className="sr-only">{user ? 'Profile' : 'Sign in'}</span>
             </Button>

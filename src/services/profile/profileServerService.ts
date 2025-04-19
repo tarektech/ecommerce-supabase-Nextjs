@@ -1,9 +1,11 @@
-import { supabase } from '../utils/supabase';
+import { supabase } from '@/lib';
+import { createServerSupabase } from '@/lib/supabase/server';
 import { ProfileType } from '@/types';
 
-export const profileService = {
+export const profileServerService = {
   async getProfileById(userId: string): Promise<ProfileType | null> {
     try {
+      const supabase = await createServerSupabase();
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -11,7 +13,8 @@ export const profileService = {
         .single();
 
       if (error) {
-        throw new Error(error.message);
+        console.error('Error fetching profile:', error);
+        return null;
       }
 
       return data;

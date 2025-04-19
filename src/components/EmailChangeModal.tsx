@@ -13,15 +13,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff } from 'lucide-react';
-import { profileService } from '@/services/profileService';
-import { supabase } from '@/utils/supabase';
+import { profileService } from '@/services/profile/profileService';
+import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 
 interface EmailChangeModalProps {
   user: User;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateEmail: (newEmail: string) => Promise<void>;
+ // onUpdateEmail: (newEmail: string) => Promise<void>;
   setEmail: (email: string) => void;
 }
 
@@ -29,7 +29,7 @@ export function EmailChangeModal({
   user,
   isOpen,
   onClose,
-  onUpdateEmail,
+  //onUpdateEmail,
   setEmail,
 }: EmailChangeModalProps) {
   const [newEmail, setNewEmail] = useState('');

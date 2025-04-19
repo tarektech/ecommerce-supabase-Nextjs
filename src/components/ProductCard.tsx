@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductType } from '@/types';
@@ -14,7 +14,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
 
   const handleProductClick = () => {
-    router.push(`/product/${product.product_id}`);
+    router.push(`/products/${product.product_id}`);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {

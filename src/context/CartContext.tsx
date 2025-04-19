@@ -7,7 +7,7 @@ import {
   useEffect,
 } from 'react';
 import { ProductType } from '../types';
-import * as cartService from '../services/cartService';
+import * as cartService from '@/services/cart/cartService';
 import { toast } from 'sonner';
 import { useAuth } from './AuthContext';
 
