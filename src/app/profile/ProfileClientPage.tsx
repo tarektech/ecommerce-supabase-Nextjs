@@ -9,7 +9,6 @@ import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { User } from '@supabase/supabase-js';
 import { OrderType, ProfileType } from '@/types';
-import { orderServerService } from '@/services/order/orderServerService';
 
 interface ProfileClientPageProps {
   initialProfile: ProfileType | null;

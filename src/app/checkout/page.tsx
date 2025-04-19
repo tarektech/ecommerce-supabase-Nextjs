@@ -3,13 +3,6 @@ import {
   getAuthenticatedUser,
 } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
 import CheckoutClientPage from '@/app/checkout/CheckoutClientPage';
 
 // This is a Server Component by default, no need for 'use client'

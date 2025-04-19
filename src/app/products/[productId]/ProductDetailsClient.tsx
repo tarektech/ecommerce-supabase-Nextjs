@@ -101,7 +101,7 @@ export default function ProductDetailsClient({
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
                 className={`w-full py-3 sm:py-3 lg:py-4 px-6 sm:px-8 rounded-lg font-medium text-white text-base
-                  transition-all duration-200 shadow-md hover:shadow-xl transform hover:-translate-y-0.5
+                  transition-all duration-200 shadow-md hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer
                   ${
                     product.stock > 0
                       ? 'bg-primary hover:bg-primary/90 active:bg-primary/95 dark:hover:bg-primary/80'
