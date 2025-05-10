@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ProductType } from '@/types';
 import { productService } from '@/services/product/productService';
 
-export function useProducts(user: any) {
+export function useProducts(user: unknown) {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');

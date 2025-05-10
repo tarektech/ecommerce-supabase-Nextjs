@@ -72,7 +72,7 @@ export default function CartShoppingPage() {
         <div className="text-center p-8">
           <h2 className="text-xl mb-4">Your cart is empty</h2>
           <Link href="/">
-            <Button>Continue Shopping</Button>
+            <Button className='cursor-pointer 0'>Continue Shopping</Button>
           </Link>
         </div>
       ) : (

@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Navbar } from '@/components/Navbar';
 import { Sidebar } from '@/components/Sidebar';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { TanStackQueryProvider } from '@/lib/providers/query-provider';
 
 export const metadata: Metadata = {
   title: 'E-Commerce',
@@ -25,24 +26,26 @@ export default function RootLayout({
         <meta name="description" content="My App is a..." />
       </head>
       <body className="min-h-screen bg-background">
-        <AuthProvider>
-          <CartProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <SidebarProvider>
-                <Navbar />
-                <div className="flex">
-                  <Sidebar />
-                  <main className="flex-1">{children}</main>
-                </div>
-              </SidebarProvider>
-            </ThemeProvider>
-          </CartProvider>
-        </AuthProvider>
+        <TanStackQueryProvider>
+          <AuthProvider>
+            <CartProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <SidebarProvider>
+                  <Navbar />
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="flex-1">{children}</main>
+                  </div>
+                </SidebarProvider>
+              </ThemeProvider>
+            </CartProvider>
+          </AuthProvider>
+        </TanStackQueryProvider>
       </body>
     </html>
   );

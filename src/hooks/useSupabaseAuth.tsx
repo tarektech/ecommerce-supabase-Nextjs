@@ -63,14 +63,14 @@ export function useSupabaseAuth() {
       }
 
       // Check if user profile exists
-      const { data: existingProfile, error: checkError } = await supabase
+      const { data: existingProfile } = await supabase
         .from('profiles')
         .select('profile_id, email')
         .eq('profile_id', user.id)
         .single();
 
       // Create profile directly with Supabase
-      const { data: newProfile, error: createError } = await supabase
+      const { error: createError } = await supabase
         .from('profiles')
         .insert({
           profile_id: user.id,

@@ -106,6 +106,7 @@ export function ProfileCard({
                   type="button"
                   onClick={() => setIsEmailModalOpen(true)}
                   variant="outline"
+                  className='bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90'
                 >
                   Change Email
                 </Button>
@@ -126,7 +127,7 @@ export function ProfileCard({
             </div>
           </div>
 
-          <Button onClick={handleSave} disabled={isSaving} className="mb-4">
+          <Button onClick={handleSave} disabled={isSaving} className="mb-4 bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90">
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
 
@@ -141,7 +142,7 @@ export function ProfileCard({
         </div>
         <Button
           onClick={onSignOut}
-          className="hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground bg-primary text-primary-foreground cursor-pointer "
         >
           Sign Out
         </Button>
@@ -152,7 +153,7 @@ export function ProfileCard({
           user={user}
           isOpen={isEmailModalOpen}
           onClose={() => setIsEmailModalOpen(false)}
-          onUpdateEmail={onUpdateEmail}
+          // onUpdateEmail={onUpdateEmail}
           setEmail={setEmail}
         />
       )}
