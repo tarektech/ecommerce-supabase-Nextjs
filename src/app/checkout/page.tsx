@@ -22,12 +22,13 @@ export default async function CheckoutPage() {
   const { data: profile } = await supabase
     .from('profiles')
     .select('username, email')
-    .eq('id', user.id)
+    .eq('profile_id', user.id)
     .single();
 
   // Use profile data if available, otherwise fallback to auth data
   const username = profile?.username || null;
   const email = profile?.email || user.email;
+
 
   return (
     <div className="min-h-screen bg-background py-12">

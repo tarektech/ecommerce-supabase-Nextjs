@@ -67,11 +67,14 @@ export const ShippingForm = ({
             <Input
               type="text"
               id="fullName"
-              defaultValue={username || ''}
-              disabled={true}
+              value={username || ''}
+              disabled
               required
               className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
             />
+            <p className="text-xs text-muted-foreground">
+              {username || 'No username available'}
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -84,8 +87,8 @@ export const ShippingForm = ({
             <Input
               type="email"
               id="email"
-              defaultValue={email || ''}
-              disabled={true}
+              value={email || ''}
+              disabled
               required
               className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
             />
