@@ -6,6 +6,7 @@ import { Heart, Minus, Plus, Check, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProductComments } from '@/components/ProductComments';
+import Image from 'next/image';
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -58,9 +59,11 @@ export default function ProductDetailsClient({
             <Card className="overflow-hidden border-border bg-card">
               <div className="relative aspect-square">
                 {product.image ? (
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.title}
+                    width={400}
+                    height={400}
                     className="w-full h-full object-contain p-4"
                     loading="eager"
                   />
@@ -286,7 +289,7 @@ export default function ProductDetailsClient({
 
         {/* Comments Section */}
         <div className="mt-16">
-          <ProductComments productId={product.product_id} />
+          <ProductComments />
         </div>
       </div>
     </div>

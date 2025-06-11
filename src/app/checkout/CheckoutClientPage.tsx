@@ -100,7 +100,6 @@ const CheckoutContent = ({ username, email }: CheckoutClientPageProps) => {
               <PaymentForm
                 onBack={() => setCurrentStep('shipping')}
                 onSubmit={handlePaymentSubmit}
-                shippingAddress={shippingAddress}
               />
             )}
             {currentStep === 'confirmation' && (

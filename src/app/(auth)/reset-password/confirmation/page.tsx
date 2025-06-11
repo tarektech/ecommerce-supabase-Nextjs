@@ -16,15 +16,15 @@ export default function ResetPasswordConfirmation() {
         <CardHeader>
           <CardTitle className="text-2xl">Check Your Email</CardTitle>
           <CardDescription>
-            We've sent you a password reset link
+            We&apos;ve sent you a password reset link
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-green-100 text-green-800 text-sm p-4 rounded-md">
             <p>
-              If an account exists with the email you entered, we've sent a link
-              to reset your password. Please check your email and follow the
-              instructions.
+              If an account exists with the email you entered, we&apos;ve sent a
+              link to reset your password. Please check your email and follow
+              the instructions.
             </p>
             <p className="mt-2">
               The link will expire in 1 hour for security reasons.
@@ -38,7 +38,7 @@ export default function ResetPasswordConfirmation() {
             </Button>
           </Link>
           <div className="mt-4 text-center text-sm">
-            Didn't receive the email?{' '}
+            Didn&apos;t receive the email?{' '}
             <Link
               href="/reset-password"
               className="text-primary underline cursor-pointer hover:text-primary/90"

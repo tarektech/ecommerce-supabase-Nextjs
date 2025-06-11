@@ -10,10 +10,18 @@ interface OrderStatusChartProps {
   orders: OrderType[];
 }
 
+interface ChartDataset {
+  label: string;
+  data: number[];
+  backgroundColor: string[];
+  borderColor: string[];
+  borderWidth: number;
+}
+
 export function OrderStatusChart({ orders }: OrderStatusChartProps) {
   const [chartData, setChartData] = useState<{
     labels: string[];
-    datasets: any[];
+    datasets: ChartDataset[];
   }>({
     labels: [],
     datasets: [],

@@ -36,3 +36,6 @@ dist
 
 
 .utils/supabase.ts
+
+# Stagewise Toolbar
+src/StagewiseToolbar.tsx

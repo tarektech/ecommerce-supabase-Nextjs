@@ -10,12 +10,20 @@ interface PaymentDistributionChartProps {
   orders: OrderType[];
 }
 
+interface ChartDataset {
+  label: string;
+  data: number[];
+  backgroundColor: string[];
+  borderColor: string[];
+  borderWidth: number;
+}
+
 export function PaymentDistributionChart({
   orders,
 }: PaymentDistributionChartProps) {
   const [chartData, setChartData] = useState<{
     labels: string[];
-    datasets: any[];
+    datasets: ChartDataset[];
   }>({
     labels: [],
     datasets: [],

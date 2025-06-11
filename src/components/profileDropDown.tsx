@@ -10,7 +10,7 @@ import { User, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
-export default function profileDropDown() {
+export default function ProfileDropDown() {
   const { user, loading, signOut } = useAuth();
 
   const handleSignOut = async () => {

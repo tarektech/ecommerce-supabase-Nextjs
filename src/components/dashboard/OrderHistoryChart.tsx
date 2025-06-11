@@ -25,10 +25,18 @@ interface OrderHistoryChartProps {
   orders: OrderType[];
 }
 
+interface ChartDataset {
+  label: string;
+  data: number[];
+  backgroundColor: string;
+  borderColor: string;
+  borderWidth: number;
+}
+
 export function OrderHistoryChart({ orders }: OrderHistoryChartProps) {
   const [chartData, setChartData] = useState<{
     labels: string[];
-    datasets: any[];
+    datasets: ChartDataset[];
   }>({
     labels: [],
     datasets: [],
@@ -72,8 +80,8 @@ export function OrderHistoryChart({ orders }: OrderHistoryChartProps) {
       .slice(-6); // Get last 6 months
 
     const labels = sortedEntries.map(([month]) => month);
-    const totals = sortedEntries.map(([_, data]) => data.total);
-    const counts = sortedEntries.map(([_, data]) => data.count);
+    const totals = sortedEntries.map(([, data]) => data.total);
+    const counts = sortedEntries.map(([, data]) => data.count);
 
     setChartData({
       labels,

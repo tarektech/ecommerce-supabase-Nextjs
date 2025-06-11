@@ -306,7 +306,7 @@ export const profileService = {
 
       // Delete previous avatars after successful upload
       // We don't need to wait for this to complete or handle errors
-      this.deleteUserAvatars(userId, publicUrlData.publicUrl)
+      this.deleteUserAvatars(userId, currentAvatarUrl)
         .then((success) => {
           if (success) {
             console.log('Previous avatars cleaned up successfully');

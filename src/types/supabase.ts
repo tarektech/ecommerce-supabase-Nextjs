@@ -42,14 +42,5 @@ export interface Database {
       };
       // Add other tables as needed
     };
-    Views: {
-      // Add any defined views
-    };
-    Functions: {
-      // Add any defined functions
-    };
-    Enums: {
-      // Add any defined enums
-    };
   };
 }

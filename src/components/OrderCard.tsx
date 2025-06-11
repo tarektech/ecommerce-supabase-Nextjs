@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OrderItemType, OrderType } from '@/types';
+import Image from 'next/image';
 
 interface OrderCardProps {
   order: OrderType;
@@ -44,9 +45,11 @@ export function OrderCard({ order }: OrderCardProps) {
             >
               <div className="flex items-center">
                 {item.product?.image && (
-                  <img
-                    src={item.product.image}
+                  <Image
+                    src={item.product.image || ''}
                     alt={item.product.title}
+                    width={48}
+                    height={48}
                     className="w-12 h-12 object-cover rounded mr-4"
                   />
                 )}

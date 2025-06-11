@@ -80,8 +80,9 @@ export function ResetPasswordForm({ message }: { message: string | null }) {
         )}
         {success && (
           <div className="bg-green-100 text-green-800 text-sm p-3 rounded-md">
-            We've sent you an email with a link to reset your password. Please
-            check your inbox. You'll be redirected to the password update page.
+            We&apos;ve sent you an email with a link to reset your password.
+            Please check your inbox. You&apos;ll be redirected to the password
+            update page.
           </div>
         )}
         <div className="space-y-2">

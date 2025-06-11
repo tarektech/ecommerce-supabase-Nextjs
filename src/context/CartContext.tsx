@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -257,7 +256,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useCart() {
   const context = useContext(CartContext);
   if (context === undefined) {

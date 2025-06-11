@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { Star, Heart } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: ProductType;
@@ -54,10 +55,13 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       <CardHeader className="p-0 relative">
         {product.image ? (
-          <img
-            src={product.image}
+          <Image
+            src={product.image || ''}
             alt={product.title}
+            width={400}
+            height={192}
             className="w-full h-48 object-cover"
+            style={{ width: 'auto' }}
           />
         ) : (
           <div className="w-full h-48 bg-muted flex items-center justify-center">

@@ -7,7 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { Sidebar } from '@/components/Sidebar';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { TanStackQueryProvider } from '@/lib/providers/query-provider';
-import StagewiseToolbar from '@/components/StagewiseToolbar';
+import StagewiseToolbar from '@/StagewiseToolbar';
 
 export const metadata: Metadata = {
   title: 'E-Commerce',

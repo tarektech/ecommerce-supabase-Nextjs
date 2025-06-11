@@ -14,6 +14,7 @@ import { useCart } from '@/context/CartContext';
 import ShoppingSkeleton from '@/components/ShoppingSkeleton';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import Image from 'next/image';
 
 export default function CartShoppingPage() {
   const { cartItems, removeFromCart, updateQuantity, subtotal, isLoading } =
@@ -47,7 +48,7 @@ export default function CartShoppingPage() {
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-primary hover:underline">
                 Sign up
               </Link>
@@ -72,7 +73,7 @@ export default function CartShoppingPage() {
         <div className="text-center p-8">
           <h2 className="text-xl mb-4">Your cart is empty</h2>
           <Link href="/">
-            <Button className='cursor-pointer 0'>Continue Shopping</Button>
+            <Button className="cursor-pointer">Continue Shopping</Button>
           </Link>
         </div>
       ) : (
@@ -82,9 +83,11 @@ export default function CartShoppingPage() {
               <Card key={item.product_id} className="mb-4">
                 <div className="flex flex-col sm:flex-row">
                   <div className="sm:w-1/4 p-4">
-                    <img
-                      src={item.image}
+                    <Image
+                      src={item.image || ''}
                       alt={item.title}
+                      width={100}
+                      height={100}
                       className="w-full h-auto object-cover"
                     />
                   </div>

@@ -14,21 +14,11 @@ interface PaymentFormProps {
     cardholderName: string,
     expiryDate: string
   ) => void;
-  shippingAddress: {
-    street: string;
-    city: string;
-    zipCode: string;
-    country: string;
-  };
 }
 
-export const PaymentForm = ({
-  onBack,
-  onSubmit,
-  shippingAddress,
-}: PaymentFormProps) => {
+export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
   const { user } = useAuth();
-  const { cartItems, subtotal: cartTotal } = useCart();
+  const { cartItems } = useCart();
   const [cardNumber, setCardNumber] = useState('');
   const [cardholderName, setCardholderName] = useState(
     user?.user_metadata?.full_name || ''

@@ -9,6 +9,7 @@ import { orderService } from '@/services/order/orderService';
 import Link from 'next/link';
 import { OrderCard } from '@/components/OrderCard';
 import { DashboardCharts } from '@/components/dashboard/DashboardCharts';
+import Image from 'next/image';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -118,9 +119,11 @@ export default function DashboardPage() {
                     <Card key={product.product_id} className="overflow-hidden">
                       <div className="h-48 bg-gray-100">
                         {product.image ? (
-                          <img
-                            src={product.image}
+                          <Image
+                            src={product.image || ''}
                             alt={product.title}
+                            width={400}
+                            height={192}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -168,7 +171,7 @@ export default function DashboardPage() {
                   <div className="flex flex-col items-center justify-center py-12 px-4">
                     <p className="text-xl font-medium mb-4">No orders yet</p>
                     <p className="text-muted-foreground mb-6">
-                      You haven't placed any orders yet.
+                      You haven&apos;t placed any orders yet.
                     </p>
                     <Link href="/">
                       <Button>Browse Products</Button>

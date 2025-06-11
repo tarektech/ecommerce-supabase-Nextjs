@@ -15,7 +15,7 @@ export const ConfirmationStep = ({
       <div className="text-primary text-6xl">✓</div>
       <h2 className="text-2xl font-semibold">Thank you for your order!</h2>
       <p className="text-muted-foreground">
-        We've sent a confirmation email to {email}
+        We&apos;ve sent a confirmation email to {email}
       </p>
       <Button onClick={onReturnHome} className="mt-4">
         Return to Home

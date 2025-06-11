@@ -7,7 +7,6 @@ import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { User } from '@supabase/supabase-js';
 import { EmailChangeModal } from '@/components/EmailChangeModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
-import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { profileService } from '@/services/profile/profileService';
 

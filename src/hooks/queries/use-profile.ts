@@ -61,7 +61,7 @@ export function useUpdateProfile() {
     }) => {
       return profileService.updateProfile(userId, data);
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate specific profile query
       queryClient.invalidateQueries({
         queryKey: profileKeys.detail(variables.userId),

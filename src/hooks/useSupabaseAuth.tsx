@@ -69,6 +69,17 @@ export function useSupabaseAuth() {
         .eq('profile_id', user.id)
         .single();
 
+      if (existingProfile) {
+        // Profile already exists, update email if needed
+        if (!existingProfile.email && userEmail) {
+          console.log('Updating existing profile with email:', userEmail);
+          await profileService.updateProfile(user.id, {
+            email: userEmail,
+          });
+        }
+        return;
+      }
+
       // Create profile directly with Supabase
       const { error: createError } = await supabase
         .from('profiles')
@@ -83,30 +94,14 @@ export function useSupabaseAuth() {
         .single();
 
       if (createError) {
-        // Check if this is a duplicate key error (which means the profile was already created)
-        // This helps prevent console errors when multiple auth events try to create the same profile
-        console.log(
-          'Profile creation returned null - checking if profile exists anyway'
-        );
-        const { data: checkAgain } = await supabase
-          .from('profiles')
-          .select('profile_id')
-          .eq('profile_id', user.id)
-          .single();
-
-        if (!checkAgain) {
-          console.error('Error creating user profile - profile does not exist');
-        } else {
-          console.log(
-            'Profile already exists despite error, proceeding normally'
-          );
+        // Check if this is a duplicate key error (profile was created by another request)
+        if (createError.code === '23505') {
+          console.log('Profile already exists (created by another request)');
+          return;
         }
-      } else if (existingProfile && !existingProfile.email && userEmail) {
-        // Update profile with email if it's missing but we have it from auth
-        console.log('Updating profile with email from auth:', userEmail);
-        await profileService.updateProfile(user.id, {
-          email: userEmail,
-        });
+
+        console.error('Error creating user profile:', createError);
+        throw createError;
       }
     } catch (error) {
       console.error('Error in ensureUserProfile:', error);

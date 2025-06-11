@@ -91,58 +91,131 @@ export default function ProfileClientPage({
 
   // Subscribe to realtime order updates
   useEffect(() => {
-    // Subscribe to orders
-    const orderSubscription = supabase
-      .channel('orders')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'orders',
-          filter: `user_id=eq.${user.id}`,
-        },
-        async (payload) => {
-          // Fetch updated orders
-          if (payload.new) {
-            const order = payload.new as OrderType;
-            setOrders((prevOrders) => [...prevOrders, order]);
-          }
-          if (payload.old) {
-            const order = payload.old as OrderType;
-            setOrders((prevOrders) =>
-              prevOrders.filter((o) => o.id !== order.id)
-            );
-          }
-        }
-      )
-      .subscribe();
+    let orderSubscription: any;
+    let profileSubscription: any;
 
-    // Subscribe to profile updates
-    const profileSubscription = supabase
-      .channel('profiles')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-          filter: `profile_id=eq.${user.id}`,
-        },
-        async (payload) => {
-          if (payload.new) {
-            const profile = payload.new as ProfileType;
-            setUsername(profile.username || '');
-            setEmail(profile.email || '');
-            setAvatarUrl(profile.avatar_url || '');
-          }
-        }
-      )
-      .subscribe();
+    const setupSubscriptions = async () => {
+      try {
+        // Subscribe to orders with error handling
+        orderSubscription = supabase
+          .channel('orders', {
+            config: {
+              presence: {
+                key: user.id,
+              },
+            },
+          })
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'orders',
+              filter: `user_id=eq.${user.id}`,
+            },
+            async (payload) => {
+              try {
+                // Fetch updated orders
+                if (payload.new) {
+                  const order = payload.new as OrderType;
+                  setOrders((prevOrders) => [...prevOrders, order]);
+                }
+                if (payload.old) {
+                  const order = payload.old as OrderType;
+                  setOrders((prevOrders) =>
+                    prevOrders.filter((o) => o.id !== order.id)
+                  );
+                }
+              } catch (error) {
+                console.error(
+                  'Error handling order subscription update:',
+                  error
+              );
+              }
+            }
+          )
+          .on('presence', { event: 'sync' }, () => {
+            // Handle presence sync
+          })
+          .on('presence', { event: 'join' }, () => {
+            // Handle presence join
+          })
+          .on('presence', { event: 'leave' }, () => {
+            // Handle presence leave
+          })
+          .subscribe((status, err) => {
+            if (status === 'SUBSCRIBED') {
+              console.log('Orders subscription established');
+            } else if (status === 'CHANNEL_ERROR') {
+              console.error('Orders subscription error:', err);
+            } else if (status === 'TIMED_OUT') {
+              console.warn('Orders subscription timed out, retrying...');
+            }
+          });
+
+        // Subscribe to profile updates with error handling
+        profileSubscription = supabase
+          .channel('profiles', {
+            config: {
+              presence: {
+                key: user.id,
+              },
+            },
+          })
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'profiles',
+              filter: `profile_id=eq.${user.id}`,
+            },
+            async (payload) => {
+              try {
+                if (payload.new) {
+                  const profile = payload.new as ProfileType;
+                  setUsername(profile.username || '');
+                  setEmail(profile.email || '');
+                  setAvatarUrl(profile.avatar_url || '');
+                }
+              } catch (error) {
+                console.error(
+                  'Error handling profile subscription update:',
+                  error
+                );
+              }
+            }
+          )
+          .on('presence', { event: 'sync' }, () => {
+            // Handle presence sync
+          })
+          .subscribe((status, err) => {
+            if (status === 'SUBSCRIBED') {
+              console.log('Profile subscription established');
+            } else if (status === 'CHANNEL_ERROR') {
+              console.error('Profile subscription error:', err);
+            } else if (status === 'TIMED_OUT') {
+              console.warn('Profile subscription timed out, retrying...');
+            }
+          });
+      } catch (error) {
+        console.error('Error setting up subscriptions:', error);
+      }
+    };
+
+    setupSubscriptions();
 
     return () => {
-      supabase.removeChannel(orderSubscription);
-      supabase.removeChannel(profileSubscription);
+      try {
+        if (orderSubscription) {
+          supabase.removeChannel(orderSubscription);
+        }
+        if (profileSubscription) {
+          supabase.removeChannel(profileSubscription);
+        }
+      } catch (error) {
+        console.error('Error cleaning up subscriptions:', error);
+      }
     };
   }, [user.id]);
 

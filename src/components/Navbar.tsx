@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { useSidebar } from '@/context/SidebarContext';
-import ProfileDropDown from './profileDropDown';
+import ProfileDropDown from './ProfileDropDown';
 export function Navbar() {
   const { totalItems } = useCart();
 

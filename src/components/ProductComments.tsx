@@ -9,6 +9,7 @@ import {
   MoreVertical,
   Trash2,
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface Comment {
   id: string;
@@ -24,11 +25,7 @@ interface Comment {
   verified_purchase?: boolean;
 }
 
-interface ProductCommentsProps {
-  productId: string;
-}
-
-export function ProductComments({ productId }: ProductCommentsProps) {
+export function ProductComments() {
   const [comments, setComments] = useState<Comment[]>([
     // {
     //   id: '1',
@@ -264,9 +261,11 @@ export function ProductComments({ productId }: ProductCommentsProps) {
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                   {comment.user.avatar ? (
-                    <img
-                      src={comment.user.avatar}
+                    <Image
+                      src={comment.user.avatar || ''}
                       alt={comment.user.name}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (

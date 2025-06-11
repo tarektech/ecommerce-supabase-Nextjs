@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import {
@@ -21,7 +21,7 @@ interface EmailChangeModalProps {
   user: User;
   isOpen: boolean;
   onClose: () => void;
- // onUpdateEmail: (newEmail: string) => Promise<void>;
+  // onUpdateEmail: (newEmail: string) => Promise<void>;
   setEmail: (email: string) => void;
 }
 
@@ -113,8 +113,8 @@ export function EmailChangeModal({
             Change Email Address
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Enter your new email address and current password. You'll need to
-            verify the new email before the change takes effect.
+            Enter your new email address and current password. You&apos;ll need
+            to verify the new email before the change takes effect.
           </DialogDescription>
         </DialogHeader>
 
