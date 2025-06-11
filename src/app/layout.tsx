@@ -7,6 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { Sidebar } from '@/components/Sidebar';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { TanStackQueryProvider } from '@/lib/providers/query-provider';
+import StagewiseToolbar from '@/components/StagewiseToolbar';
 
 export const metadata: Metadata = {
   title: 'E-Commerce',
@@ -46,6 +47,7 @@ export default function RootLayout({
             </CartProvider>
           </AuthProvider>
         </TanStackQueryProvider>
+        <StagewiseToolbar />
       </body>
     </html>
   );

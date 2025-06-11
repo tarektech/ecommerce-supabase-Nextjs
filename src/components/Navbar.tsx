@@ -1,16 +1,15 @@
 'use client';
-import { ShoppingCart, User, Moon, Sun, LogOut, Menu } from 'lucide-react';
+import { ShoppingCart, Moon, Sun, Menu } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
-import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { useSidebar } from '@/context/SidebarContext';
-
+import ProfileDropDown from './profileDropDown';
 export function Navbar() {
   const { totalItems } = useCart();
-  const { user, loading, signOut } = useAuth();
+
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useSidebar();
@@ -20,22 +19,9 @@ export function Navbar() {
     setMounted(true);
   }, []);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      console.log('Signed out successfully');
-    } catch (error) {
-      console.error('Failed to sign out:', error);
-    }
-  };
-
   // Prevent hydration mismatch by not rendering theme-dependent content until mounted
   if (!mounted) {
     return null; // Return null on first render to avoid hydration mismatch
-  }
-
-  if (loading) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -70,6 +56,8 @@ export function Navbar() {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
+          <ProfileDropDown />
+
           <Link href="/cart">
             <Button
               variant="ghost"
@@ -85,29 +73,6 @@ export function Navbar() {
               <span className="sr-only">Shopping cart</span>
             </Button>
           </Link>
-
-          <Link href={user ? '/profile' : '/signin'}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 cursor-pointer"
-            >
-              <User className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">{user ? 'Profile' : 'Sign in'}</span>
-            </Button>
-          </Link>
-
-          {user && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">Sign out</span>
-            </Button>
-          )}
         </div>
       </div>
     </nav>
