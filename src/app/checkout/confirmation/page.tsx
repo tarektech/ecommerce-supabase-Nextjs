@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const searchParams = useSearchParams();
   const checkoutId = searchParams.get('checkout_id');
   const router = useRouter();
@@ -60,5 +60,30 @@ export default function ConfirmationPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-background py-12">
+      <Card className="max-w-lg mx-auto">
+        <CardHeader>
+          <CardTitle>Loading...</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Please wait while we load your confirmation.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ConfirmationContent />
+    </Suspense>
   );
 }
