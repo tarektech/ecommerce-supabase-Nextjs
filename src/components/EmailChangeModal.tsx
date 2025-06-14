@@ -106,7 +106,7 @@ export function EmailChangeModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}> 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-foreground">
@@ -164,7 +164,7 @@ export function EmailChangeModal({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent cursor-pointer"
                 onClick={togglePasswordVisibility}
                 tabIndex={-1}
               >
@@ -173,7 +173,7 @@ export function EmailChangeModal({
                 ) : (
                   <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                 )}
-                <span className="sr-only">
+                <span className="sr-only ">
                   {showPassword ? 'Hide password' : 'Show password'}
                 </span>
               </Button>
@@ -192,14 +192,14 @@ export function EmailChangeModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full sm:w-auto bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground"
+              className="w-full sm:w-auto bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
             >
               {isSubmitting ? 'Updating...' : 'Update Email'}
             </Button>

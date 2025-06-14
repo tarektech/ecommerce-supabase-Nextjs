@@ -91,8 +91,8 @@ export default function ProfileClientPage({
 
   // Subscribe to realtime order updates
   useEffect(() => {
-    let orderSubscription: any;
-    let profileSubscription: any;
+    let orderSubscription: ReturnType<typeof supabase.channel> | null = null;
+    let profileSubscription: ReturnType<typeof supabase.channel> | null = null;
 
     const setupSubscriptions = async () => {
       try {
@@ -130,7 +130,7 @@ export default function ProfileClientPage({
                 console.error(
                   'Error handling order subscription update:',
                   error
-              );
+                );
               }
             }
           )

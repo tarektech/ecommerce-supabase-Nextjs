@@ -1,9 +1,10 @@
 import { productService } from '@/services/product/productService';
+import { getProducts } from '@/services/product/getProducts';
 import { ProductType } from '@/types';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 
-// Query Keys
+// Query Keys - Following TanStack Query key factory pattern
 export const productKeys = {
   all: ['products'] as const,
   lists: () => [...productKeys.all, 'list'] as const,
@@ -15,13 +16,17 @@ export const productKeys = {
     [...productKeys.lists(), { categoryId }] as const,
 };
 
-// Get all products
+// Get all products with improved caching and error handling
 export function useProducts(options?: UseQueryOptions<ProductType[]>) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const query = useQuery({
     queryKey: productKeys.lists(),
-    queryFn: () => productService.getProducts(),
+    queryFn: getProducts,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     ...options,
   });
 
@@ -68,6 +73,8 @@ export function useProduct(
   return useQuery({
     queryKey: productKeys.detail(productId),
     queryFn: () => productService.getProductById(productId),
+    enabled: !!productId, // Only fetch when productId is provided
+    staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });
 }
@@ -80,6 +87,8 @@ export function useProductsByCategory(
   return useQuery({
     queryKey: productKeys.category(categoryId),
     queryFn: () => productService.getProductsByCategory(categoryId),
+    enabled: !!categoryId && categoryId > 0, // Only fetch when valid categoryId
+    staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });
 }

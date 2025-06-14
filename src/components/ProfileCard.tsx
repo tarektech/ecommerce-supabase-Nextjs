@@ -44,6 +44,7 @@ export function ProfileCard({
   const [avatarUrlInput, setAvatarUrlInput] = useState(avatarUrl);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update local state when props change (e.g., after successful save)
@@ -51,7 +52,11 @@ export function ProfileCard({
     setUsernameInput(username);
     setEmailInput(email);
     setAvatarUrlInput(avatarUrl);
-  }, [username, email, avatarUrl]);
+    // Clear preview when avatar URL changes from external source
+    if (avatarUrl !== avatarUrlInput) {
+      setPreviewUrl(null);
+    }
+  }, [username, email, avatarUrl, avatarUrlInput]);
 
   const handleSave = async () => {
     // Update local UI state
@@ -68,34 +73,38 @@ export function ProfileCard({
     fileInputRef.current?.click();
   };
 
-  const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 2MB)
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      toast.error(
+        `File size exceeds 2MB limit (${(file.size / (1024 * 1024)).toFixed(
+          2
+        )}MB)`
+      );
+      return;
+    }
+
+    // Check file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPEG, PNG, GIF, or WEBP)');
+      return;
+    }
+
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    // Start upload
+    handleAvatarUpload(file);
+  };
+
+  const handleAvatarUpload = async (file: File) => {
     try {
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-
-      const file = event.target.files[0];
-
-      // Check file size (max 2MB)
-      const maxSize = 2 * 1024 * 1024; // 2MB
-      if (file.size > maxSize) {
-        toast.error(
-          `File size exceeds 2MB limit (${(file.size / (1024 * 1024)).toFixed(
-            2
-          )}MB)`
-        );
-        return;
-      }
-
-      // Check file type
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        toast.error(
-          'Please upload a valid image file (JPEG, PNG, GIF, or WEBP)'
-        );
-        return;
-      }
-
       setUploading(true);
 
       // Use profile service to upload avatar and pass current avatar URL to delete previous avatars
@@ -109,12 +118,22 @@ export function ProfileCard({
         // Update both local state and parent component state
         setAvatarUrlInput(publicUrl);
         setAvatarUrl(publicUrl); // Update parent component state immediately
+        // Clear preview since we now have the uploaded URL
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+          setPreviewUrl(null);
+        }
         toast.success('Avatar uploaded successfully');
       } else {
         throw new Error('Failed to upload avatar. Please try again later.');
       }
     } catch (error) {
       console.error('Error uploading avatar:', error);
+      // Clear preview on error
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
 
       // Provide a user-friendly error message
       if (error instanceof Error) {
@@ -124,12 +143,17 @@ export function ProfileCard({
       }
     } finally {
       setUploading(false);
-      // Reset the file input
-      if (event.target) {
-        event.target.value = '';
-      }
     }
   };
+
+  // Clean up preview URL on component unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   // Get initials for avatar fallback
   const getInitials = () => {
@@ -142,6 +166,9 @@ export function ProfileCard({
     return 'U';
   };
 
+  // Determine which image to show: preview, uploaded avatar, or fallback
+  const displayImageUrl = previewUrl || avatarUrlInput || undefined;
+
   return (
     <Card className="mb-6">
       <CardHeader>
@@ -152,7 +179,7 @@ export function ProfileCard({
           >
             <Avatar className="w-24 h-24">
               <AvatarImage
-                src={avatarUrlInput || undefined}
+                src={displayImageUrl}
                 className="rounded-full w-24 h-24 object-cover"
               />
               <AvatarFallback className="w-24 h-24 text-xl">
@@ -165,7 +192,7 @@ export function ProfileCard({
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              onChange={handleAvatarUpload}
+              onChange={handleFileSelect}
               disabled={uploading}
               className="hidden"
             />
