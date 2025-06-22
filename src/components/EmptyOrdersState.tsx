@@ -10,7 +10,7 @@ export function EmptyOrdersState({ onBrowseProducts }: EmptyOrdersStateProps) {
       <p className="text-muted-foreground">
         You haven&apos;t placed any orders yet.
       </p>
-      <Button className="mt-4" onClick={onBrowseProducts}>
+      <Button className="mt-4 cursor-pointer" onClick={onBrowseProducts}>
         Browse Products
       </Button>
     </div>

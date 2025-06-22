@@ -62,12 +62,22 @@ export function ProductCard({ product }: ProductCardProps) {
             height={192}
             className="w-full h-48 object-cover"
             style={{ width: 'auto' }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              if (target.nextElementSibling) {
+                (target.nextElementSibling as HTMLElement).style.display =
+                  'flex';
+              }
+            }}
           />
-        ) : (
-          <div className="w-full h-48 bg-muted flex items-center justify-center">
-            <span className="text-muted-foreground">No Image</span>
-          </div>
-        )}
+        ) : null}
+        <div
+          className="w-full h-48 bg-muted flex items-center justify-center"
+          style={{ display: product.image ? 'none' : 'flex' }}
+        >
+          <span className="text-muted-foreground">No Image</span>
+        </div>
       </CardHeader>
 
       <CardContent className="p-6 space-y-4">

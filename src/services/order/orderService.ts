@@ -123,4 +123,15 @@ export const orderService = {
     }
     return data;
   },
+
+  async deleteOrder(orderId: string) {
+    // Attempt to delete order; assuming foreign keys handle cascade for order_items
+    const { error } = await supabase.from('orders').delete().eq('id', orderId);
+
+    if (error) {
+      toast.error('Failed to delete order');
+      throw error;
+    }
+    return true;
+  },
 };

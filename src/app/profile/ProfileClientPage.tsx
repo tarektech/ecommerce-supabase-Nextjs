@@ -89,6 +89,12 @@ export default function ProfileClientPage({
     router.push('/');
   };
 
+  // Remove order from state immediately after deletion (optimistic UI)
+  //the UI is updated immediately without waiting for the server to confirm the deletion
+  const handleOrderDeleted = (deletedOrderId: number) => {
+    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
+  };
+
   // Subscribe to realtime order updates
   useEffect(() => {
     let orderSubscription: ReturnType<typeof supabase.channel> | null = null;
@@ -118,7 +124,19 @@ export default function ProfileClientPage({
                 // Fetch updated orders
                 if (payload.new) {
                   const order = payload.new as OrderType;
-                  setOrders((prevOrders) => [...prevOrders, order]);
+                  setOrders((prevOrders) => {
+                    const index = prevOrders.findIndex(
+                      (o) => o.id === order.id
+                    );
+                    if (index !== -1) {
+                      // Replace existing order
+                      const updated = [...prevOrders];
+                      updated[index] = order;
+                      return updated;
+                    }
+                    // Add new order
+                    return [...prevOrders, order];
+                  });
                 }
                 if (payload.old) {
                   const order = payload.old as OrderType;
@@ -192,10 +210,13 @@ export default function ProfileClientPage({
           .subscribe((status, err) => {
             if (status === 'SUBSCRIBED') {
               console.log('Profile subscription established');
+              toast.success('Profile subscription established');
             } else if (status === 'CHANNEL_ERROR') {
               console.error('Profile subscription error:', err);
+              toast.error('Profile subscription error');
             } else if (status === 'TIMED_OUT') {
               console.warn('Profile subscription timed out, retrying...');
+              toast.error('Profile subscription timed out, retrying...');
             }
           });
       } catch (error) {
@@ -243,7 +264,11 @@ export default function ProfileClientPage({
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard
+              key={order.id}
+              order={order}
+              onDelete={handleOrderDeleted}
+            />
           ))}
         </div>
       )}

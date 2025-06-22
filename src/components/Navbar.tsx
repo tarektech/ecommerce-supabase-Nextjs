@@ -1,19 +1,21 @@
 'use client';
-import { ShoppingCart, Moon, Sun, Menu } from 'lucide-react';
+import { ShoppingCart, Moon, Sun, Menu, User, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { useSidebar } from '@/context/SidebarContext';
-import ProfileDropDown from './ProfileDropDown';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 export function Navbar() {
   const { totalItems } = useCart();
 
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useSidebar();
-
+  const { user } = useAuth();
+  const router = useRouter();
   // Handle mounting state
   useEffect(() => {
     setMounted(true);
@@ -56,8 +58,27 @@ export function Navbar() {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          <ProfileDropDown />
-
+          {user ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 cursor-pointer"
+              onClick={() => router.push('/profile')}
+            >
+              <User className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">{user ? 'Profile' : 'Sign in'}</span>
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 cursor-pointer"
+              onClick={() => router.push('/signup')}
+            >
+              <LogIn className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">Sign in</span>
+            </Button>
+          )}
           <Link href="/cart">
             <Button
               variant="ghost"

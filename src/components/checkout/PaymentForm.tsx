@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useCart } from '@/context/CartContext';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface PaymentFormProps {
   onBack: () => void;
@@ -25,7 +25,51 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
   );
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
-  // const router = useRouter();
+  const router = useRouter();
+
+  // Format card number with spaces every 4 digits
+  const formatCardNumber = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+    // Limit to 16 digits
+    const limitedDigits = digits.slice(0, 16);
+    // Add spaces every 4 digits
+    return limitedDigits.replace(/(\d{4})(?=\d)/g, '$1 ');
+  };
+
+  // Format expiry date as MM/YY
+  const formatExpiryDate = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+    // Limit to 4 digits
+    const limitedDigits = digits.slice(0, 4);
+    // Add slash after 2 digits
+    if (limitedDigits.length >= 2) {
+      return limitedDigits.slice(0, 2) + '/' + limitedDigits.slice(2);
+    }
+    return limitedDigits;
+  };
+
+  // Format CVV to numeric only
+  const formatCVV = (value: string) => {
+    // Remove all non-digits and limit to 4 digits
+    return value.replace(/\D/g, '').slice(0, 4);
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCardNumber(e.target.value);
+    setCardNumber(formatted);
+  };
+
+  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatExpiryDate(e.target.value);
+    setExpiryDate(formatted);
+  };
+
+  const handleCVVChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCVV(e.target.value);
+    setCvv(formatted);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +90,28 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
       return;
     }
 
+    // Validate card number (should be 16 digits when spaces are removed)
+    const cleanCardNumber = cardNumber.replace(/\s/g, '');
+    if (cleanCardNumber.length !== 16) {
+      toast.error('Card number must be 16 digits');
+      return;
+    }
+
+    // Validate expiry date format
+    if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
+      toast.error('Expiry date must be in MM/YY format');
+      return;
+    }
+
+    // Validate CVV length
+    if (cvv.length < 3 || cvv.length > 4) {
+      toast.error('CVV must be 3 or 4 digits');
+      return;
+    }
+
     try {
       // Get last four digits of the card number
-      const lastFourDigits = cardNumber.slice(-4);
+      const lastFourDigits = cleanCardNumber.slice(-4);
 
       // Submit the payment info
       onSubmit(lastFourDigits, cardholderName, expiryDate);
@@ -56,6 +119,10 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
       // You would implement your new payment processing logic here
 
       toast.success('Payment processed successfully');
+
+      // Navigate to confirmation page
+      const checkoutId = `${Date.now()}`;
+      router.push(`/checkout/confirmation?checkout_id=${checkoutId}`);
     } catch (error) {
       console.error('Error processing payment:', error);
       toast.error('Failed to process payment. Please try again.');
@@ -71,7 +138,8 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
             id="cardNumber"
             placeholder="1234 5678 9012 3456"
             value={cardNumber}
-            onChange={(e) => setCardNumber(e.target.value)}
+            onChange={handleCardNumberChange}
+            maxLength={19} // 16 digits + 3 spaces
             required
           />
         </div>
@@ -94,7 +162,8 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
               id="expiryDate"
               placeholder="MM/YY"
               value={expiryDate}
-              onChange={(e) => setExpiryDate(e.target.value)}
+              onChange={handleExpiryDateChange}
+              maxLength={5} // MM/YY format
               required
             />
           </div>
@@ -105,7 +174,8 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
               id="cvv"
               placeholder="123"
               value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
+              onChange={handleCVVChange}
+              maxLength={4} // 3-4 digits
               required
             />
           </div>

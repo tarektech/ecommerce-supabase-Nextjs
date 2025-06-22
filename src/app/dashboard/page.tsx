@@ -20,6 +20,11 @@ export default function DashboardPage() {
     'analytics' | 'products' | 'orders'
   >('analytics');
 
+  // Handler to remove order from local state after deletion
+  const handleOrderDeleted = (deletedOrderId: number) => {
+    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -165,7 +170,11 @@ export default function DashboardPage() {
               <div className="space-y-6">
                 {orders.length > 0 ? (
                   orders.map((order) => (
-                    <OrderCard key={order.id} order={order} />
+                    <OrderCard
+                      key={order.id}
+                      order={order}
+                      onDelete={handleOrderDeleted}
+                    />
                   ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 px-4">

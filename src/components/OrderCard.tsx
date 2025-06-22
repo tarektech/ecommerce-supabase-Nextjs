@@ -1,12 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OrderItemType, OrderType } from '@/types';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { orderService } from '@/services/order/orderService';
 
 interface OrderCardProps {
   order: OrderType;
+  onDelete?: (orderId: number) => void;
 }
 
-export function OrderCard({ order }: OrderCardProps) {
+export function OrderCard({ order, onDelete }: OrderCardProps) {
+  const handleDeleteOrder = async () => {
+    try {
+      await orderService.deleteOrder(order.id.toString());
+      toast.success('Order deleted');
+      onDelete?.(order.id);
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast.error('Failed to delete order');
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="bg-muted/20">
@@ -33,6 +48,16 @@ export function OrderCard({ order }: OrderCardProps) {
             >
               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
+            {order.status !== 'cancelled' && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="ml-2 cursor-pointer"
+                onClick={handleDeleteOrder}
+              >
+                Delete Order
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
