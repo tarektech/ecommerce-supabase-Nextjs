@@ -1,11 +1,31 @@
 'use client';
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Star,
+  Heart,
+  Share2,
+  ShoppingCart,
+  Plus,
+  Minus,
+  ChevronLeft,
+  ChevronRight,
+  Truck,
+  Shield,
+  RotateCcw,
+  Check,
+} from 'lucide-react';
 import { ProductType } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { useState } from 'react';
-import { Heart, Minus, Plus, Check, Truck } from 'lucide-react';
+import { useProductReviews } from '@/hooks/queries/use-reviews';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ProductComments } from '@/components/ProductComments';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
 import Image from 'next/image';
 
 type ProductDetailsClientProps = {
@@ -16,11 +36,27 @@ export default function ProductDetailsClient({
   product,
 }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedType, setSelectedType] = useState('Ground');
-  const [selectedSize, setSelectedSize] = useState('12oz');
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  // Get reviews for this product
+  const { data: reviews = [], isLoading: reviewsLoading } = useProductReviews(
+    product.product_id
+  );
+
+  // Generate multiple images from the single image (mock data for demo)
+  const productImages = product.image
+    ? [product.image, product.image, product.image, product.image]
+    : ['/placeholder-product.jpg'];
+
+  // Calculate review stats
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 4.5;
+  const reviewCount = reviews.length || 123; // fallback for demo
 
   const handleAddToCart = async () => {
     try {
@@ -46,251 +82,425 @@ export default function ProductDetailsClient({
     }
   };
 
-  // Mock rating data - you can replace with actual rating from your product data
-  const rating = 4.8;
-  const reviewCount = 146;
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => (prev + 1) % productImages.length);
+  };
+
+  const prevImage = () => {
+    setSelectedImageIndex(
+      (prev) => (prev - 1 + productImages.length) % productImages.length
+    );
+  };
+
+  const renderStars = (rating: number, size: 'sm' | 'md' = 'md') => {
+    const sizeClass = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
+    return (
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`${sizeClass} ${
+              star <= rating
+                ? 'fill-yellow-400 text-yellow-400'
+                : 'text-muted-foreground'
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  // Mock rating distribution for demo
+  const ratingDistribution = [
+    { stars: 5, percentage: 68 },
+    { stars: 4, percentage: 20 },
+    { stars: 3, percentage: 8 },
+    { stars: 2, percentage: 3 },
+    { stars: 1, percentage: 1 },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8 lg:py-12 max-w-7xl">
-        <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-12 xl:gap-16">
-          {/* Product Image */}
-          <div className="w-full mb-6 lg:mb-0">
-            <Card className="overflow-hidden border-border bg-card">
-              <div className="relative aspect-square">
-                {product.image ? (
-                  <Image
-                    src={product.image}
-                    alt={product.title}
-                    width={400}
-                    height={400}
-                    className="w-full h-full object-contain p-4"
-                    loading="eager"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center w-full h-full bg-muted">
-                    <span className="text-sm text-muted-foreground">
-                      No image available
-                    </span>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* Product Images */}
+          <div className="space-y-4">
+            <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedImageIndex}
+                  className="relative w-full h-full"
+                  initial={{ opacity: 0, scale: 1.1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {product.image ? (
+                    <Image
+                      src={productImages[selectedImageIndex]}
+                      alt={product.title}
+                      fill
+                      className="object-contain p-4"
+                      loading="eager"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center w-full h-full bg-muted">
+                      <span className="text-sm text-muted-foreground">
+                        No image available
+                      </span>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
 
-          {/* Product Info */}
-          <div className="flex flex-col">
-            {/* Brand Badge */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="bg-foreground text-background px-2 py-1 text-xs font-bold rounded-sm">
-                  BRAND
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  premium brand
-                </span>
+              {productImages.length > 1 && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
+                    onClick={prevImage}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
+                    onClick={nextImage}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </>
+              )}
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-background/80 backdrop-blur-sm cursor-pointer"
+                  onClick={() => setIsFavorited(!isFavorited)}
+                >
+                  <Heart
+                    className={`w-4 h-4 ${
+                      isFavorited ? 'fill-red-500 text-red-500' : ''
+                    }`}
+                  />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-background/80 backdrop-blur-sm cursor-pointer"
+                >
+                  <Share2 className="w-4 h-4" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsFavorited(!isFavorited)}
-                className={`cursor-pointer ${
-                  isFavorited
-                    ? 'text-red-500 hover:text-red-600'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Heart
-                  className="w-5 h-5"
-                  fill={isFavorited ? 'currentColor' : 'none'}
-                />
-              </Button>
             </div>
 
-            {/* Title */}
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
-              {product.title}
-            </h1>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < Math.floor(rating)
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-muted'
+            {productImages.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {productImages.map((image, index) => (
+                  <motion.button
+                    key={index}
+                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
+                      selectedImageIndex === index
+                        ? 'border-primary'
+                        : 'border-border'
                     }`}
-                    viewBox="0 0 20 20"
+                    onClick={() => setSelectedImageIndex(index)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                    <Image
+                      src={image}
+                      alt={`${product.title} ${index + 1}`}
+                      width={100}
+                      height={100}
+                      className="w-full h-full object-cover"
+                    />
+                  </motion.button>
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">
-                ({reviewCount})
-              </span>
-            </div>
+            )}
+          </div>
 
-            {/* Price */}
-            <div className="text-3xl font-bold text-foreground mb-4">
-              ${product.price.toFixed(2)}
-            </div>
+          {/* Product Information */}
+          <div className="space-y-6">
+            <div>
+              <motion.h1
+                className="text-3xl font-bold text-foreground mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                {product.title}
+              </motion.h1>
 
-            {/* Shipping Info */}
-            <div className="flex items-center gap-2 mb-2">
-              <Truck className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Shipping calculated at checkout
-              </span>
-            </div>
-            <Button
-              variant="link"
-              className="justify-start p-0 h-auto text-sm mb-6 cursor-pointer"
-            >
-              Add address
-            </Button>
-
-            {/* Product Options */}
-            <Card className="mb-6">
-              <CardContent className="p-4 space-y-4">
-                {/* Type */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-foreground">
-                    Type
-                  </label>
-                  <select
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    className="border border-input rounded-md px-3 py-2 bg-background text-foreground text-sm min-w-[120px] focus:outline-none focus:ring-1 focus:ring-ring"
-                  >
-                    <option value="Ground">Ground</option>
-                    <option value="Whole Bean">Whole Bean</option>
-                    <option value="Instant">Instant</option>
-                  </select>
-                </div>
-
-                {/* Size */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-foreground">
-                    Size
-                  </label>
-                  <select
-                    value={selectedSize}
-                    onChange={(e) => setSelectedSize(e.target.value)}
-                    className="border border-input rounded-md px-3 py-2 bg-background text-foreground text-sm min-w-[120px] focus:outline-none focus:ring-1 focus:ring-ring"
-                  >
-                    <option value="8oz">8oz</option>
-                    <option value="12oz">12oz</option>
-                    <option value="16oz">16oz</option>
-                    <option value="2lbs">2lbs</option>
-                  </select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quantity */}
-            <div className="mb-6">
-              <label className="text-sm font-medium text-foreground block mb-2">
-                Quantity
-              </label>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={decrementQuantity}
-                  disabled={quantity <= 1}
-                  className="cursor-pointer"
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                <span className="w-12 text-center font-medium text-foreground">
-                  {quantity}
+              <motion.div
+                className="flex items-center gap-4 mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {renderStars(averageRating)}
+                <span className="text-sm text-muted-foreground">
+                  {averageRating.toFixed(1)} ({reviewCount.toLocaleString()}{' '}
+                  reviews)
                 </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={incrementQuantity}
-                  disabled={quantity >= product.stock}
-                  className="cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
+              </motion.div>
+
+              <motion.div
+                className="flex items-center gap-3 mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <span className="text-3xl font-bold text-foreground">
+                  ${product.price.toFixed(2)}
+                </span>
+                {product.stock > 0 ? (
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-800"
+                  >
+                    In Stock ({product.stock} available)
+                  </Badge>
+                ) : (
+                  <Badge variant="destructive">Out of Stock</Badge>
+                )}
+              </motion.div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3 mb-8">
+            <motion.p
+              className="text-muted-foreground leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              {product.description}
+            </motion.p>
+
+            {/* Quantity and Add to Cart */}
+            <motion.div
+              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div>
+                <h3 className="font-medium mb-3">Quantity</h3>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-border rounded-lg">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={decrementQuantity}
+                      disabled={quantity <= 1}
+                      className="cursor-pointer"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span className="px-4 py-2 min-w-[60px] text-center">
+                      {quantity}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={incrementQuantity}
+                      disabled={quantity >= product.stock}
+                      className="cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {product.stock} items available
+                  </span>
+                </div>
+              </div>
+
               <Button
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
                 size="lg"
-                className={`w-full cursor-pointer ${
-                  isAddedToCart
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : ''
-                }`}
+                className="w-full cursor-pointer"
+                disabled={!product.stock || product.stock === 0}
+                onClick={handleAddToCart}
               >
                 {isAddedToCart ? (
                   <>
-                    <Check className="w-4 h-4" />
-                    Added to cart
+                    <Check className="w-4 h-4 mr-2" />
+                    Added to Cart!
                   </>
-                ) : product.stock > 0 ? (
-                  'Add to cart'
                 ) : (
-                  'Out of Stock'
+                  <>
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart - ${(product.price * quantity).toFixed(2)}
+                  </>
                 )}
               </Button>
+            </motion.div>
 
-              <Button
-                variant="secondary"
-                size="lg"
-                disabled={product.stock === 0}
-                className="w-full cursor-pointer"
-              >
-                Buy now
-              </Button>
-            </div>
-
-            {/* Availability */}
-            <Card className="mb-6">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">
-                    Availability
-                  </span>
-                  <span
-                    className={`text-sm font-medium ${
-                      product.stock > 0 ? 'text-green-600' : 'text-destructive'
-                    }`}
-                  >
-                    {product.stock > 0
-                      ? `In Stock (${product.stock} available)`
-                      : 'Out of Stock'}
-                  </span>
+            {/* Shipping Info */}
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-border"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <div className="flex items-center gap-3">
+                <Truck className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="text-sm font-medium">Free Shipping</p>
+                  <p className="text-xs text-muted-foreground">
+                    Orders over $50
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Description */}
-            <div>
-              <h3 className="text-lg font-semibold text-foreground mb-3">
-                Description
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {product.description}
-              </p>
-            </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Shield className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="text-sm font-medium">Secure Payment</p>
+                  <p className="text-xs text-muted-foreground">SSL encrypted</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <RotateCcw className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="text-sm font-medium">30-Day Returns</p>
+                  <p className="text-xs text-muted-foreground">
+                    No questions asked
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
 
-        {/* Comments Section */}
-        <div className="mt-16">
-          <ProductComments />
-        </div>
+        {/* Product Details Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <Tabs defaultValue="description" className="mb-12">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews ({reviewCount})</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="description" className="mt-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-muted-foreground leading-relaxed mb-4">
+                      {product.description}
+                    </p>
+                    {product.sku && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-sm text-muted-foreground">
+                          <strong>SKU:</strong> {product.sku}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="reviews" className="mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="text-center mb-6">
+                      <div className="text-4xl font-bold mb-2">
+                        {averageRating.toFixed(1)}
+                      </div>
+                      {renderStars(averageRating)}
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Based on {reviewCount.toLocaleString()} reviews
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {ratingDistribution.map((item) => (
+                        <div
+                          key={item.stars}
+                          className="flex items-center gap-3"
+                        >
+                          <span className="text-sm w-6">{item.stars}★</span>
+                          <Progress
+                            value={item.percentage}
+                            className="flex-1"
+                          />
+                          <span className="text-sm text-muted-foreground w-10">
+                            {item.percentage}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <div className="lg:col-span-2 space-y-4">
+                  {reviewsLoading ? (
+                    <Card>
+                      <CardContent className="p-6">
+                        <div className="animate-pulse">
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : reviews.length > 0 ? (
+                    reviews.map((review) => (
+                      <Card key={review.id}>
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <Avatar>
+                              <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                                <span className="text-sm font-medium">
+                                  {review.user_id.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h4 className="font-medium">
+                                  User {review.user_id.slice(0, 8)}
+                                </h4>
+                                {renderStars(review.rating, 'sm')}
+                                {review.created_at && (
+                                  <span className="text-sm text-muted-foreground">
+                                    {new Date(
+                                      review.created_at
+                                    ).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                              {review.comment && (
+                                <p className="text-muted-foreground">
+                                  {review.comment}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <Card>
+                      <CardContent className="p-6 text-center">
+                        <p className="text-muted-foreground">
+                          No reviews yet. Be the first to review this product!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
       </div>
     </div>
   );

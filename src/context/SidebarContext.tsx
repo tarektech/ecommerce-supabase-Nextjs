@@ -7,6 +7,8 @@ type SidebarContextType = {
   setIsMobileMenuOpen: (open: boolean) => void;
   hideSidebar: boolean;
   setHideSidebar: (hide: boolean) => void;
+  isCollapsed: boolean;
+  setIsCollapsed: (collapsed: boolean) => void;
 };
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -14,6 +16,7 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideSidebar, setHideSidebar] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <SidebarContext.Provider
@@ -22,6 +25,8 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
         setIsMobileMenuOpen,
         hideSidebar,
         setHideSidebar,
+        isCollapsed,
+        setIsCollapsed,
       }}
     >
       {children}
