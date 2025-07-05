@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Home, Search, ShoppingBag } from 'lucide-react';
+import { Home, Search } from 'lucide-react';
 
 export default function NotFoundPage() {
   return (
@@ -19,7 +19,8 @@ export default function NotFoundPage() {
           </div>
           <CardTitle className="text-2xl font-bold">Page Not Found</CardTitle>
           <CardDescription>
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been
+            moved.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

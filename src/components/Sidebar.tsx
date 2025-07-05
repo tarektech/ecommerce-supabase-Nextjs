@@ -12,7 +12,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  User,
   LogOut,
   LayoutDashboard,
 } from 'lucide-react';

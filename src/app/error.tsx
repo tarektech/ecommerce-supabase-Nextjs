@@ -1,4 +1,4 @@
-'use client'; // Error components must be Client Components
+'use client'; 
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -35,8 +35,8 @@ export default function Error({
             Something went wrong!
           </CardTitle>
           <CardDescription>
-            We encountered an unexpected error. This has been logged and we'll
-            look into it.
+            We encountered an unexpected error. This has been logged and
+            we&apos;ll look into it.
           </CardDescription>
           {error.digest && (
             <p className="text-xs text-muted-foreground mt-2">

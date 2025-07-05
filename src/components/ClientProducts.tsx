@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ProductCard } from '@/components/ProductCard';
 // import { useAuth } from '@/context/AuthContext';
 import { useProducts, FilterOptions } from '@/hooks/queries/use-products';
+import { ProductType } from '@/types';
 import { ErrorState } from '@/components/ErrorState';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ProductFilter } from '@/components/ProductFilter';
@@ -21,7 +22,11 @@ const getCategoryId = (categoryName: string): number | null => {
   return categoryMap[categoryName] || null;
 };
 
-const sortProducts = (products: any[], sortBy: FilterOptions['sortBy']) => {
+// Sort products based on the selected option
+const sortProducts = (
+  products: ProductType[],
+  sortBy: FilterOptions['sortBy']
+) => {
   const sorted = [...products];
 
   switch (sortBy) {
@@ -38,7 +43,7 @@ const sortProducts = (products: any[], sortBy: FilterOptions['sortBy']) => {
   }
 };
 
-const filterProducts = (products: any[], filters: FilterOptions) => {
+const filterProducts = (products: ProductType[], filters: FilterOptions) => {
   let filtered = [...products];
 
   // Filter by stock (only if not 'all')
@@ -80,6 +85,7 @@ export default function ClientProducts() {
   });
 
   // Process products with search, filters, and sorting
+  //useMemo is used to memoize the function
   const processedProducts = useMemo(() => {
     if (!products) return [];
 

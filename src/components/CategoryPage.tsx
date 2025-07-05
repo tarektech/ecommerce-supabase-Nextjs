@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { ProductCard } from '@/components/ProductCard';
@@ -39,7 +39,9 @@ export default function CategoryPage({
     }
   }, [user, categoryName, router]);
 
-  const fetchProducts = async () => {
+  // Fetch products from the API 
+  //useCallback is used to memoize the function
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -61,11 +63,11 @@ export default function CategoryPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [categoryId, categoryName]);
 
   useEffect(() => {
     fetchProducts();
-  }, [categoryId, categoryName]);
+  }, [fetchProducts]);
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
