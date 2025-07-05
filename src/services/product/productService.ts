@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { ProductType } from '../../types';
-import { toast } from 'sonner';
+// import { handleCommonErrors } from '@/utils/errorHandling';
 
 export const productService = {
   async getProducts(): Promise<ProductType[]> {
@@ -12,15 +12,15 @@ export const productService = {
 
       if (error) {
         console.error('Error fetching products:', error);
-        toast.error('Failed to fetch products');
-        return [];
+        throw new Error(`Failed to fetch products: ${error.message}`);
       }
 
       return data as ProductType[];
     } catch (error) {
-      console.error('Error in getProducts:', error);
-      toast.error('Something went wrong');
-      return [];
+      // Re-throw to let the calling component handle the error
+      throw error instanceof Error
+        ? error
+        : new Error('Failed to fetch products');
     }
   },
 
@@ -34,15 +34,19 @@ export const productService = {
 
       if (error) {
         console.error('Error fetching product:', error);
-        toast.error('Failed to fetch product');
-        return null;
+        if (error.code === 'PGRST116') {
+          // No rows returned - product not found
+          return null;
+        }
+        throw new Error(`Failed to fetch product: ${error.message}`);
       }
 
       return data as ProductType;
     } catch (error) {
-      console.error('Error in getProductById:', error);
-      toast.error('Something went wrong');
-      return null;
+      // Re-throw to let the calling component handle the error
+      throw error instanceof Error
+        ? error
+        : new Error('Failed to fetch product');
     }
   },
 
@@ -56,37 +60,17 @@ export const productService = {
 
       if (error) {
         console.error('Error fetching products by category:', error);
-        toast.error('Failed to fetch products');
-        return [];
+        throw new Error(
+          `Failed to fetch products by category: ${error.message}`
+        );
       }
 
       return data as ProductType[];
     } catch (error) {
-      console.error('Error in getProductsByCategory:', error);
-      toast.error('Something went wrong');
-      return [];
-    }
-  },
-
-  async searchProducts(query: string): Promise<ProductType[]> {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, category:categories(*)')
-        .ilike('title', `%${query}%`)
-        .order('title');
-
-      if (error) {
-        console.error('Error searching products:', error);
-        toast.error('Failed to search products');
-        return [];
-      }
-
-      return data as ProductType[];
-    } catch (error) {
-      console.error('Error in searchProducts:', error);
-      toast.error('Something went wrong');
-      return [];
+      // Re-throw to let the calling component handle the error
+      throw error instanceof Error
+        ? error
+        : new Error('Failed to fetch products by category');
     }
   },
 };

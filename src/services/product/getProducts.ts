@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
 import { ProductType } from '@/types';
-import { toast } from 'sonner';
 
 /**
  * Fetches all products from the database with category information
@@ -34,14 +33,14 @@ export async function getProducts(): Promise<ProductType[]> {
 
     if (error) {
       console.error('Error fetching products:', error);
-      toast.error('Failed to fetch products');
-      return [];
+      throw new Error(`Failed to fetch products: ${error.message}`);
     }
 
     return data as ProductType[];
   } catch (error) {
-    console.error('Error in getProducts:', error);
-    toast.error('Something went wrong');
-    return [];
+    // Re-throw to let the calling component handle the error
+    throw error instanceof Error
+      ? error
+      : new Error('Failed to fetch products');
   }
 }

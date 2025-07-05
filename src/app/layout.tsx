@@ -10,6 +10,7 @@ import { TanStackQueryProvider } from '@/lib/providers/query-provider';
 import StagewiseToolbar from '@/StagewiseToolbar';
 import { Toaster } from 'sonner';
 import { MainLayout } from '@/components/MainLayout';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'E-Commerce',
@@ -29,26 +30,28 @@ export default function RootLayout({
         <meta name="description" content="My App is a..." />
       </head>
       <body className="min-h-screen bg-background">
-        <TanStackQueryProvider>
-          <AuthProvider>
-            <CartProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <SidebarProvider>
-                  <Navbar />
-                  <div className="flex">
-                    <Sidebar />
-                    <MainLayout>{children}</MainLayout>
-                  </div>
-                </SidebarProvider>
-              </ThemeProvider>
-            </CartProvider>
-          </AuthProvider>
-        </TanStackQueryProvider>
+        <ErrorBoundary>
+          <TanStackQueryProvider>
+            <AuthProvider>
+              <CartProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  <SidebarProvider>
+                    <Navbar />
+                    <div className="flex">
+                      <Sidebar />
+                      <MainLayout>{children}</MainLayout>
+                    </div>
+                  </SidebarProvider>
+                </ThemeProvider>
+              </CartProvider>
+            </AuthProvider>
+          </TanStackQueryProvider>
+        </ErrorBoundary>
         <Toaster
           theme="light" // or "dark" or "system"
           toastOptions={{
