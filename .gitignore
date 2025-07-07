@@ -29,13 +29,9 @@ dist-ssr
 next-env.d.ts
 dist
 
-# Supabase
-*supabase
 .cursor
 .env
 
-
-.utils/supabase.ts
 
 # Stagewise Toolbar
 src/StagewiseToolbar.tsx
