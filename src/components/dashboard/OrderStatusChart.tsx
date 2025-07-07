@@ -1,8 +1,8 @@
-'use client';
-import { OrderType } from '@/types';
-import { useEffect, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
+"use client";
+import { OrderType } from "@/types";
+import { useEffect, useState } from "react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -57,21 +57,21 @@ export function OrderStatusChart({ orders }: OrderStatusChartProps) {
       labels,
       datasets: [
         {
-          label: 'Orders',
+          label: "Orders",
           data,
           backgroundColor: [
-            'rgba(75, 192, 192, 0.5)', // Delivered
-            'rgba(54, 162, 235, 0.5)', // Shipped
-            'rgba(255, 206, 86, 0.5)', // Processing
-            'rgba(255, 99, 132, 0.5)', // Cancelled
-            'rgba(153, 102, 255, 0.5)', // Pending
+            "rgba(75, 192, 192, 0.5)", // Delivered
+            "rgba(54, 162, 235, 0.5)", // Shipped
+            "rgba(255, 206, 86, 0.5)", // Processing
+            "rgba(255, 99, 132, 0.5)", // Cancelled
+            "rgba(153, 102, 255, 0.5)", // Pending
           ],
           borderColor: [
-            'rgba(75, 192, 192, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(255, 99, 132, 1)',
-            'rgba(153, 102, 255, 1)',
+            "rgba(75, 192, 192, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(255, 99, 132, 1)",
+            "rgba(153, 102, 255, 1)",
           ],
           borderWidth: 1,
         },
@@ -84,22 +84,22 @@ export function OrderStatusChart({ orders }: OrderStatusChartProps) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
       },
       title: {
         display: true,
-        text: 'Order Status Distribution',
+        text: "Order Status Distribution",
         font: {
           size: 16,
         },
       },
     },
-    cutout: '50%',
+    cutout: "50%",
   };
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center border rounded-lg bg-muted/10">
+      <div className="bg-muted/10 flex h-64 items-center justify-center rounded-lg border">
         <p className="text-muted-foreground">No order status data available</p>
       </div>
     );

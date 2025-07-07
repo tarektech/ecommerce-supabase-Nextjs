@@ -1,9 +1,9 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductLoading() {
   return (
-    <div className="container mx-auto py-6 px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="container mx-auto px-4 py-6">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Image skeleton */}
         <Skeleton className="aspect-square w-full" />
 

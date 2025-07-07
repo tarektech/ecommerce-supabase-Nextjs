@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
-import ProductDetailsClient from './ProductDetailsClient';
-import { productServerService } from '@/services/product/productServerService';
+import { notFound } from "next/navigation";
+import ProductDetailsClient from "./ProductDetailsClient";
+import { productServerService } from "@/services/product/productServerService";
 
 interface ProductDetailsPageProps {
   params: Promise<{
@@ -13,7 +13,7 @@ export default async function ProductDetailsPage({
 }: ProductDetailsPageProps) {
   const resolvedParams = await params;
   const product = await productServerService.getProductById(
-    resolvedParams.productId
+    resolvedParams.productId,
   );
 
   if (!product) {

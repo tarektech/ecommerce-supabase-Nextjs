@@ -1,20 +1,20 @@
-import { AuthProvider } from '@/context/AuthContext';
-import { CartProvider } from '@/context/CartContext';
-import { Metadata } from 'next';
-import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Navbar } from '@/components/Navbar';
-import { Sidebar } from '@/components/Sidebar';
-import { SidebarProvider } from '@/context/SidebarContext';
-import { TanStackQueryProvider } from '@/lib/providers/query-provider';
-import StagewiseToolbar from '@/StagewiseToolbar';
-import { Toaster } from 'sonner';
-import { MainLayout } from '@/components/MainLayout';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
+import { Metadata } from "next";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Navbar } from "@/components/Navbar";
+import { Sidebar } from "@/components/Sidebar";
+import { SidebarProvider } from "@/context/SidebarContext";
+import { TanStackQueryProvider } from "@/lib/providers/query-provider";
+import StagewiseToolbar from "@/StagewiseToolbar";
+import { Toaster } from "sonner";
+import { MainLayout } from "@/components/MainLayout";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
-  title: 'E-Commerce',
-  description: 'E-Commerce App',
+  title: "E-Commerce",
+  description: "E-Commerce App",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
         <title>My App</title>
         <meta name="description" content="My App is a..." />
       </head>
-      <body className="min-h-screen bg-background">
+      <body className="bg-background min-h-screen">
         <ErrorBoundary>
           <TanStackQueryProvider>
             <AuthProvider>
@@ -57,10 +57,10 @@ export default function RootLayout({
           toastOptions={{
             unstyled: false,
             classNames: {
-              error: 'bg-red-500 text-white border-red-600',
-              success: 'bg-green-500 text-white border-green-600',
-              warning: 'bg-yellow-500 text-black border-yellow-600',
-              info: 'bg-blue-500 text-white border-blue-600',
+              error: "bg-red-500 text-white border-red-600",
+              success: "bg-green-500 text-white border-green-600",
+              warning: "bg-yellow-500 text-black border-yellow-600",
+              info: "bg-blue-500 text-white border-blue-600",
             },
           }}
         />

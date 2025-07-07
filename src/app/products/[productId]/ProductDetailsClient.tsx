@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Star,
   Heart,
@@ -15,18 +15,18 @@ import {
   Shield,
   RotateCcw,
   Check,
-} from 'lucide-react';
-import { ProductType } from '@/types';
-import { useCart } from '@/context/CartContext';
-import { useProductReviews } from '@/hooks/queries/use-reviews';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from "lucide-react";
+import { ProductType } from "@/types";
+import { useCart } from "@/context/CartContext";
+import { useProductReviews } from "@/hooks/queries/use-reviews";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import Image from 'next/image';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import Image from "next/image";
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -43,13 +43,13 @@ export default function ProductDetailsClient({
 
   // Get reviews for this product
   const { data: reviews = [], isLoading: reviewsLoading } = useProductReviews(
-    product.product_id
+    product.product_id,
   );
 
   // Generate multiple images from the single image (mock data for demo)
   const productImages = product.image
     ? [product.image, product.image, product.image, product.image]
-    : ['/placeholder-product.jpg'];
+    : ["/placeholder-product.jpg"];
 
   // Calculate review stats
   const averageRating =
@@ -66,7 +66,7 @@ export default function ProductDetailsClient({
       setIsAddedToCart(true);
       setTimeout(() => setIsAddedToCart(false), 2000);
     } catch (err) {
-      console.error('Error adding to cart:', err);
+      console.error("Error adding to cart:", err);
     }
   };
 
@@ -88,12 +88,12 @@ export default function ProductDetailsClient({
 
   const prevImage = () => {
     setSelectedImageIndex(
-      (prev) => (prev - 1 + productImages.length) % productImages.length
+      (prev) => (prev - 1 + productImages.length) % productImages.length,
     );
   };
 
-  const renderStars = (rating: number, size: 'sm' | 'md' = 'md') => {
-    const sizeClass = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
+  const renderStars = (rating: number, size: "sm" | "md" = "md") => {
+    const sizeClass = size === "sm" ? "w-3 h-3" : "w-4 h-4";
     return (
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -101,8 +101,8 @@ export default function ProductDetailsClient({
             key={star}
             className={`${sizeClass} ${
               star <= rating
-                ? 'fill-yellow-400 text-yellow-400'
-                : 'text-muted-foreground'
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-muted-foreground"
             }`}
           />
         ))}
@@ -120,16 +120,16 @@ export default function ProductDetailsClient({
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+            <div className="bg-muted relative aspect-square overflow-hidden rounded-lg">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selectedImageIndex}
-                  className="relative w-full h-full"
+                  className="relative h-full w-full"
                   initial={{ opacity: 0, scale: 1.1 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
@@ -144,8 +144,8 @@ export default function ProductDetailsClient({
                       loading="eager"
                     />
                   ) : (
-                    <div className="flex items-center justify-center w-full h-full bg-muted">
-                      <span className="text-sm text-muted-foreground">
+                    <div className="bg-muted flex h-full w-full items-center justify-center">
+                      <span className="text-muted-foreground text-sm">
                         No image available
                       </span>
                     </div>
@@ -158,19 +158,19 @@ export default function ProductDetailsClient({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
+                    className="bg-background/80 absolute top-1/2 left-4 -translate-y-1/2 backdrop-blur-sm"
                     onClick={prevImage}
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="h-4 w-4" />
                   </Button>
 
                   <Button
                     variant="outline"
                     size="icon"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
+                    className="bg-background/80 absolute top-1/2 right-4 -translate-y-1/2 backdrop-blur-sm"
                     onClick={nextImage}
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 </>
               )}
@@ -179,21 +179,21 @@ export default function ProductDetailsClient({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="bg-background/80 backdrop-blur-sm cursor-pointer"
+                  className="bg-background/80 cursor-pointer backdrop-blur-sm"
                   onClick={() => setIsFavorited(!isFavorited)}
                 >
                   <Heart
-                    className={`w-4 h-4 ${
-                      isFavorited ? 'fill-red-500 text-red-500' : ''
+                    className={`h-4 w-4 ${
+                      isFavorited ? "fill-red-500 text-red-500" : ""
                     }`}
                   />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="bg-background/80 backdrop-blur-sm cursor-pointer"
+                  className="bg-background/80 cursor-pointer backdrop-blur-sm"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -203,10 +203,10 @@ export default function ProductDetailsClient({
                 {productImages.map((image, index) => (
                   <motion.button
                     key={index}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
+                    className={`aspect-square cursor-pointer overflow-hidden rounded-lg border-2 transition-colors ${
                       selectedImageIndex === index
-                        ? 'border-primary'
-                        : 'border-border'
+                        ? "border-primary"
+                        : "border-border"
                     }`}
                     onClick={() => setSelectedImageIndex(index)}
                     whileHover={{ scale: 1.05 }}
@@ -217,7 +217,7 @@ export default function ProductDetailsClient({
                       alt={`${product.title} ${index + 1}`}
                       width={100}
                       height={100}
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
                     />
                   </motion.button>
                 ))}
@@ -229,7 +229,7 @@ export default function ProductDetailsClient({
           <div className="space-y-6">
             <div>
               <motion.h1
-                className="text-3xl font-bold text-foreground mb-2"
+                className="text-foreground mb-2 text-3xl font-bold"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -238,25 +238,25 @@ export default function ProductDetailsClient({
               </motion.h1>
 
               <motion.div
-                className="flex items-center gap-4 mb-4"
+                className="mb-4 flex items-center gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
                 {renderStars(averageRating)}
-                <span className="text-sm text-muted-foreground">
-                  {averageRating.toFixed(1)} ({reviewCount.toLocaleString()}{' '}
+                <span className="text-muted-foreground text-sm">
+                  {averageRating.toFixed(1)} ({reviewCount.toLocaleString()}{" "}
                   reviews)
                 </span>
               </motion.div>
 
               <motion.div
-                className="flex items-center gap-3 mb-6"
+                className="mb-6 flex items-center gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <span className="text-3xl font-bold text-foreground">
+                <span className="text-foreground text-3xl font-bold">
                   ${product.price.toFixed(2)}
                 </span>
                 {product.stock > 0 ? (
@@ -289,9 +289,9 @@ export default function ProductDetailsClient({
               transition={{ delay: 0.5 }}
             >
               <div>
-                <h3 className="font-medium mb-3">Quantity</h3>
+                <h3 className="mb-3 font-medium">Quantity</h3>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center border border-border rounded-lg">
+                  <div className="border-border flex items-center rounded-lg border">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -299,9 +299,9 @@ export default function ProductDetailsClient({
                       disabled={quantity <= 1}
                       className="cursor-pointer"
                     >
-                      <Minus className="w-4 h-4" />
+                      <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="px-4 py-2 min-w-[60px] text-center">
+                    <span className="min-w-[60px] px-4 py-2 text-center">
                       {quantity}
                     </span>
                     <Button
@@ -311,10 +311,10 @@ export default function ProductDetailsClient({
                       disabled={quantity >= product.stock}
                       className="cursor-pointer"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {product.stock} items available
                   </span>
                 </div>
@@ -328,12 +328,12 @@ export default function ProductDetailsClient({
               >
                 {isAddedToCart ? (
                   <>
-                    <Check className="w-4 h-4 mr-2" />
+                    <Check className="mr-2 h-4 w-4" />
                     Added to Cart!
                   </>
                 ) : (
                   <>
-                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    <ShoppingCart className="mr-2 h-4 w-4" />
                     Add to Cart - ${(product.price * quantity).toFixed(2)}
                   </>
                 )}
@@ -342,32 +342,32 @@ export default function ProductDetailsClient({
 
             {/* Shipping Info */}
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-border"
+              className="border-border grid grid-cols-1 gap-4 border-t pt-6 sm:grid-cols-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
               <div className="flex items-center gap-3">
-                <Truck className="w-5 h-5 text-primary" />
+                <Truck className="text-primary h-5 w-5" />
                 <div>
                   <p className="text-sm font-medium">Free Shipping</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Orders over $50
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Shield className="w-5 h-5 text-primary" />
+                <Shield className="text-primary h-5 w-5" />
                 <div>
                   <p className="text-sm font-medium">Secure Payment</p>
-                  <p className="text-xs text-muted-foreground">SSL encrypted</p>
+                  <p className="text-muted-foreground text-xs">SSL encrypted</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <RotateCcw className="w-5 h-5 text-primary" />
+                <RotateCcw className="text-primary h-5 w-5" />
                 <div>
                   <p className="text-sm font-medium">30-Day Returns</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     No questions asked
                   </p>
                 </div>
@@ -392,12 +392,12 @@ export default function ProductDetailsClient({
               <Card>
                 <CardContent className="p-6">
                   <div className="prose prose-sm max-w-none">
-                    <p className="text-muted-foreground leading-relaxed mb-4">
+                    <p className="text-muted-foreground mb-4 leading-relaxed">
                       {product.description}
                     </p>
                     {product.sku && (
-                      <div className="mt-4 pt-4 border-t border-border">
-                        <p className="text-sm text-muted-foreground">
+                      <div className="border-border mt-4 border-t pt-4">
+                        <p className="text-muted-foreground text-sm">
                           <strong>SKU:</strong> {product.sku}
                         </p>
                       </div>
@@ -408,15 +408,15 @@ export default function ProductDetailsClient({
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <Card>
                   <CardContent className="p-6">
-                    <div className="text-center mb-6">
-                      <div className="text-4xl font-bold mb-2">
+                    <div className="mb-6 text-center">
+                      <div className="mb-2 text-4xl font-bold">
                         {averageRating.toFixed(1)}
                       </div>
                       {renderStars(averageRating)}
-                      <p className="text-sm text-muted-foreground mt-2">
+                      <p className="text-muted-foreground mt-2 text-sm">
                         Based on {reviewCount.toLocaleString()} reviews
                       </p>
                     </div>
@@ -427,12 +427,12 @@ export default function ProductDetailsClient({
                           key={item.stars}
                           className="flex items-center gap-3"
                         >
-                          <span className="text-sm w-6">{item.stars}★</span>
+                          <span className="w-6 text-sm">{item.stars}★</span>
                           <Progress
                             value={item.percentage}
                             className="flex-1"
                           />
-                          <span className="text-sm text-muted-foreground w-10">
+                          <span className="text-muted-foreground w-10 text-sm">
                             {item.percentage}%
                           </span>
                         </div>
@@ -441,13 +441,13 @@ export default function ProductDetailsClient({
                   </CardContent>
                 </Card>
 
-                <div className="lg:col-span-2 space-y-4">
+                <div className="space-y-4 lg:col-span-2">
                   {reviewsLoading ? (
                     <Card>
                       <CardContent className="p-6">
                         <div className="animate-pulse">
-                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                          <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                          <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                         </div>
                       </CardContent>
                     </Card>
@@ -457,22 +457,22 @@ export default function ProductDetailsClient({
                         <CardContent className="p-6">
                           <div className="flex items-start gap-4">
                             <Avatar>
-                              <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                              <div className="bg-primary/10 flex h-full w-full items-center justify-center">
                                 <span className="text-sm font-medium">
                                   {review.user_id.charAt(0).toUpperCase()}
                                 </span>
                               </div>
                             </Avatar>
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
+                              <div className="mb-2 flex items-center gap-2">
                                 <h4 className="font-medium">
                                   User {review.user_id.slice(0, 8)}
                                 </h4>
-                                {renderStars(review.rating, 'sm')}
+                                {renderStars(review.rating, "sm")}
                                 {review.created_at && (
-                                  <span className="text-sm text-muted-foreground">
+                                  <span className="text-muted-foreground text-sm">
                                     {new Date(
-                                      review.created_at
+                                      review.created_at,
                                     ).toLocaleDateString()}
                                   </span>
                                 )}

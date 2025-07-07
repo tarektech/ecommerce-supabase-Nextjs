@@ -3,8 +3,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { UpdatePasswordForm } from './UpdatePasswordForm';
+} from "@/components/ui/card";
+import { UpdatePasswordForm } from "./UpdatePasswordForm";
 
 type UpdatePasswordProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -17,7 +17,7 @@ export default async function UpdatePassword({
   const message = params.message ? String(params.message) : null;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background p-4">
+    <div className="bg-background flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Update Password</CardTitle>

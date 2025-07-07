@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
-import { useAuth } from '@/context/AuthContext';
-import { useCheckout } from '@/context/CheckoutContext';
-import { orderService } from '@/services/order/orderService';
-import { addressService } from '@/services/address/addressService';
-import { toast } from 'sonner';
-import { AddressType } from '@/types';
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useCheckout } from "@/context/CheckoutContext";
+import { orderService } from "@/services/order/orderService";
+import { addressService } from "@/services/address/addressService";
+import { toast } from "sonner";
+import { AddressType } from "@/types";
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
-  const checkoutId = searchParams.get('checkout_id');
+  const checkoutId = searchParams.get("checkout_id");
   const router = useRouter();
   const { clearCart, cartItems, subtotal } = useCart();
   const { user } = useAuth();
@@ -37,7 +37,7 @@ function ConfirmationContent() {
                 user_id: user.id,
                 street: shippingAddress.street,
                 city: shippingAddress.city,
-                state: '', // Not available in checkout context
+                state: "", // Not available in checkout context
                 zip_code: shippingAddress.zipCode,
                 country: shippingAddress.country,
                 is_default: false,
@@ -48,7 +48,7 @@ function ConfirmationContent() {
           } else {
             // Fallback: try to get user's existing addresses
             const existingAddresses = await addressService.getAddresses(
-              user.id
+              user.id,
             );
             if (existingAddresses.length > 0) {
               addressToUse = existingAddresses[0]; // Use first available address
@@ -58,11 +58,11 @@ function ConfirmationContent() {
                 address: {
                   id: 0,
                   user_id: user.id,
-                  street: 'Default Street (Please update)',
-                  city: 'Default City',
-                  state: 'Default State',
-                  zip_code: '00000',
-                  country: 'US',
+                  street: "Default Street (Please update)",
+                  city: "Default City",
+                  state: "Default State",
+                  zip_code: "00000",
+                  country: "US",
                   is_default: true,
                 },
                 userId: user.id,
@@ -93,18 +93,18 @@ function ConfirmationContent() {
             await clearCart();
             // Reset checkout context
             resetCheckout();
-            toast.success('Order created successfully!');
+            toast.success("Order created successfully!");
           }
         } catch (error) {
-          console.error('Error creating order:', error);
-          toast.error('Failed to create order. Please contact support.');
+          console.error("Error creating order:", error);
+          toast.error("Failed to create order. Please contact support.");
         } finally {
           setIsProcessing(false);
         }
       } else if (checkoutId && !user) {
         // Handle case where user is not logged in
         setIsProcessing(false);
-        toast.error('Please log in to complete your order.');
+        toast.error("Please log in to complete your order.");
       } else if (checkoutId && cartItems.length === 0) {
         // Handle case where cart is empty
         setIsProcessing(false);
@@ -126,17 +126,17 @@ function ConfirmationContent() {
   ]);
 
   const handleContinueShopping = () => {
-    router.push('/products');
+    router.push("/products");
   };
 
   const handleViewOrders = () => {
-    router.push('/profile');
+    router.push("/profile");
   };
 
   if (isProcessing) {
     return (
-      <div className="min-h-screen bg-background py-12">
-        <Card className="max-w-lg mx-auto">
+      <div className="bg-background min-h-screen py-12">
+        <Card className="mx-auto max-w-lg">
           <CardHeader>
             <CardTitle>Processing your order...</CardTitle>
           </CardHeader>
@@ -151,8 +151,8 @@ function ConfirmationContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12">
-      <Card className="max-w-lg mx-auto">
+    <div className="bg-background min-h-screen py-12">
+      <Card className="mx-auto max-w-lg">
         <CardHeader>
           <CardTitle>Thank you for your order!</CardTitle>
         </CardHeader>
@@ -175,8 +175,8 @@ function ConfirmationContent() {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-background py-12">
-      <Card className="max-w-lg mx-auto">
+    <div className="bg-background min-h-screen py-12">
+      <Card className="mx-auto max-w-lg">
         <CardHeader>
           <CardTitle>Loading...</CardTitle>
         </CardHeader>

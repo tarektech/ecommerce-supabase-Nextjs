@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff } from 'lucide-react';
-import { supabase } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export function UpdatePasswordForm({ message }: { message: string | null }) {
   const router = useRouter();
 
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -28,20 +28,20 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
       const hash = window.location.hash;
       if (hash && hash.length > 1) {
         const hashParams = new URLSearchParams(
-          window.location.hash.substring(1)
+          window.location.hash.substring(1),
         );
-        const accessToken = hashParams.get('access_token');
-        const type = hashParams.get('type');
+        const accessToken = hashParams.get("access_token");
+        const type = hashParams.get("type");
 
-        if (accessToken && type === 'recovery') {
+        if (accessToken && type === "recovery") {
           // We have a valid recovery flow from email link
-          console.log('Valid recovery flow detected');
+          console.log("Valid recovery flow detected");
 
           // Set the access token in Supabase to authenticate the user
           // This is important - without this, updateUser won't work
           supabase.auth.setSession({
             access_token: accessToken,
-            refresh_token: hashParams.get('refresh_token') || '',
+            refresh_token: hashParams.get("refresh_token") || "",
           });
         }
       }
@@ -49,10 +49,10 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
 
     // Check hash params immediately and also listen for hash changes
     checkHashParams();
-    window.addEventListener('hashchange', checkHashParams);
+    window.addEventListener("hashchange", checkHashParams);
 
     return () => {
-      window.removeEventListener('hashchange', checkHashParams);
+      window.removeEventListener("hashchange", checkHashParams);
     };
   }, []);
 
@@ -69,17 +69,17 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
     setError(null);
 
     if (!password) {
-      setError('Password is required');
+      setError("Password is required");
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
@@ -96,12 +96,12 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
       }
 
       if (data) {
-        toast.success('Password updated successfully!');
+        toast.success("Password updated successfully!");
 
         // Redirect to sign in page after successful password update
         setTimeout(() => {
           router.push(
-            '/signin?message=Your password has been updated successfully. Please sign in with your new password.'
+            "/signin?message=Your password has been updated successfully. Please sign in with your new password.",
           );
         }, 2000);
       }
@@ -109,9 +109,9 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'An error occurred while updating your password';
+          : "An error occurred while updating your password";
       setError(errorMessage);
-      console.error('Password update error:', error);
+      console.error("Password update error:", error);
     } finally {
       setLoading(false);
     }
@@ -121,16 +121,16 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
     <form onSubmit={handleSubmit}>
       <CardContent className="space-y-4">
         {error && (
-          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+          <div className="bg-destructive/15 text-destructive rounded-md p-3 text-sm">
             {error}
           </div>
         )}
         {message && (
-          <div className="bg-primary/15 text-green-500 text-sm p-3 rounded-md">
+          <div className="bg-primary/15 rounded-md p-3 text-sm text-green-500">
             {message}
           </div>
         )}
-        <div className="bg-blue-50 text-blue-800 text-sm p-3 rounded-md mb-2">
+        <div className="mb-2 rounded-md bg-blue-50 p-3 text-sm text-blue-800">
           Enter your new password below. You must have clicked the password
           reset link from your email to complete this process.
         </div>
@@ -140,7 +140,7 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
             <Input
               id="password"
               name="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -149,7 +149,7 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-full cursor-pointer items-center justify-center px-3"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
             >
@@ -159,7 +159,7 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
                 <Eye className="h-4 w-4" />
               )}
               <span className="sr-only">
-                {showPassword ? 'Hide password' : 'Show password'}
+                {showPassword ? "Hide password" : "Show password"}
               </span>
             </button>
           </div>
@@ -170,7 +170,7 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
             <Input
               id="confirmPassword"
               name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -179,7 +179,7 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-full cursor-pointer items-center justify-center px-3"
               onClick={toggleConfirmPasswordVisibility}
               tabIndex={-1}
             >
@@ -189,7 +189,7 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
                 <Eye className="h-4 w-4" />
               )}
               <span className="sr-only">
-                {showConfirmPassword ? 'Hide password' : 'Show password'}
+                {showConfirmPassword ? "Hide password" : "Show password"}
               </span>
             </button>
           </div>
@@ -198,16 +198,16 @@ export function UpdatePasswordForm({ message }: { message: string | null }) {
       <CardFooter className="flex flex-col">
         <Button
           type="submit"
-          className="w-full cursor-pointer hover:bg-primary/90"
+          className="hover:bg-primary/90 w-full cursor-pointer"
           disabled={loading}
         >
-          {loading ? 'Updating...' : 'Update Password'}
+          {loading ? "Updating..." : "Update Password"}
         </Button>
         <div className="mt-4 text-center text-sm">
-          Remember your password?{' '}
+          Remember your password?{" "}
           <Link
             href="/signin"
-            className="text-primary underline cursor-pointer hover:text-primary/90"
+            className="text-primary hover:text-primary/90 cursor-pointer underline"
           >
             Sign in
           </Link>

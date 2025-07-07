@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,11 +7,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
 export default function ResetPasswordConfirmation() {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background p-4">
+    <div className="bg-background flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Check Your Email</CardTitle>
@@ -20,7 +20,7 @@ export default function ResetPasswordConfirmation() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-green-100 text-green-800 text-sm p-4 rounded-md">
+          <div className="rounded-md bg-green-100 p-4 text-sm text-green-800">
             <p>
               If an account exists with the email you entered, we&apos;ve sent a
               link to reset your password. Please check your email and follow
@@ -33,15 +33,15 @@ export default function ResetPasswordConfirmation() {
         </CardContent>
         <CardFooter className="flex flex-col">
           <Link href="/signin" className="w-full">
-            <Button className="w-full cursor-pointer hover:bg-primary/90">
+            <Button className="hover:bg-primary/90 w-full cursor-pointer">
               Back to Sign In
             </Button>
           </Link>
           <div className="mt-4 text-center text-sm">
-            Didn&apos;t receive the email?{' '}
+            Didn&apos;t receive the email?{" "}
             <Link
               href="/reset-password"
-              className="text-primary underline cursor-pointer hover:text-primary/90"
+              className="text-primary hover:text-primary/90 cursor-pointer underline"
             >
               Try again
             </Link>

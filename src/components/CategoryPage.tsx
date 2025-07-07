@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Input } from '@/components/ui/input';
-import { ProductCard } from '@/components/ProductCard';
-import { useAuth } from '@/context/AuthContext';
-import { ProductType } from '@/types';
-import { productService } from '@/services/product/productService';
-import { useRouter } from 'next/navigation';
-import { ErrorState } from '@/components/ErrorState';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { ProductCard } from "@/components/ProductCard";
+import { useAuth } from "@/context/AuthContext";
+import { ProductType } from "@/types";
+import { productService } from "@/services/product/productService";
+import { useRouter } from "next/navigation";
+import { ErrorState } from "@/components/ErrorState";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface CategoryPageProps {
   categoryName: string;
@@ -24,7 +24,7 @@ export default function CategoryPage({
   const router = useRouter();
   const [products, setProducts] = useState<ProductType[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -33,13 +33,13 @@ export default function CategoryPage({
     // If not logged in and trying to access restricted categories (Clothing or Accessories)
     if (
       !user &&
-      (categoryName === 'Clothing' || categoryName === 'Accessories')
+      (categoryName === "Clothing" || categoryName === "Accessories")
     ) {
-      router.push('/signin');
+      router.push("/signin");
     }
   }, [user, categoryName, router]);
 
-  // Fetch products from the API 
+  // Fetch products from the API
   //useCallback is used to memoize the function
   const fetchProducts = useCallback(async () => {
     try {
@@ -51,7 +51,7 @@ export default function CategoryPage({
         setProducts(data);
         setFilteredProducts(data);
       } else {
-        throw new Error('Invalid response format');
+        throw new Error("Invalid response format");
       }
     } catch (err) {
       const error =
@@ -70,15 +70,15 @@ export default function CategoryPage({
   }, [fetchProducts]);
 
   useEffect(() => {
-    if (searchTerm.trim() === '') {
+    if (searchTerm.trim() === "") {
       setFilteredProducts(products);
     } else {
       const filtered = products.filter(
         (product) =>
           product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (product.description?.toLowerCase() || '').includes(
-            searchTerm.toLowerCase()
-          )
+          (product.description?.toLowerCase() || "").includes(
+            searchTerm.toLowerCase(),
+          ),
       );
       setFilteredProducts(filtered);
     }
@@ -87,22 +87,22 @@ export default function CategoryPage({
   // If not authenticated and trying to access a restricted category, don't render the content
   if (
     !user &&
-    (categoryName === 'Clothing' || categoryName === 'Accessories')
+    (categoryName === "Clothing" || categoryName === "Accessories")
   ) {
     return null;
   }
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-background">
+      <div className="bg-background min-h-screen">
         <div className="container mx-auto px-4">
-          <div className="py-4 space-y-4">
+          <div className="space-y-4 py-4">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <h1 className="text-3xl font-bold mb-4">{categoryName}</h1>
+              <h1 className="mb-4 text-3xl font-bold">{categoryName}</h1>
             </motion.div>
 
             {/* Search Input */}
@@ -110,7 +110,7 @@ export default function CategoryPage({
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-md mx-auto w-full"
+              className="mx-auto w-full max-w-md"
             >
               <Input
                 type="text"
@@ -129,16 +129,16 @@ export default function CategoryPage({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex justify-center items-center min-h-[200px]"
+                    className="flex min-h-[200px] items-center justify-center"
                   >
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 1,
                         repeat: Infinity,
-                        ease: 'linear',
+                        ease: "linear",
                       }}
-                      className="rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"
+                      className="border-primary h-8 w-8 rounded-full border-t-2 border-b-2"
                     />
                   </motion.div>
                 ) : error ? (
@@ -167,7 +167,7 @@ export default function CategoryPage({
                       title={`No ${categoryName.toLowerCase()} found`}
                       description={
                         searchTerm
-                          ? 'Try a different search term'
+                          ? "Try a different search term"
                           : `No ${categoryName.toLowerCase()} products are available right now.`
                       }
                       showRetry={!searchTerm}

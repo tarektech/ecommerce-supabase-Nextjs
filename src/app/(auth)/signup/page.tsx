@@ -1,14 +1,14 @@
-import SignUpForm from './SignUpForm';
+import SignUpForm from "./SignUpForm";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
 export default function SignUp() {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background p-4">
+    <div className="bg-background flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Create an Account</CardTitle>

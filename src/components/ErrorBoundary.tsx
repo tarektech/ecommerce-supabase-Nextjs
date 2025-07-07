@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { Component } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { Component } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+} from "@/components/ui/card";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -36,7 +36,7 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error("Error caught by boundary:", error, errorInfo);
     this.props.onError?.(error, errorInfo);
   }
 
@@ -65,11 +65,11 @@ interface ErrorFallbackProps {
 
 function DefaultErrorFallback({ error, reset }: ErrorFallbackProps) {
   return (
-    <div className="min-h-[400px] flex items-center justify-center p-4">
+    <div className="flex min-h-[400px] items-center justify-center p-4">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
-            <AlertTriangle className="h-8 w-8 text-destructive" />
+          <div className="bg-destructive/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <AlertTriangle className="text-destructive h-8 w-8" />
           </div>
           <CardTitle className="text-2xl font-bold">
             Something went wrong
@@ -82,7 +82,7 @@ function DefaultErrorFallback({ error, reset }: ErrorFallbackProps) {
               <summary className="cursor-pointer text-sm font-medium">
                 Error details
               </summary>
-              <pre className="mt-2 text-xs text-muted-foreground bg-muted p-2 rounded overflow-auto">
+              <pre className="text-muted-foreground bg-muted mt-2 overflow-auto rounded p-2 text-xs">
                 {error.message}
               </pre>
             </details>

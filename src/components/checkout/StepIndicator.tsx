@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface StepIndicatorProps {
   step: number;
@@ -15,10 +15,10 @@ export const StepIndicator = ({
 }: StepIndicatorProps) => (
   <div className="flex items-center">
     <div
-      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+      className={`flex h-8 w-8 items-center justify-center rounded-full ${
         isActive || isCompleted
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-secondary text-secondary-foreground'
+          ? "bg-primary text-primary-foreground"
+          : "bg-secondary text-secondary-foreground"
       }`}
     >
       {step}

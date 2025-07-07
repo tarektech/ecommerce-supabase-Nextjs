@@ -1,8 +1,8 @@
-import { Suspense } from 'react';
-import CategoryPage from '@/components/CategoryPage';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { createServerSupabase } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { Suspense } from "react";
+import CategoryPage from "@/components/CategoryPage";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function AccessoriesPage() {
   // Check if user is authenticated to view restricted category
@@ -12,7 +12,7 @@ export default async function AccessoriesPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/signin');
+    redirect("/signin");
   }
 
   return (

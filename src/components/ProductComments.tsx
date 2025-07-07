@@ -1,15 +1,15 @@
-'use client';
-import { useState } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+"use client";
+import { useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Star,
   MessageCircle,
   ThumbsUp,
   MoreVertical,
   Trash2,
-} from 'lucide-react';
-import Image from 'next/image';
+} from "lucide-react";
+import Image from "next/image";
 
 interface Comment {
   id: string;
@@ -69,12 +69,12 @@ export function ProductComments() {
     // },
   ]);
 
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [helpfulComments, setHelpfulComments] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   const averageRating =
@@ -94,17 +94,17 @@ export function ProductComments() {
       const comment: Comment = {
         id: Date.now().toString(),
         user: {
-          name: 'Current User',
+          name: "Current User",
           verified: false,
         },
         rating: newRating,
         comment: newComment.trim(),
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split("T")[0],
         helpful: 0,
         verified_purchase: false,
       };
       setComments([comment, ...comments]);
-      setNewComment('');
+      setNewComment("");
       setNewRating(0);
     }
   };
@@ -125,8 +125,8 @@ export function ProductComments() {
       comments.map((comment) =>
         comment.id === commentId
           ? { ...comment, helpful: comment.helpful + 1 }
-          : comment
-      )
+          : comment,
+      ),
     );
 
     setHelpfulComments(new Set([...helpfulComments, commentId]));
@@ -135,15 +135,15 @@ export function ProductComments() {
   const renderStars = (
     rating: number,
     interactive = false,
-    size = 'w-4 h-4'
+    size = "w-4 h-4",
   ) => {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
         className={`${size} cursor-pointer transition-colors ${
           index < (interactive ? hoveredStar || newRating : rating)
-            ? 'fill-yellow-400 text-yellow-400'
-            : 'text-muted fill-muted'
+            ? "fill-yellow-400 text-yellow-400"
+            : "text-muted fill-muted"
         }`}
         onClick={interactive ? () => setNewRating(index + 1) : undefined}
         onMouseEnter={interactive ? () => setHoveredStar(index + 1) : undefined}
@@ -154,9 +154,9 @@ export function ProductComments() {
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
@@ -164,8 +164,8 @@ export function ProductComments() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <MessageCircle className="w-6 h-6 text-primary" />
-        <h2 className="text-2xl font-bold text-foreground">
+        <MessageCircle className="text-primary h-6 w-6" />
+        <h2 className="text-foreground text-2xl font-bold">
           Customer Reviews ({comments.length})
         </h2>
       </div>
@@ -173,14 +173,14 @@ export function ProductComments() {
       {/* Rating Summary */}
       <Card>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             {/* Average Rating */}
             <div className="text-center">
-              <div className="text-4xl font-bold text-foreground mb-2">
+              <div className="text-foreground mb-2 text-4xl font-bold">
                 {averageRating.toFixed(1)}
               </div>
-              <div className="flex justify-center mb-2">
-                {renderStars(Math.round(averageRating), false, 'w-6 h-6')}
+              <div className="mb-2 flex justify-center">
+                {renderStars(Math.round(averageRating), false, "w-6 h-6")}
               </div>
               <p className="text-muted-foreground">
                 Based on {comments.length} reviews
@@ -191,15 +191,15 @@ export function ProductComments() {
             <div className="space-y-2">
               {ratingDistribution.map(({ rating, count, percentage }) => (
                 <div key={rating} className="flex items-center gap-3">
-                  <span className="text-sm text-foreground w-6">{rating}</span>
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                  <span className="text-foreground w-6 text-sm">{rating}</span>
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
                     <div
                       className="h-full bg-yellow-400 transition-all"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className="text-sm text-muted-foreground w-8">
+                  <span className="text-muted-foreground w-8 text-sm">
                     {count}
                   </span>
                 </div>
@@ -212,32 +212,32 @@ export function ProductComments() {
       {/* Add Review Form */}
       <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="text-foreground text-lg font-semibold">
             Write a Review
           </h3>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-foreground block mb-2">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               Rating
             </label>
             <div className="flex gap-1">
-              {renderStars(newRating, true, 'w-6 h-6')}
+              {renderStars(newRating, true, "w-6 h-6")}
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-foreground block mb-2">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               Your Review
             </label>
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Share your experience with this product..."
-              className="w-full min-h-[100px] p-3 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-vertical"
+              className="border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-ring resize-vertical min-h-[100px] w-full rounded-md border p-3 focus:ring-1 focus:outline-none"
               maxLength={500}
             />
-            <div className="text-sm text-muted-foreground mt-1">
+            <div className="text-muted-foreground mt-1 text-sm">
               {newComment.length}/500 characters
             </div>
           </div>
@@ -245,7 +245,7 @@ export function ProductComments() {
           <Button
             onClick={handleSubmitComment}
             disabled={!newComment.trim() || newRating === 0}
-            className="w-full sm:w-auto cursor-pointer"
+            className="w-full cursor-pointer sm:w-auto"
           >
             Submit Review
           </Button>
@@ -262,43 +262,43 @@ export function ProductComments() {
                 <div className="flex-shrink-0">
                   {comment.user.avatar ? (
                     <Image
-                      src={comment.user.avatar || ''}
+                      src={comment.user.avatar || ""}
                       alt={comment.user.name}
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="h-10 w-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-sm">
+                    <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium">
                       {getInitials(comment.user.name)}
                     </div>
                   )}
                 </div>
 
                 {/* Comment Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-4 mb-2">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-2 flex items-start justify-between gap-4">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-foreground">
+                      <div className="mb-1 flex items-center gap-2">
+                        <h4 className="text-foreground font-medium">
                           {comment.user.name}
                         </h4>
                         {comment.user.verified && (
-                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-800">
                             Verified
                           </span>
                         )}
                         {comment.verified_purchase && (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">
                             Verified Purchase
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="mb-2 flex items-center gap-2">
                         <div className="flex">
                           {renderStars(comment.rating)}
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           {new Date(comment.date).toLocaleDateString()}
                         </span>
                       </div>
@@ -310,18 +310,18 @@ export function ProductComments() {
                         className="cursor-pointer"
                         onClick={() => toggleDropdown(comment.id)}
                       >
-                        <MoreVertical className="w-4 h-4" />
+                        <MoreVertical className="h-4 w-4" />
                       </Button>
 
                       {openDropdownId === comment.id && (
-                        <div className="absolute right-0 top-full mt-1 bg-background border border-border rounded-md shadow-lg z-10 min-w-[120px]">
+                        <div className="bg-background border-border absolute top-full right-0 z-10 mt-1 min-w-[120px] rounded-md border shadow-lg">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full cursor-pointer justify-start"
                           >
-                            <Trash2 className="w-4 h-4 mr-2" />
+                            <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                           </Button>
                         </div>
@@ -329,7 +329,7 @@ export function ProductComments() {
                     </div>
                   </div>
 
-                  <p className="text-foreground leading-relaxed mb-3">
+                  <p className="text-foreground mb-3 leading-relaxed">
                     {comment.comment}
                   </p>
 
@@ -341,16 +341,16 @@ export function ProductComments() {
                       disabled={helpfulComments.has(comment.id)}
                       className={`cursor-pointer ${
                         helpfulComments.has(comment.id)
-                          ? 'text-blue-600 hover:text-blue-600'
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? "text-blue-600 hover:text-blue-600"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <ThumbsUp
-                        className="w-4 h-4 mr-1"
+                        className="mr-1 h-4 w-4"
                         fill={
                           helpfulComments.has(comment.id)
-                            ? 'currentColor'
-                            : 'none'
+                            ? "currentColor"
+                            : "none"
                         }
                       />
                       Helpful ({comment.helpful})

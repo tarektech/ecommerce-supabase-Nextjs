@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff } from 'lucide-react';
-import { useAuthForm } from '@/hooks/useAuthForm';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
+import { useAuthForm } from "@/hooks/useAuthForm";
 
 export function SignInForm({ message }: { message: string | null }) {
   const {
@@ -23,12 +23,12 @@ export function SignInForm({ message }: { message: string | null }) {
     <form onSubmit={handleSubmit}>
       <CardContent className="space-y-4">
         {error && (
-          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+          <div className="bg-destructive/15 text-destructive rounded-md p-3 text-sm">
             {error}
           </div>
         )}
         {message && (
-          <div className="bg-primary/15 text-primary text-sm p-3 rounded-md">
+          <div className="bg-primary/15 text-primary rounded-md p-3 text-sm">
             {message}
           </div>
         )}
@@ -45,11 +45,11 @@ export function SignInForm({ message }: { message: string | null }) {
           />
         </div>
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
             <Link
               href="/reset-password"
-              className="text-sm text-primary underline"
+              className="text-primary text-sm underline"
             >
               Forgot password?
             </Link>
@@ -58,14 +58,14 @@ export function SignInForm({ message }: { message: string | null }) {
             <Input
               id="password"
               name="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleChange}
               required
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-full cursor-pointer items-center justify-center px-3"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
             >
@@ -75,7 +75,7 @@ export function SignInForm({ message }: { message: string | null }) {
                 <Eye className="h-4 w-4" />
               )}
               <span className="sr-only">
-                {showPassword ? 'Hide password' : 'Show password'}
+                {showPassword ? "Hide password" : "Show password"}
               </span>
             </button>
           </div>
@@ -84,16 +84,16 @@ export function SignInForm({ message }: { message: string | null }) {
       <CardFooter className="flex flex-col">
         <Button
           type="submit"
-          className="w-full cursor-pointer hover:bg-primary/90"
+          className="hover:bg-primary/90 w-full cursor-pointer"
           disabled={loading}
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {loading ? "Signing in..." : "Sign In"}
         </Button>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{' '}
+          Don&apos;t have an account?{" "}
           <Link
             href="/signup"
-            className="text-primary underline cursor-pointer  hover:text-primary/90"
+            className="text-primary hover:text-primary/90 cursor-pointer underline"
           >
             Sign up
           </Link>

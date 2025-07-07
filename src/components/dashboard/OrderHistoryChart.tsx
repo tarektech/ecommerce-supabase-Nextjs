@@ -1,6 +1,6 @@
-'use client';
-import { OrderType } from '@/types';
-import { useEffect, useState } from 'react';
+"use client";
+import { OrderType } from "@/types";
+import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,8 +9,8 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -18,7 +18,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 interface OrderHistoryChartProps {
@@ -58,7 +58,7 @@ export function OrderHistoryChart({ orders }: OrderHistoryChartProps) {
       if (!order.created_at) return;
 
       const date = new Date(order.created_at);
-      const month = date.toLocaleString('default', { month: 'short' });
+      const month = date.toLocaleString("default", { month: "short" });
       const year = date.getFullYear();
       const key = `${month} ${year}`;
 
@@ -87,17 +87,17 @@ export function OrderHistoryChart({ orders }: OrderHistoryChartProps) {
       labels,
       datasets: [
         {
-          label: 'Order Amount ($)',
+          label: "Order Amount ($)",
           data: totals,
-          backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          borderColor: 'rgba(53, 162, 235, 1)',
+          backgroundColor: "rgba(53, 162, 235, 0.5)",
+          borderColor: "rgba(53, 162, 235, 1)",
           borderWidth: 1,
         },
         {
-          label: 'Order Count',
+          label: "Order Count",
           data: counts,
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+          borderColor: "rgba(255, 99, 132, 1)",
           borderWidth: 1,
         },
       ],
@@ -109,11 +109,11 @@ export function OrderHistoryChart({ orders }: OrderHistoryChartProps) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
       },
       title: {
         display: true,
-        text: 'Order History',
+        text: "Order History",
         font: {
           size: 16,
         },
@@ -128,7 +128,7 @@ export function OrderHistoryChart({ orders }: OrderHistoryChartProps) {
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center border rounded-lg bg-muted/10">
+      <div className="bg-muted/10 flex h-64 items-center justify-center rounded-lg border">
         <p className="text-muted-foreground">No order data available</p>
       </div>
     );

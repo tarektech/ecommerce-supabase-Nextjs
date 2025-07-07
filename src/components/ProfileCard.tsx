@@ -1,14 +1,14 @@
-'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState, useEffect, ChangeEvent, useRef } from 'react';
-import { User } from '@supabase/supabase-js';
-import { EmailChangeModal } from '@/components/EmailChangeModal';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
-import { toast } from 'sonner';
-import { profileService } from '@/services/profile/profileService';
+"use client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState, useEffect, ChangeEvent, useRef } from "react";
+import { User } from "@supabase/supabase-js";
+import { EmailChangeModal } from "@/components/EmailChangeModal";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { toast } from "sonner";
+import { profileService } from "@/services/profile/profileService";
 
 interface ProfileCardProps {
   user: User;
@@ -82,16 +82,16 @@ export function ProfileCard({
     if (file.size > maxSize) {
       toast.error(
         `File size exceeds 2MB limit (${(file.size / (1024 * 1024)).toFixed(
-          2
-        )}MB)`
+          2,
+        )}MB)`,
       );
       return;
     }
 
     // Check file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPEG, PNG, GIF, or WEBP)');
+      toast.error("Please upload a valid image file (JPEG, PNG, GIF, or WEBP)");
       return;
     }
 
@@ -111,7 +111,7 @@ export function ProfileCard({
       const publicUrl = await profileService.uploadAvatar(
         user.id,
         file,
-        avatarUrl
+        avatarUrl,
       );
 
       if (publicUrl) {
@@ -123,12 +123,12 @@ export function ProfileCard({
           URL.revokeObjectURL(previewUrl);
           setPreviewUrl(null);
         }
-        toast.success('Avatar uploaded successfully');
+        toast.success("Avatar uploaded successfully");
       } else {
-        throw new Error('Failed to upload avatar. Please try again later.');
+        throw new Error("Failed to upload avatar. Please try again later.");
       }
     } catch (error) {
-      console.error('Error uploading avatar:', error);
+      console.error("Error uploading avatar:", error);
       // Clear preview on error
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -139,7 +139,7 @@ export function ProfileCard({
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to upload avatar. Please try again later.');
+        toast.error("Failed to upload avatar. Please try again later.");
       }
     } finally {
       setUploading(false);
@@ -163,7 +163,7 @@ export function ProfileCard({
     if (email) {
       return email.substring(0, 2).toUpperCase();
     }
-    return 'U';
+    return "U";
   };
 
   // Determine which image to show: preview, uploaded avatar, or fallback
@@ -172,17 +172,17 @@ export function ProfileCard({
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="text-2xl flex items-center gap-2 justify-center">
+        <CardTitle className="flex items-center justify-center gap-2 text-2xl">
           <div
-            className="relative group cursor-pointer"
+            className="group relative cursor-pointer"
             onClick={handleAvatarClick}
           >
-            <Avatar className="w-24 h-24">
+            <Avatar className="h-24 w-24">
               <AvatarImage
                 src={displayImageUrl}
-                className="rounded-full w-24 h-24 object-cover"
+                className="h-24 w-24 rounded-full object-cover"
               />
-              <AvatarFallback className="w-24 h-24 text-xl">
+              <AvatarFallback className="h-24 w-24 text-xl">
                 {getInitials()}
               </AvatarFallback>
             </Avatar>
@@ -198,9 +198,9 @@ export function ProfileCard({
             />
 
             {/* Overlay with upload icon/text */}
-            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-white text-xs">
-                {uploading ? 'Uploading...' : 'Change Photo'}
+            <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-full bg-black opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="text-xs text-white">
+                {uploading ? "Uploading..." : "Change Photo"}
               </span>
             </div>
           </div>
@@ -208,24 +208,24 @@ export function ProfileCard({
       </CardHeader>
       <CardContent>
         <div className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <h3 className="text-lg font-medium mb-4">Account Information</h3>
+              <h3 className="mb-4 text-lg font-medium">Account Information</h3>
               <p className="text-muted-foreground mb-4">{email}</p>
             </div>
             <div>
-              <p className="text-lg font-medium mb-4">
+              <p className="mb-4 text-lg font-medium">
                 {username
-                  ? 'Your profile information'
-                  : 'Please add your username'}
+                  ? "Your profile information"
+                  : "Please add your username"}
               </p>
               <p className="text-muted-foreground mb-4">
-                {username || 'Please add your username'}
+                {username || "Please add your username"}
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 mb-4">
+          <div className="mb-4 grid grid-cols-1 gap-4">
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -249,12 +249,12 @@ export function ProfileCard({
                   type="button"
                   onClick={() => setIsEmailModalOpen(true)}
                   variant="outline"
-                  className="bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
                 >
                   Change Email
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Email changes require verification
               </p>
             </div>
@@ -273,12 +273,12 @@ export function ProfileCard({
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="mb-4 bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 mb-4 cursor-pointer"
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            {isSaving ? "Saving..." : "Save Changes"}
           </Button>
 
-          <div className="text-sm text-muted-foreground space-y-1">
+          <div className="text-muted-foreground space-y-1 text-sm">
             {createdAt && (
               <span className="block">
                 Account created: {new Date(createdAt).toLocaleDateString()}
@@ -289,7 +289,7 @@ export function ProfileCard({
         </div>
         <Button
           onClick={onSignOut}
-          className="hover:bg-accent hover:text-accent-foreground bg-primary text-primary-foreground cursor-pointer "
+          className="hover:bg-accent hover:text-accent-foreground bg-primary text-primary-foreground cursor-pointer"
         >
           Sign Out
         </Button>

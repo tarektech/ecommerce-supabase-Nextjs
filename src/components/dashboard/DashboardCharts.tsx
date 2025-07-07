@@ -1,9 +1,9 @@
-'use client';
-import { OrderType } from '@/types';
-import { OrderHistoryChart } from './OrderHistoryChart';
-import { PaymentDistributionChart } from './PaymentDistributionChart';
-import { OrderStatusChart } from './OrderStatusChart';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+"use client";
+import { OrderType } from "@/types";
+import { OrderHistoryChart } from "./OrderHistoryChart";
+import { PaymentDistributionChart } from "./PaymentDistributionChart";
+import { OrderStatusChart } from "./OrderStatusChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DashboardChartsProps {
   orders: OrderType[];
@@ -25,16 +25,16 @@ export function DashboardCharts({ orders }: DashboardChartsProps) {
   });
   const lastMonthTotal = lastMonthOrders.reduce(
     (sum, order) => sum + order.total,
-    0
+    0,
   );
 
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Total Orders
             </CardTitle>
           </CardHeader>
@@ -45,7 +45,7 @@ export function DashboardCharts({ orders }: DashboardChartsProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Total Revenue
             </CardTitle>
           </CardHeader>
@@ -58,7 +58,7 @@ export function DashboardCharts({ orders }: DashboardChartsProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Average Order Value
             </CardTitle>
           </CardHeader>
@@ -71,7 +71,7 @@ export function DashboardCharts({ orders }: DashboardChartsProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
               Last 30 Days Revenue
             </CardTitle>
           </CardHeader>
@@ -84,7 +84,7 @@ export function DashboardCharts({ orders }: DashboardChartsProps) {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="col-span-1 lg:col-span-2">
           <CardHeader>
             <CardTitle>Order Trends</CardTitle>

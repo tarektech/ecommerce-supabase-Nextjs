@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Button } from "@/components/ui/button";
 
 interface ConfirmationStepProps {
   email: string | null;
@@ -11,7 +11,7 @@ export const ConfirmationStep = ({
   onReturnHome,
 }: ConfirmationStepProps) => {
   return (
-    <div className="text-center space-y-4">
+    <div className="space-y-4 text-center">
       <div className="text-primary text-6xl">✓</div>
       <h2 className="text-2xl font-semibold">Thank you for your order!</h2>
       <p className="text-muted-foreground">

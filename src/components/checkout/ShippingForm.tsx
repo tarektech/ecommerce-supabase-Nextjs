@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import React, { useRef } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ShippingFormProps {
   username: string | null;
@@ -35,13 +35,13 @@ export const ShippingForm = ({
       !postalCodeRef.current?.value ||
       !countryRef.current?.value
     ) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
     // Validate postal code format
     if (!/^\d{5}(-\d{4})?$/.test(postalCodeRef.current.value)) {
-      toast.error('Invalid postal code format (e.g., 12345 or 12345-6789)');
+      toast.error("Invalid postal code format (e.g., 12345 or 12345-6789)");
       return;
     }
 
@@ -54,7 +54,7 @@ export const ShippingForm = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 rounded-lg bg-zinc-900/30 backdrop-blur-sm border border-zinc-800">
+    <div className="mx-auto w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-900/30 p-6 backdrop-blur-sm">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-4">
           <div className="space-y-2">
@@ -67,13 +67,13 @@ export const ShippingForm = ({
             <Input
               type="text"
               id="fullName"
-              value={username || ''}
+              value={username || ""}
               disabled
               required
-              className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
+              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
             />
-            <p className="text-xs text-muted-foreground">
-              {username || 'No username available'}
+            <p className="text-muted-foreground text-xs">
+              {username || "No username available"}
             </p>
           </div>
 
@@ -87,10 +87,10 @@ export const ShippingForm = ({
             <Input
               type="email"
               id="email"
-              value={email || ''}
+              value={email || ""}
               disabled
               required
-              className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
+              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
 
@@ -107,7 +107,7 @@ export const ShippingForm = ({
               ref={addressRef}
               placeholder="123 Main St, Apt 4B"
               required
-              className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
+              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
 
@@ -125,7 +125,7 @@ export const ShippingForm = ({
                 ref={cityRef}
                 placeholder="New York"
                 required
-                className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
+                className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
               />
             </div>
             <div className="space-y-2">
@@ -142,7 +142,7 @@ export const ShippingForm = ({
                 placeholder="12345"
                 maxLength={5}
                 required
-                className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
+                className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
               />
             </div>
           </div>
@@ -160,14 +160,14 @@ export const ShippingForm = ({
               ref={countryRef}
               placeholder="United States"
               required
-              className="bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
+              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
             />
           </div>
         </div>
 
         <Button
           type="submit"
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6 cursor-pointer"
+          className="mt-6 w-full cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-medium text-white transition-colors hover:bg-orange-600"
         >
           Continue to Payment
         </Button>

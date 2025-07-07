@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
   Shirt,
@@ -14,26 +14,26 @@ import {
   Search,
   LogOut,
   LayoutDashboard,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useAuth } from '@/context/AuthContext';
-import { categoryService } from '@/services/category/categoryService';
-import { CategoryType } from '@/types';
-import { useSidebar } from '@/context/SidebarContext';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/context/AuthContext";
+import { categoryService } from "@/services/category/categoryService";
+import { CategoryType } from "@/types";
+import { useSidebar } from "@/context/SidebarContext";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // Default icons for each category
 const categoryIcons: Record<string, React.ElementType> = {
@@ -46,10 +46,10 @@ const categoryIcons: Record<string, React.ElementType> = {
 // Animation variants
 const sidebarVariants = {
   open: {
-    width: '18rem',
+    width: "18rem",
   },
   closed: {
-    width: '4rem',
+    width: "4rem",
   },
 };
 
@@ -115,7 +115,7 @@ export function Sidebar() {
         const data = await categoryService.getCategories();
         setCategories(data);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       } finally {
         setLoading(false);
       }
@@ -132,7 +132,7 @@ export function Sidebar() {
 
   // Mapping of categories from DB to display with icons and hrefs
   const categoryItems = [
-    { name: 'All', icon: Home, href: '/' },
+    { name: "All", icon: Home, href: "/" },
     ...categories.map((category) => ({
       name: category.name,
       icon: categoryIcons[category.name] || Smartphone,
@@ -144,7 +144,7 @@ export function Sidebar() {
   const displayCategories = user
     ? categoryItems
     : categoryItems.filter((category) =>
-        ['All', 'Electronics'].includes(category.name)
+        ["All", "Electronics"].includes(category.name),
       );
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
@@ -156,7 +156,7 @@ export function Sidebar() {
         variant="outline"
         size="icon"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="fixed top-4 left-4 z-50 sm:hidden bg-background/95 backdrop-blur-sm shadow-lg border-border/50 hover:shadow-xl transition-all duration-200"
+        className="bg-background/95 border-border/50 fixed top-4 left-4 z-50 shadow-lg backdrop-blur-sm transition-all duration-200 hover:shadow-xl sm:hidden"
         aria-label="Toggle sidebar"
       >
         <AnimatePresence mode="wait">
@@ -168,7 +168,7 @@ export function Sidebar() {
               exit={{ rotate: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <X className="h-5 w-5 text-foreground" />
+              <X className="text-foreground h-5 w-5" />
             </motion.div>
           ) : (
             <motion.div
@@ -178,7 +178,7 @@ export function Sidebar() {
               exit={{ rotate: 90 }}
               transition={{ duration: 0.2 }}
             >
-              <Menu className="h-5 w-5 text-foreground" />
+              <Menu className="text-foreground h-5 w-5" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -192,7 +192,7 @@ export function Sidebar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 sm:hidden"
+            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
         )}
@@ -200,34 +200,34 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <motion.aside
-        initial={isCollapsed ? 'closed' : 'open'}
-        animate={isCollapsed ? 'closed' : 'open'}
+        initial={isCollapsed ? "closed" : "open"}
+        animate={isCollapsed ? "closed" : "open"}
         variants={sidebarVariants}
-        transition={{ type: 'tween', ease: 'easeOut', duration: 0.3 }}
+        transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
         className={cn(
-          'fixed top-16 left-0 h-[calc(100vh-4rem)] bg-background/95 backdrop-blur-xl border-r border-border/50 z-40 flex flex-col shadow-xl',
+          "bg-background/95 border-border/50 fixed top-16 left-0 z-40 flex h-[calc(100vh-4rem)] flex-col border-r shadow-xl backdrop-blur-xl",
           isMobileMenuOpen
-            ? 'translate-x-0'
-            : '-translate-x-full sm:translate-x-0'
+            ? "translate-x-0"
+            : "-translate-x-full sm:translate-x-0",
         )}
       >
         {/* Header with logo and collapse button */}
-        <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/30">
+        <div className="border-border/50 bg-muted/30 flex items-center justify-between border-b p-4">
           <motion.div
             variants={contentVariants}
             className="flex items-center space-x-2.5"
           >
-            <div className="w-9 h-9 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-primary-foreground font-bold text-base">
+            <div className="from-primary to-primary/80 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg">
+              <span className="text-primary-foreground text-base font-bold">
                 E
               </span>
             </div>
             {!isCollapsed && (
               <motion.div variants={itemVariants} className="flex flex-col">
-                <span className="font-semibold text-foreground text-base">
+                <span className="text-foreground text-base font-semibold">
                   E-Store
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   Premium Shop
                 </span>
               </motion.div>
@@ -239,14 +239,14 @@ export function Sidebar() {
             variant="ghost"
             size="icon"
             onClick={toggleCollapse}
-            className="hidden sm:flex h-8 w-8 hover:bg-muted/50 transition-all duration-200"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="hover:bg-muted/50 hidden h-8 w-8 transition-all duration-200 sm:flex"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <motion.div
               animate={{ rotate: isCollapsed ? 180 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+              <ChevronLeft className="text-muted-foreground h-4 w-4" />
             </motion.div>
           </Button>
         </div>
@@ -256,17 +256,17 @@ export function Sidebar() {
           {!isCollapsed && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="px-4 py-3 border-b border-border/30"
+              className="border-border/30 border-b px-4 py-3"
             >
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                 <Input
                   type="text"
                   placeholder="Search products..."
-                  className="w-full pl-9 text-sm bg-muted/50 border-border/50 focus:bg-background transition-all duration-200"
+                  className="bg-muted/50 border-border/50 focus:bg-background w-full pl-9 text-sm transition-all duration-200"
                 />
               </div>
             </motion.div>
@@ -278,12 +278,12 @@ export function Sidebar() {
           <motion.nav
             variants={staggerVariants}
             initial="closed"
-            animate={isCollapsed ? 'closed' : 'open'}
+            animate={isCollapsed ? "closed" : "open"}
           >
             {!isCollapsed && (
               <motion.h3
                 variants={itemVariants}
-                className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3"
+                className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
               >
                 Categories
               </motion.h3>
@@ -295,8 +295,8 @@ export function Sidebar() {
                   <div
                     key={n}
                     className={cn(
-                      'bg-muted rounded-lg',
-                      isCollapsed ? 'h-10 w-10' : 'h-10'
+                      "bg-muted rounded-lg",
+                      isCollapsed ? "h-10 w-10" : "h-10",
                     )}
                   />
                 ))}
@@ -315,28 +315,28 @@ export function Sidebar() {
                         className="block"
                       >
                         <Button
-                          variant={isActive ? 'secondary' : 'ghost'}
+                          variant={isActive ? "secondary" : "ghost"}
                           className={cn(
-                            'w-full justify-start h-11 group cursor-pointer relative overflow-hidden transition-all duration-200',
-                            isCollapsed ? 'justify-center px-2' : '',
+                            "group relative h-11 w-full cursor-pointer justify-start overflow-hidden transition-all duration-200",
+                            isCollapsed ? "justify-center px-2" : "",
                             isActive
-                              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-                              : 'hover:bg-muted/70 hover:translate-x-1'
+                              ? "bg-primary/10 text-primary border-primary/20 border shadow-sm"
+                              : "hover:bg-muted/70 hover:translate-x-1",
                           )}
                           title={isCollapsed ? category.name : undefined}
                         >
                           <Icon
                             className={cn(
-                              'h-4 w-4 flex-shrink-0 transition-all duration-200',
-                              isCollapsed ? 'mr-0' : 'mr-3',
+                              "h-4 w-4 flex-shrink-0 transition-all duration-200",
+                              isCollapsed ? "mr-0" : "mr-3",
                               isActive
-                                ? 'text-primary'
-                                : 'text-muted-foreground group-hover:text-foreground'
+                                ? "text-primary"
+                                : "text-muted-foreground group-hover:text-foreground",
                             )}
                           />
 
                           {!isCollapsed && (
-                            <span className="flex-1 text-sm text-left font-medium">
+                            <span className="flex-1 text-left text-sm font-medium">
                               {category.name}
                             </span>
                           )}
@@ -345,11 +345,11 @@ export function Sidebar() {
                           {isActive && (
                             <motion.div
                               layoutId="activeIndicator"
-                              className="absolute right-2 w-2 h-2 bg-primary rounded-full"
+                              className="bg-primary absolute right-2 h-2 w-2 rounded-full"
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               transition={{
-                                type: 'spring',
+                                type: "spring",
                                 stiffness: 500,
                                 damping: 30,
                               }}
@@ -358,9 +358,9 @@ export function Sidebar() {
 
                           {/* Tooltip for collapsed state */}
                           {isCollapsed && (
-                            <div className="absolute left-full ml-2 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
+                            <div className="bg-foreground text-background invisible absolute left-full z-50 ml-2 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
                               {category.name}
-                              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-1.5 h-1.5 bg-foreground rotate-45" />
+                              <div className="bg-foreground absolute top-1/2 left-0 h-1.5 w-1.5 -translate-x-1 -translate-y-1/2 rotate-45 transform" />
                             </div>
                           )}
                         </Button>
@@ -375,78 +375,78 @@ export function Sidebar() {
 
         {/* User section */}
         {user && (
-          <div className="border-t border-border/50 p-3 bg-muted/20">
+          <div className="border-border/50 bg-muted/20 border-t p-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 {!isCollapsed ? (
                   <motion.div
                     variants={contentVariants}
-                    className="flex items-center p-3 rounded-xl bg-background/60 hover:bg-background/80 transition-all duration-200 cursor-pointer group shadow-sm border border-border/30"
+                    className="bg-background/60 hover:bg-background/80 group border-border/30 flex cursor-pointer items-center rounded-xl border p-3 shadow-sm transition-all duration-200"
                   >
-                    <Avatar className="h-9 w-9 ring-2 ring-primary/20">
-                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
-                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                    <Avatar className="ring-primary/20 h-9 w-9 ring-2">
+                      <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br font-semibold">
+                        {user.email?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 min-w-0 ml-3">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {user.email?.split('@')[0] || 'User'}
+                    <div className="ml-3 min-w-0 flex-1">
+                      <p className="text-foreground truncate text-sm font-medium">
+                        {user.email?.split("@")[0] || "User"}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-muted-foreground truncate text-xs">
                         {user.email}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div
-                        className="w-2 h-2 bg-green-500 rounded-full"
+                        className="h-2 w-2 rounded-full bg-green-500"
                         title="Online"
                       />
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors duration-200" />
+                      <ChevronRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors duration-200" />
                     </div>
                   </motion.div>
                 ) : (
-                  <div className="flex justify-center cursor-pointer group">
+                  <div className="group flex cursor-pointer justify-center">
                     <div className="relative">
-                      <Avatar className="h-10 w-10 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-200">
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
-                          {user.email?.charAt(0).toUpperCase() || 'U'}
+                      <Avatar className="ring-primary/20 group-hover:ring-primary/40 h-10 w-10 ring-2 transition-all duration-200">
+                        <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br font-semibold">
+                          {user.email?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+                      <div className="border-background absolute -right-1 -bottom-1 h-3 w-3 rounded-full border-2 bg-green-500" />
                     </div>
                   </div>
                 )}
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="center"
-                className="w-56 bg-background/95 backdrop-blur-xl border-border/50"
+                className="bg-background/95 border-border/50 w-56 backdrop-blur-xl"
               >
                 <div className="flex items-center space-x-2 p-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                      {user.email?.charAt(0).toUpperCase() || 'U'}
+                    <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br">
+                      {user.email?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">
-                      {user.email?.split('@')[0] || 'User'}
+                      {user.email?.split("@")[0] || "User"}
                     </span>
-                    <span className="text-xs text-muted-foreground truncate">
+                    <span className="text-muted-foreground truncate text-xs">
                       {user.email}
                     </span>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="cursor-pointer focus:bg-muted/70"
-                  onClick={() => router.replace('/dashboard')}
+                  className="focus:bg-muted/70 cursor-pointer"
+                  onClick={() => router.replace("/dashboard")}
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={signOut}
-                  className="cursor-pointer focus:bg-red-50 focus:text-red-600 transition-colors duration-200"
+                  className="cursor-pointer transition-colors duration-200 focus:bg-red-50 focus:text-red-600"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import { CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuthForm } from "@/hooks/useAuthForm";
-import { Eye } from 'lucide-react';
-import { EyeOff } from 'lucide-react';
-import Link from 'next/link';
+import { Eye } from "lucide-react";
+import { EyeOff } from "lucide-react";
+import Link from "next/link";
 
 export default function SignUpForm() {
   const {
@@ -25,7 +25,7 @@ export default function SignUpForm() {
     <form onSubmit={handleSubmit}>
       <CardContent className="space-y-4">
         {error && (
-          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+          <div className="bg-destructive/15 text-destructive rounded-md p-3 text-sm">
             {error}
           </div>
         )}
@@ -47,14 +47,14 @@ export default function SignUpForm() {
             <Input
               id="password"
               name="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleChange}
               required
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-full cursor-pointer items-center justify-center px-3"
               onClick={togglePasswordVisibility}
               tabIndex={-1}
             >
@@ -64,7 +64,7 @@ export default function SignUpForm() {
                 <Eye className="h-4 w-4" />
               )}
               <span className="sr-only">
-                {showPassword ? 'Hide password' : 'Show password'}
+                {showPassword ? "Hide password" : "Show password"}
               </span>
             </button>
           </div>
@@ -75,14 +75,14 @@ export default function SignUpForm() {
             <Input
               id="confirmPassword"
               name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
             <button
               type="button"
-              className="absolute right-0 top-0 h-full px-3 inline-flex items-center justify-center hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-full cursor-pointer items-center justify-center px-3"
               onClick={toggleConfirmPasswordVisibility}
               tabIndex={-1}
             >
@@ -93,20 +93,27 @@ export default function SignUpForm() {
               )}
               <span className="sr-only">
                 {showConfirmPassword
-                  ? 'Hide confirm password'
-                  : 'Show confirm password'}
+                  ? "Hide confirm password"
+                  : "Show confirm password"}
               </span>
             </button>
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col">
-        <Button type="submit" className="w-full cursor-pointer hover:bg-primary/90" disabled={loading}>
-          {loading ? 'Creating account...' : 'Sign Up'}
+        <Button
+          type="submit"
+          className="hover:bg-primary/90 w-full cursor-pointer"
+          disabled={loading}
+        >
+          {loading ? "Creating account..." : "Sign Up"}
         </Button>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{' '}
-          <Link href="/signin" className="text-primary underline cursor-pointer hover:text-primary/90">
+          Already have an account?{" "}
+          <Link
+            href="/signin"
+            className="text-primary hover:text-primary/90 cursor-pointer underline"
+          >
             Sign in
           </Link>
         </div>

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { CheckoutProvider } from '@/context/CheckoutContext';
+import { CheckoutProvider } from "@/context/CheckoutContext";
 
 export default function CheckoutLayout({
   children,

@@ -1,15 +1,15 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ProductType, OrderType } from '@/types';
-import { productService } from '@/services/product/productService';
-import { orderService } from '@/services/order/orderService';
-import Link from 'next/link';
-import { OrderCard } from '@/components/OrderCard';
-import { DashboardCharts } from '@/components/dashboard/DashboardCharts';
-import Image from 'next/image';
+"use client";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ProductType, OrderType } from "@/types";
+import { productService } from "@/services/product/productService";
+import { orderService } from "@/services/order/orderService";
+import Link from "next/link";
+import { OrderCard } from "@/components/OrderCard";
+import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import Image from "next/image";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -17,8 +17,8 @@ export default function DashboardPage() {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
-    'analytics' | 'products' | 'orders'
-  >('analytics');
+    "analytics" | "products" | "orders"
+  >("analytics");
 
   // Handler to remove order from local state after deletion
   const handleOrderDeleted = (deletedOrderId: number) => {
@@ -39,7 +39,7 @@ export default function DashboardPage() {
         const ordersData = await orderService.getOrders(user.id);
         setOrders(ordersData);
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -76,31 +76,31 @@ export default function DashboardPage() {
         {/* Tabs */}
         <div className="flex border-b">
           <button
-            onClick={() => setActiveTab('analytics')}
+            onClick={() => setActiveTab("analytics")}
             className={`px-4 py-2 font-medium ${
-              activeTab === 'analytics'
-                ? 'border-b-2 border-primary text-primary'
-                : 'text-muted-foreground'
+              activeTab === "analytics"
+                ? "border-primary text-primary border-b-2"
+                : "text-muted-foreground"
             }`}
           >
             Analytics
           </button>
           <button
-            onClick={() => setActiveTab('products')}
+            onClick={() => setActiveTab("products")}
             className={`px-4 py-2 font-medium ${
-              activeTab === 'products'
-                ? 'border-b-2 border-primary text-primary'
-                : 'text-muted-foreground'
+              activeTab === "products"
+                ? "border-primary text-primary border-b-2"
+                : "text-muted-foreground"
             }`}
           >
             Products
           </button>
           <button
-            onClick={() => setActiveTab('orders')}
+            onClick={() => setActiveTab("orders")}
             className={`px-4 py-2 font-medium ${
-              activeTab === 'orders'
-                ? 'border-b-2 border-primary text-primary'
-                : 'text-muted-foreground'
+              activeTab === "orders"
+                ? "border-primary text-primary border-b-2"
+                : "text-muted-foreground"
             }`}
           >
             Order History
@@ -108,31 +108,31 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex h-64 items-center justify-center">
             <p>Loading...</p>
           </div>
         ) : (
           <>
             {/* Analytics Tab */}
-            {activeTab === 'analytics' && <DashboardCharts orders={orders} />}
+            {activeTab === "analytics" && <DashboardCharts orders={orders} />}
 
             {/* Products Tab */}
-            {activeTab === 'products' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeTab === "products" && (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {products.length > 0 ? (
                   products.map((product) => (
                     <Card key={product.product_id} className="overflow-hidden">
                       <div className="h-48 bg-gray-100">
                         {product.image ? (
                           <Image
-                            src={product.image || ''}
+                            src={product.image || ""}
                             alt={product.title}
                             width={400}
                             height={192}
-                            className="w-full h-full object-cover"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          <div className="text-muted-foreground flex h-full w-full items-center justify-center">
                             No image
                           </div>
                         )}
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                        <div className="text-muted-foreground mb-2 line-clamp-2 text-sm">
                           {product.description}
                         </div>
                         <div className="flex items-center justify-between">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                     </Card>
                   ))
                 ) : (
-                  <div className="col-span-full flex items-center justify-center h-64">
+                  <div className="col-span-full flex h-64 items-center justify-center">
                     <p className="text-muted-foreground">No products found</p>
                   </div>
                 )}
@@ -166,7 +166,7 @@ export default function DashboardPage() {
             )}
 
             {/* Orders Tab */}
-            {activeTab === 'orders' && (
+            {activeTab === "orders" && (
               <div className="space-y-6">
                 {orders.length > 0 ? (
                   orders.map((order) => (
@@ -177,8 +177,8 @@ export default function DashboardPage() {
                     />
                   ))
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-12 px-4">
-                    <p className="text-xl font-medium mb-4">No orders yet</p>
+                  <div className="flex flex-col items-center justify-center px-4 py-12">
+                    <p className="mb-4 text-xl font-medium">No orders yet</p>
                     <p className="text-muted-foreground mb-6">
                       You haven&apos;t placed any orders yet.
                     </p>

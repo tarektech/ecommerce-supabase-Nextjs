@@ -1,6 +1,6 @@
-'use client';
-import { useState } from 'react';
-import { User } from '@supabase/supabase-js';
+"use client";
+import { useState } from "react";
+import { User } from "@supabase/supabase-js";
 import {
   Dialog,
   DialogContent,
@@ -8,14 +8,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff } from 'lucide-react';
-import { profileService } from '@/services/profile/profileService';
-import { supabase } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
+import { profileService } from "@/services/profile/profileService";
+import { supabase } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface EmailChangeModalProps {
   user: User;
@@ -32,8 +32,8 @@ export function EmailChangeModal({
   //onUpdateEmail,
   setEmail,
 }: EmailChangeModalProps) {
-  const [newEmail, setNewEmail] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
+  const [newEmail, setNewEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -51,7 +51,7 @@ export function EmailChangeModal({
       });
 
       if (signInError) {
-        setError('Current password is incorrect');
+        setError("Current password is incorrect");
         return;
       }
 
@@ -61,8 +61,8 @@ export function EmailChangeModal({
       });
 
       if (updateError) {
-        if (updateError.message.toLowerCase().includes('email')) {
-          setError('Invalid email format or email already in use');
+        if (updateError.message.toLowerCase().includes("email")) {
+          setError("Invalid email format or email already in use");
         } else {
           setError(updateError.message);
         }
@@ -75,9 +75,9 @@ export function EmailChangeModal({
       });
 
       if (!profileUpdateResult) {
-        console.error('Failed to update email in profiles table');
+        console.error("Failed to update email in profiles table");
         setError(
-          'Email updated in auth but failed to sync with profile. Please try refreshing the page.'
+          "Email updated in auth but failed to sync with profile. Please try refreshing the page.",
         );
         return;
       }
@@ -86,15 +86,15 @@ export function EmailChangeModal({
       setEmail(newEmail);
 
       toast.success(
-        'Email update initiated. Please check your new email for verification.'
+        "Email update initiated. Please check your new email for verification.",
       );
       onClose();
       // Reset form
-      setNewEmail('');
-      setCurrentPassword('');
+      setNewEmail("");
+      setCurrentPassword("");
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : 'Failed to update email'
+        error instanceof Error ? error.message : "Failed to update email",
       );
     } finally {
       setIsSubmitting(false);
@@ -106,7 +106,7 @@ export function EmailChangeModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}> 
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-foreground">
@@ -125,7 +125,7 @@ export function EmailChangeModal({
             </Label>
             <Input
               id="currentEmail"
-              value={user.email || ''}
+              value={user.email || ""}
               disabled
               className="bg-muted text-muted-foreground"
             />
@@ -153,7 +153,7 @@ export function EmailChangeModal({
             <div className="relative">
               <Input
                 id="currentPassword"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter your current password"
@@ -164,24 +164,24 @@ export function EmailChangeModal({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent cursor-pointer"
+                className="absolute top-0 right-0 h-full cursor-pointer px-3 py-2 hover:bg-transparent"
                 onClick={togglePasswordVisibility}
                 tabIndex={-1}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                  <EyeOff className="text-muted-foreground hover:text-foreground h-4 w-4" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                  <Eye className="text-muted-foreground hover:text-foreground h-4 w-4" />
                 )}
-                <span className="sr-only ">
-                  {showPassword ? 'Hide password' : 'Show password'}
+                <span className="sr-only">
+                  {showPassword ? "Hide password" : "Show password"}
                 </span>
               </Button>
             </div>
           </div>
 
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
+            <div className="text-destructive bg-destructive/10 rounded p-2 text-sm">
               {error}
             </div>
           )}
@@ -192,16 +192,16 @@ export function EmailChangeModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full sm:w-auto bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground w-full cursor-pointer sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer sm:w-auto"
             >
-              {isSubmitting ? 'Updating...' : 'Update Email'}
+              {isSubmitting ? "Updating..." : "Update Email"}
             </Button>
           </DialogFooter>
         </form>

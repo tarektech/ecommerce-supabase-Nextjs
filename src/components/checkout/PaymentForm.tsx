@@ -1,51 +1,51 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
-import { useCart } from '@/context/CartContext';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { useCart } from "@/context/CartContext";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 interface PaymentFormProps {
   onBack: () => void;
   onSubmit: (
     lastFourDigits: string,
     cardholderName: string,
-    expiryDate: string
+    expiryDate: string,
   ) => void;
 }
 
 export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
   const { user } = useAuth();
   const { cartItems } = useCart();
-  const [cardNumber, setCardNumber] = useState('');
+  const [cardNumber, setCardNumber] = useState("");
   const [cardholderName, setCardholderName] = useState(
-    user?.user_metadata?.full_name || ''
+    user?.user_metadata?.full_name || "",
   );
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
   const router = useRouter();
 
   // Format card number with spaces every 4 digits
   const formatCardNumber = (value: string) => {
     // Remove all non-digits
-    const digits = value.replace(/\D/g, '');
+    const digits = value.replace(/\D/g, "");
     // Limit to 16 digits
     const limitedDigits = digits.slice(0, 16);
     // Add spaces every 4 digits
-    return limitedDigits.replace(/(\d{4})(?=\d)/g, '$1 ');
+    return limitedDigits.replace(/(\d{4})(?=\d)/g, "$1 ");
   };
 
   // Format expiry date as MM/YY
   const formatExpiryDate = (value: string) => {
     // Remove all non-digits
-    const digits = value.replace(/\D/g, '');
+    const digits = value.replace(/\D/g, "");
     // Limit to 4 digits
     const limitedDigits = digits.slice(0, 4);
     // Add slash after 2 digits
     if (limitedDigits.length >= 2) {
-      return limitedDigits.slice(0, 2) + '/' + limitedDigits.slice(2);
+      return limitedDigits.slice(0, 2) + "/" + limitedDigits.slice(2);
     }
     return limitedDigits;
   };
@@ -53,7 +53,7 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
   // Format CVV to numeric only
   const formatCVV = (value: string) => {
     // Remove all non-digits and limit to 4 digits
-    return value.replace(/\D/g, '').slice(0, 4);
+    return value.replace(/\D/g, "").slice(0, 4);
   };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,37 +75,37 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
     e.preventDefault();
 
     if (!user) {
-      toast.error('You must be logged in to place an order');
+      toast.error("You must be logged in to place an order");
       return;
     }
 
     if (cartItems.length === 0) {
-      toast.error('Your cart is empty');
+      toast.error("Your cart is empty");
       return;
     }
 
     // Validate credit card information
     if (!cardNumber || !cardholderName || !expiryDate || !cvv) {
-      toast.error('Please fill in all payment details');
+      toast.error("Please fill in all payment details");
       return;
     }
 
     // Validate card number (should be 16 digits when spaces are removed)
-    const cleanCardNumber = cardNumber.replace(/\s/g, '');
+    const cleanCardNumber = cardNumber.replace(/\s/g, "");
     if (cleanCardNumber.length !== 16) {
-      toast.error('Card number must be 16 digits');
+      toast.error("Card number must be 16 digits");
       return;
     }
 
     // Validate expiry date format
     if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
-      toast.error('Expiry date must be in MM/YY format');
+      toast.error("Expiry date must be in MM/YY format");
       return;
     }
 
     // Validate CVV length
     if (cvv.length < 3 || cvv.length > 4) {
-      toast.error('CVV must be 3 or 4 digits');
+      toast.error("CVV must be 3 or 4 digits");
       return;
     }
 
@@ -118,14 +118,14 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
 
       // You would implement your new payment processing logic here
 
-      toast.success('Payment processed successfully');
+      toast.success("Payment processed successfully");
 
       // Navigate to confirmation page
       const checkoutId = `${Date.now()}`;
       router.push(`/checkout/confirmation?checkout_id=${checkoutId}`);
     } catch (error) {
-      console.error('Error processing payment:', error);
-      toast.error('Failed to process payment. Please try again.');
+      console.error("Error processing payment:", error);
+      toast.error("Failed to process payment. Please try again.");
     }
   };
 

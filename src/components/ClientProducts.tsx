@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { Input } from '@/components/ui/input';
-import { ProductCard } from '@/components/ProductCard';
+import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { ProductCard } from "@/components/ProductCard";
 // import { useAuth } from '@/context/AuthContext';
-import { useProducts, FilterOptions } from '@/hooks/queries/use-products';
-import { ProductType } from '@/types';
-import { ErrorState } from '@/components/ErrorState';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { ProductFilter } from '@/components/ProductFilter';
-import { useEffect, useState, useMemo } from 'react';
-import { toast } from 'sonner';
+import { useProducts, FilterOptions } from "@/hooks/queries/use-products";
+import { ProductType } from "@/types";
+import { ErrorState } from "@/components/ErrorState";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ProductFilter } from "@/components/ProductFilter";
+import { useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
 
 // Helper functions (moved from hook to component for simplicity)
 const getCategoryId = (categoryName: string): number | null => {
@@ -25,18 +25,18 @@ const getCategoryId = (categoryName: string): number | null => {
 // Sort products based on the selected option
 const sortProducts = (
   products: ProductType[],
-  sortBy: FilterOptions['sortBy']
+  sortBy: FilterOptions["sortBy"],
 ) => {
   const sorted = [...products];
 
   switch (sortBy) {
-    case 'price-asc':
+    case "price-asc":
       return sorted.sort((a, b) => a.price - b.price);
-    case 'price-desc':
+    case "price-desc":
       return sorted.sort((a, b) => b.price - a.price);
-    case 'name-asc':
+    case "name-asc":
       return sorted.sort((a, b) => a.title.localeCompare(b.title));
-    case 'name-desc':
+    case "name-desc":
       return sorted.sort((a, b) => b.title.localeCompare(a.title));
     default:
       return sorted;
@@ -47,19 +47,19 @@ const filterProducts = (products: ProductType[], filters: FilterOptions) => {
   let filtered = [...products];
 
   // Filter by stock (only if not 'all')
-  if (filters.stockFilter === 'in-stock') {
+  if (filters.stockFilter === "in-stock") {
     filtered = filtered.filter((product) => product.stock > 0);
-  } else if (filters.stockFilter === 'out-of-stock') {
+  } else if (filters.stockFilter === "out-of-stock") {
     filtered = filtered.filter((product) => product.stock === 0);
   }
   // When stockFilter is 'all', show all products regardless of stock
 
   // Filter by category (only if not 'all')
-  if (filters.categoryFilter !== 'all') {
+  if (filters.categoryFilter !== "all") {
     const categoryId = getCategoryId(filters.categoryFilter);
     if (categoryId !== null) {
       filtered = filtered.filter(
-        (product) => product.category_id === categoryId
+        (product) => product.category_id === categoryId,
       );
     }
   }
@@ -77,11 +77,11 @@ export default function ClientProducts() {
     refetch: retry,
   } = useProducts();
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<FilterOptions>({
-    sortBy: 'default',
-    stockFilter: 'all',
-    categoryFilter: 'all',
+    sortBy: "default",
+    stockFilter: "all",
+    categoryFilter: "all",
   });
 
   // Process products with search, filters, and sorting
@@ -93,13 +93,13 @@ export default function ClientProducts() {
     let processed = [...products];
 
     // Apply search filter
-    if (searchTerm.trim() !== '') {
+    if (searchTerm.trim() !== "") {
       processed = processed.filter(
         (product) =>
           product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (product.description?.toLowerCase() || '').includes(
-            searchTerm.toLowerCase()
-          )
+          (product.description?.toLowerCase() || "").includes(
+            searchTerm.toLowerCase(),
+          ),
       );
     }
 
@@ -115,7 +115,7 @@ export default function ClientProducts() {
   // Show toast notification for errors
   useEffect(() => {
     if (error) {
-      toast.error('Failed to load products. Please try again.');
+      toast.error("Failed to load products. Please try again.");
     }
   }, [error]);
 
@@ -127,7 +127,7 @@ export default function ClientProducts() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-md mx-auto w-full"
+          className="mx-auto w-full max-w-md"
         >
           <Input
             type="text"
@@ -145,30 +145,30 @@ export default function ClientProducts() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-muted/50 rounded-lg"
+          className="bg-muted/50 flex flex-col items-center justify-between gap-4 rounded-lg p-4 sm:flex-row"
         >
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <span>
-              Showing {processedProducts.length} of {products?.length || 0}{' '}
+              Showing {processedProducts.length} of {products?.length || 0}{" "}
               products
             </span>
           </div>
 
           {/* Reset Filters Button */}
-          {(filters.sortBy !== 'default' ||
-            filters.stockFilter !== 'all' ||
-            filters.categoryFilter !== 'all' ||
-            searchTerm.trim() !== '') && (
+          {(filters.sortBy !== "default" ||
+            filters.stockFilter !== "all" ||
+            filters.categoryFilter !== "all" ||
+            searchTerm.trim() !== "") && (
             <button
               onClick={() => {
                 setFilters({
-                  sortBy: 'default',
-                  stockFilter: 'all',
-                  categoryFilter: 'all',
+                  sortBy: "default",
+                  stockFilter: "all",
+                  categoryFilter: "all",
                 });
-                setSearchTerm('');
+                setSearchTerm("");
               }}
-              className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded px-3 py-1 text-xs transition-colors"
             >
               Reset All Filters
             </button>
@@ -184,12 +184,12 @@ export default function ClientProducts() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex justify-center items-center min-h-[200px]"
+                className="flex min-h-[200px] items-center justify-center"
               >
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="border-primary h-8 w-8 rounded-full border-t-2 border-b-2"
                 />
               </motion.div>
             ) : error ? (
@@ -217,15 +217,15 @@ export default function ClientProducts() {
                 <ErrorState
                   title={
                     (products?.length || 0) === 0
-                      ? 'No products available'
-                      : 'No products match your filters'
+                      ? "No products available"
+                      : "No products match your filters"
                   }
                   description={
                     (products?.length || 0) === 0
-                      ? 'No products are currently available. Please check back later.'
-                      : searchTerm.trim() !== ''
-                      ? 'Try a different search term or adjust your filters.'
-                      : 'Try adjusting your filters to see more products.'
+                      ? "No products are currently available. Please check back later."
+                      : searchTerm.trim() !== ""
+                        ? "Try a different search term or adjust your filters."
+                        : "Try adjusting your filters to see more products."
                   }
                   showRetry={false}
                   type="not-found"
@@ -235,13 +235,13 @@ export default function ClientProducts() {
                     <button
                       onClick={() => {
                         setFilters({
-                          sortBy: 'default',
-                          stockFilter: 'all',
-                          categoryFilter: 'all',
+                          sortBy: "default",
+                          stockFilter: "all",
+                          categoryFilter: "all",
                         });
-                        setSearchTerm('');
+                        setSearchTerm("");
                       }}
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded px-4 py-2 transition-colors"
                     >
                       Clear All Filters
                     </button>
