@@ -14,6 +14,10 @@ import {
   Search,
   LogOut,
   LayoutDashboard,
+  Settings,
+  Package,
+  ShoppingCart,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -29,6 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
+import { useAdmin } from "@/hooks/useAdmin";
 import { categoryService } from "@/services/category/categoryService";
 import { CategoryType } from "@/types";
 import { useSidebar } from "@/context/SidebarContext";
@@ -102,6 +107,7 @@ export function Sidebar() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -205,7 +211,7 @@ export function Sidebar() {
         variants={sidebarVariants}
         transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
         className={cn(
-          "bg-background/95 border-border/50 fixed top-16 left-0 z-40 flex h-[calc(100vh-4rem)] flex-col border-r shadow-xl backdrop-blur-xl",
+          "bg-background/95 border-border/50 fixed top-25 left-0 z-40 flex h-[calc(100vh-6rem)] flex-col border-r shadow-xl backdrop-blur-xl overflow-auto",
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full sm:translate-x-0",
@@ -273,103 +279,202 @@ export function Sidebar() {
           )}
         </AnimatePresence>
 
-        {/* Categories Navigation */}
+        {/* Navigation */}
         <ScrollArea className="flex-1 px-3 py-4">
           <motion.nav
             variants={staggerVariants}
             initial="closed"
             animate={isCollapsed ? "closed" : "open"}
+            className="space-y-6"
           >
-            {!isCollapsed && (
-              <motion.h3
-                variants={itemVariants}
-                className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
-              >
-                Categories
-              </motion.h3>
-            )}
+            {/* Admin Navigation */}
+            {user && isAdmin && (
+              <motion.div variants={staggerVariants}>
+                {!isCollapsed && (
+                  <motion.h3
+                    variants={itemVariants}
+                    className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
+                  >
+                    Administration
+                  </motion.h3>
+                )}
 
-            {loading ? (
-              <div className="animate-pulse space-y-2 px-3">
-                {[1, 2, 3].map((n) => (
-                  <div
-                    key={n}
-                    className={cn(
-                      "bg-muted rounded-lg",
-                      isCollapsed ? "h-10 w-10" : "h-10",
-                    )}
-                  />
-                ))}
-              </div>
-            ) : (
-              <motion.div variants={staggerVariants} className="space-y-1">
-                {displayCategories.map((category) => {
-                  const isActive = pathname === category.href;
-                  const Icon = category.icon;
+                <motion.div variants={staggerVariants} className="space-y-1">
+                  {[
+                    { name: "Admin Dashboard", icon: Settings, href: "/admin" },
+                    {
+                      name: "Products",
+                      icon: Package,
+                      href: "/admin/products",
+                    },
+                    {
+                      name: "Orders",
+                      icon: ShoppingCart,
+                      href: "/admin/orders",
+                    },
+                    { name: "Users", icon: Users, href: "/admin/users" },
+                  ].map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
 
-                  return (
-                    <motion.div key={category.name} variants={itemVariants}>
-                      <Link
-                        href={category.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block"
-                      >
-                        <Button
-                          variant={isActive ? "secondary" : "ghost"}
-                          className={cn(
-                            "group relative h-11 w-full cursor-pointer justify-start overflow-hidden transition-all duration-200",
-                            isCollapsed ? "justify-center px-2" : "",
-                            isActive
-                              ? "bg-primary/10 text-primary border-primary/20 border shadow-sm"
-                              : "hover:bg-muted/70 hover:translate-x-1",
-                          )}
-                          title={isCollapsed ? category.name : undefined}
+                    return (
+                      <motion.div key={item.name} variants={itemVariants}>
+                        <Link
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block"
                         >
-                          <Icon
+                          <Button
+                            variant={isActive ? "secondary" : "ghost"}
                             className={cn(
-                              "h-4 w-4 flex-shrink-0 transition-all duration-200",
-                              isCollapsed ? "mr-0" : "mr-3",
+                              "group relative h-11 w-full cursor-pointer justify-start overflow-hidden transition-all duration-200",
+                              isCollapsed ? "justify-center px-2" : "",
                               isActive
-                                ? "text-primary"
-                                : "text-muted-foreground group-hover:text-foreground",
+                                ? "border border-purple-200 bg-purple-100 text-purple-700 shadow-sm"
+                                : "hover:bg-muted/70 hover:translate-x-1",
                             )}
-                          />
-
-                          {!isCollapsed && (
-                            <span className="flex-1 text-left text-sm font-medium">
-                              {category.name}
-                            </span>
-                          )}
-
-                          {/* Active indicator */}
-                          {isActive && (
-                            <motion.div
-                              layoutId="activeIndicator"
-                              className="bg-primary absolute right-2 h-2 w-2 rounded-full"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 500,
-                                damping: 30,
-                              }}
+                            title={isCollapsed ? item.name : undefined}
+                          >
+                            <Icon
+                              className={cn(
+                                "h-4 w-4 flex-shrink-0 transition-all duration-200",
+                                isCollapsed ? "mr-0" : "mr-3",
+                                isActive
+                                  ? "text-purple-700"
+                                  : "text-muted-foreground group-hover:text-foreground",
+                              )}
                             />
-                          )}
 
-                          {/* Tooltip for collapsed state */}
-                          {isCollapsed && (
-                            <div className="bg-foreground text-background invisible absolute left-full z-50 ml-2 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
-                              {category.name}
-                              <div className="bg-foreground absolute top-1/2 left-0 h-1.5 w-1.5 -translate-x-1 -translate-y-1/2 rotate-45 transform" />
-                            </div>
-                          )}
-                        </Button>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                            {!isCollapsed && (
+                              <span className="flex-1 text-left text-sm font-medium">
+                                {item.name}
+                              </span>
+                            )}
+
+                            {/* Active indicator */}
+                            {isActive && (
+                              <motion.div
+                                layoutId="activeAdminIndicator"
+                                className="absolute right-2 h-2 w-2 rounded-full bg-purple-600"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 500,
+                                  damping: 30,
+                                }}
+                              />
+                            )}
+
+                            {/* Tooltip for collapsed state */}
+                            {isCollapsed && (
+                              <div className="bg-foreground text-background invisible absolute left-full z-50 ml-2 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                                {item.name}
+                                <div className="bg-foreground absolute top-1/2 left-0 h-1.5 w-1.5 -translate-x-1 -translate-y-1/2 rotate-45 transform" />
+                              </div>
+                            )}
+                          </Button>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
               </motion.div>
             )}
+
+            {/* Categories Navigation */}
+            <motion.div variants={staggerVariants}>
+              {!isCollapsed && (
+                <motion.h3
+                  variants={itemVariants}
+                  className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
+                >
+                  Categories
+                </motion.h3>
+              )}
+
+              {loading ? (
+                <div className="animate-pulse space-y-2 px-3">
+                  {[1, 2, 3].map((n) => (
+                    <div
+                      key={n}
+                      className={cn(
+                        "bg-muted rounded-lg",
+                        isCollapsed ? "h-10 w-10" : "h-10",
+                      )}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <motion.div variants={staggerVariants} className="space-y-1">
+                  {displayCategories.map((category) => {
+                    const isActive = pathname === category.href;
+                    const Icon = category.icon;
+
+                    return (
+                      <motion.div key={category.name} variants={itemVariants}>
+                        <Link
+                          href={category.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block"
+                        >
+                          <Button
+                            variant={isActive ? "secondary" : "ghost"}
+                            className={cn(
+                              "group relative h-11 w-full cursor-pointer justify-start overflow-hidden transition-all duration-200",
+                              isCollapsed ? "justify-center px-2" : "",
+                              isActive
+                                ? "bg-primary/10 text-primary border-primary/20 border shadow-sm"
+                                : "hover:bg-muted/70 hover:translate-x-1",
+                            )}
+                            title={isCollapsed ? category.name : undefined}
+                          >
+                            <Icon
+                              className={cn(
+                                "h-4 w-4 flex-shrink-0 transition-all duration-200",
+                                isCollapsed ? "mr-0" : "mr-3",
+                                isActive
+                                  ? "text-primary"
+                                  : "text-muted-foreground group-hover:text-foreground",
+                              )}
+                            />
+
+                            {!isCollapsed && (
+                              <span className="flex-1 text-left text-sm font-medium">
+                                {category.name}
+                              </span>
+                            )}
+
+                            {/* Active indicator */}
+                            {isActive && (
+                              <motion.div
+                                layoutId="activeIndicator"
+                                className="bg-primary absolute right-2 h-2 w-2 rounded-full"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 500,
+                                  damping: 30,
+                                }}
+                              />
+                            )}
+
+                            {/* Tooltip for collapsed state */}
+                            {isCollapsed && (
+                              <div className="bg-foreground text-background invisible absolute left-full z-50 ml-2 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                                {category.name}
+                                <div className="bg-foreground absolute top-1/2 left-0 h-1.5 w-1.5 -translate-x-1 -translate-y-1/2 rotate-45 transform" />
+                              </div>
+                            )}
+                          </Button>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </motion.div>
           </motion.nav>
         </ScrollArea>
 
@@ -444,6 +549,15 @@ export function Sidebar() {
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem
+                    className="cursor-pointer focus:bg-purple-50 focus:text-purple-700"
+                    onClick={() => router.replace("/admin")}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Admin Panel</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={signOut}
                   className="cursor-pointer transition-colors duration-200 focus:bg-red-50 focus:text-red-600"

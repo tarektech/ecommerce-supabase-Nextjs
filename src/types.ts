@@ -22,7 +22,7 @@ export interface CartItemType {
   product?: ProductType;
 }
 
-export type CartStatus = 'active' | 'abandoned' | 'converted';
+export type CartStatus = "active" | "abandoned" | "converted";
 
 export interface CartType {
   id: number;
@@ -49,11 +49,11 @@ export interface OrderItemType {
 }
 
 export type OrderStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 export interface OrderType {
   id: number;
@@ -84,7 +84,9 @@ export interface ProfileType {
   username?: string;
   avatar_url?: string;
   email?: string;
+  role: "admin" | "user";
   created_at: string;
+  updated_at?: string;
 }
 
 export interface ReviewType {
@@ -102,4 +104,3 @@ export interface CategoryType {
   description: string;
   parent_id?: number;
 }
-

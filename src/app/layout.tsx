@@ -11,6 +11,7 @@ import StagewiseToolbar from "@/StagewiseToolbar";
 import { Toaster } from "sonner";
 import { MainLayout } from "@/components/MainLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { DemoBanner } from "@/components/DemoBanner";
 
 export const metadata: Metadata = {
   title: "E-Commerce",
@@ -41,6 +42,7 @@ export default function RootLayout({
                   disableTransitionOnChange
                 >
                   <SidebarProvider>
+                    <DemoBanner />
                     <Navbar />
                     <div className="flex">
                       <Sidebar />

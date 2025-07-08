@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
-import { User } from '@supabase/supabase-js';
-import { OrderType } from '@/types';
-import { toast } from 'sonner';
-import { profileService } from '@/services/profile/profileService';
-import { authService } from '@/services/auth/authService';
-import { orderService } from '@/services/order/orderService';
+import { useState, useEffect } from "react";
+import { User } from "@supabase/supabase-js";
+import { OrderType } from "@/types";
+import { toast } from "sonner";
+import { profileService } from "@/services/profile/profileService";
+import { authService } from "@/services/auth/authService";
+import { orderService } from "@/services/order/orderService";
 import {
   isProfileAccessError,
   handleCommonErrors,
-} from '@/utils/errorHandling';
-import { useRouter } from 'next/navigation';
-import { PostgrestError } from '@supabase/supabase-js';
-import { ProfileType } from '@/types';
-import { profileServerService } from '@/services/profile/profileServerService';
+} from "@/utils/errorHandling";
+import { useRouter } from "next/navigation";
+import { PostgrestError } from "@supabase/supabase-js";
+import { ProfileType } from "@/types";
+import { profileServerService } from "@/services/profile/profileServerService";
 
 // Types for auth user update data
 type AuthUpdateData = {
@@ -36,16 +36,16 @@ type ProfileData = {
   saveProfile: (
     usernameInput?: string,
     emailInput?: string,
-    avatarUrlInput?: string
+    avatarUrlInput?: string,
   ) => Promise<void>;
 };
 
 export function useProfile(user: User | null): ProfileData {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
@@ -59,7 +59,7 @@ export function useProfile(user: User | null): ProfileData {
 
   // Fetch user's email either from user object or auth service
   const fetchUserEmail = async (user: User): Promise<string> => {
-    let userEmail = user.email || '';
+    let userEmail = user.email || "";
 
     if (!userEmail) {
       const authUserEmail = await authService.getCurrentUserEmail();
@@ -75,12 +75,12 @@ export function useProfile(user: User | null): ProfileData {
   const syncProfileData = async (
     profile: ProfileType,
     userEmail: string,
-    userId: string
+    userId: string,
   ) => {
     // Update local state
-    setUsername(profile.username || '');
+    setUsername(profile.username || "");
     setEmail(profile.email || userEmail);
-    setAvatarUrl(profile.avatar_url || '');
+    setAvatarUrl(profile.avatar_url || "");
     setCreatedAt(profile.created_at);
 
     // If profile email is empty but we have auth email, update the database
@@ -98,7 +98,7 @@ export function useProfile(user: User | null): ProfileData {
 
     if (orderError) {
       handleCommonErrors(orderError, {
-        context: 'fetching orders',
+        context: "fetching orders",
         showToast: false,
         silentOnNoRows: true,
       });
@@ -117,8 +117,8 @@ export function useProfile(user: User | null): ProfileData {
       const profile = await profileService.getProfileById(user.id);
       const profileError = !profile
         ? ({
-            message: 'Profile not found',
-            code: 'PGRST116',
+            message: "Profile not found",
+            code: "PGRST116",
           } as PostgrestError)
         : null;
 
@@ -126,21 +126,22 @@ export function useProfile(user: User | null): ProfileData {
       if (profileError && isProfileAccessError(profileError)) {
         const newProfile = await profileServerService.createProfile({
           profile_id: user.id,
-          username: '',
-          avatar_url: '',
+          username: "",
+          avatar_url: "",
           email: userEmail,
+          role: "user",
           created_at: new Date().toISOString(),
         });
 
         if (!newProfile) {
-          router.push('/signin');
+          router.push("/signin");
           return;
         }
 
         await syncProfileData(newProfile, userEmail, user.id);
       } else if (profileError) {
         // Handle other profile errors
-        handleCommonErrors(profileError, { context: 'fetching profile' });
+        handleCommonErrors(profileError, { context: "fetching profile" });
       } else if (profile) {
         // Update profile state and sync email if needed
         await syncProfileData(profile, userEmail, user.id);
@@ -149,7 +150,7 @@ export function useProfile(user: User | null): ProfileData {
       // Fetch user orders
       await fetchUserOrders(user.id);
     } catch (error) {
-      handleCommonErrors(error, { context: 'fetching user data' });
+      handleCommonErrors(error, { context: "fetching user data" });
     } finally {
       setLoading(false);
     }
@@ -159,7 +160,7 @@ export function useProfile(user: User | null): ProfileData {
   const saveProfile = async (
     usernameInput?: string,
     emailInput?: string,
-    avatarUrlInput?: string
+    avatarUrlInput?: string,
   ) => {
     if (!user) return;
 
@@ -178,7 +179,7 @@ export function useProfile(user: User | null): ProfileData {
       // Don't proceed with empty username if we had one before
       if (!usernameToSave && username) {
         console.warn(
-          'Preventing profile update with empty username when previous username exists'
+          "Preventing profile update with empty username when previous username exists",
         );
         return;
       }
@@ -192,11 +193,11 @@ export function useProfile(user: User | null): ProfileData {
 
       const updatedProfile = await profileService.updateProfile(
         user.id,
-        profileData
+        profileData,
       );
 
       if (!updatedProfile) {
-        throw new Error('Failed to update profile');
+        throw new Error("Failed to update profile");
       }
 
       // Update auth user data if email or username changed
@@ -218,16 +219,16 @@ export function useProfile(user: User | null): ProfileData {
         if (!authUser) {
           const errorMessage =
             emailChanged && usernameChanged
-              ? 'Profile updated but failed to update email and display name in authentication system.'
+              ? "Profile updated but failed to update email and display name in authentication system."
               : emailChanged
-              ? 'Profile updated but failed to update email in authentication system.'
-              : 'Profile updated but failed to update display name in authentication system.';
+                ? "Profile updated but failed to update email in authentication system."
+                : "Profile updated but failed to update display name in authentication system.";
 
           toast.error(errorMessage);
         }
       }
     } catch (error) {
-      handleCommonErrors(error, { context: 'updating profile' });
+      handleCommonErrors(error, { context: "updating profile" });
     } finally {
       setIsSaving(false);
     }

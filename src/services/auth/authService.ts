@@ -1,5 +1,5 @@
-import { supabaseAuth } from '@/lib/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { supabaseAuth } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 export const authService = {
   /**
@@ -14,13 +14,13 @@ export const authService = {
       const { data: user, error } = await supabaseAuth.updateUser(data);
 
       if (error) {
-        console.error('AuthService - Failed to update user:', error);
+        console.error("AuthService - Failed to update user:", error);
         throw error;
       }
 
       return user.user;
     } catch (error) {
-      console.error('AuthService - Error updating user:', error);
+      console.error("AuthService - Error updating user:", error);
       return null;
     }
   },
@@ -40,7 +40,7 @@ export const authService = {
 
       return data.session;
     } catch (error) {
-      console.error('AuthService - Error getting session:', error);
+      console.error("AuthService - Error getting session:", error);
       return null;
     }
   },
@@ -59,7 +59,7 @@ export const authService = {
       } = await supabaseAuth.admin.getUserById(userId);
 
       if (error) {
-        console.error('AuthService - Failed to get user by ID:', error);
+        console.error("AuthService - Failed to get user by ID:", error);
         throw error;
       }
 
@@ -67,7 +67,7 @@ export const authService = {
     } catch (error) {
       console.error(
         `AuthService - Error getting user with ID ${userId}:`,
-        error
+        error,
       );
       return null;
     }
@@ -86,13 +86,13 @@ export const authService = {
       } = await supabaseAuth.getUser();
 
       if (error) {
-        console.error('AuthService - Failed to get current user:', error);
+        console.error("AuthService - Failed to get current user:", error);
         throw error;
       }
 
       return user?.email || null;
     } catch (error) {
-      console.error('AuthService - Error getting current user email:', error);
+      console.error("AuthService - Error getting current user email:", error);
       return null;
     }
   },
