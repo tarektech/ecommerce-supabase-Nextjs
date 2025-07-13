@@ -66,7 +66,8 @@ export default function RootLayout({
             },
           }}
         />
-        <StagewiseToolbar />
+
+        {process.env.NODE_ENV === "development" && <StagewiseToolbar />}
       </body>
     </html>
   );

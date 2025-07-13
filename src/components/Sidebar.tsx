@@ -106,6 +106,7 @@ export function Sidebar() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [isNavigationHidden, setIsNavigationHidden] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const pathname = usePathname();
@@ -114,6 +115,37 @@ export function Sidebar() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Add scroll detection to track when navigation is hidden
+  useEffect(() => {
+    if (!mounted) return;
+
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const demoBanner = document.querySelector(
+        '[class*="from-blue-600"]',
+      ) as HTMLElement;
+      const navbar = document.querySelector("nav") as HTMLElement;
+
+      if (demoBanner && navbar) {
+        const bannerHeight = demoBanner.offsetHeight;
+        const navbarHeight = navbar.offsetHeight;
+        const totalHeaderHeight = bannerHeight + navbarHeight;
+
+        // Check if both banner and navbar are scrolled out of view
+        setIsNavigationHidden(currentScrollY > totalHeaderHeight);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check initial state
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [mounted]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -211,7 +243,8 @@ export function Sidebar() {
         variants={sidebarVariants}
         transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
         className={cn(
-          "bg-background/95 border-border/50 fixed top-25 left-0 z-40 flex h-[calc(100vh-6rem)] flex-col border-r shadow-xl backdrop-blur-xl overflow-auto",
+          "bg-background/95 border-border/50 fixed left-0 z-40 flex flex-col overflow-auto border-r shadow-xl backdrop-blur-xl transition-all duration-300",
+          isNavigationHidden ? "top-0 h-screen" : "top-25 h-[calc(100vh-6rem)]",
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full sm:translate-x-0",
@@ -551,7 +584,7 @@ export function Sidebar() {
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem
-                    className="cursor-pointer focus:bg-purple-50 focus:text-purple-700"
+                    className="focus:bg-muted/70 cursor-pointer"
                     onClick={() => router.replace("/admin")}
                   >
                     <Settings className="mr-2 h-4 w-4" />
@@ -560,7 +593,7 @@ export function Sidebar() {
                 )}
                 <DropdownMenuItem
                   onClick={signOut}
-                  className="cursor-pointer transition-colors duration-200 focus:bg-red-50 focus:text-red-600"
+                  className="focus:bg-muted/70 cursor-pointer transition-colors duration-200"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>
