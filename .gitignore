@@ -32,6 +32,3 @@ dist
 .cursor
 .env
 
-
-# Stagewise Toolbar
-src/StagewiseToolbar.tsx
