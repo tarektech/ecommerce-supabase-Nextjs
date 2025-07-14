@@ -232,15 +232,20 @@ export const adminProductService = {
 				`);
 
       // Count products by category
-      const categoryStats = (categoryCounts || []).reduce(
-        (acc, product) => {
-          const categoryName =
-            (product.categories as any)?.name || "Uncategorized";
-          acc[categoryName] = (acc[categoryName] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
+      const categoryStats = (categoryCounts || []).reduce<
+        Record<string, number>
+      >((acc, product) => {
+        const categoryName = (() => {
+          const cat = (product as { categories?: unknown }).categories;
+          if (Array.isArray(cat)) {
+            return (cat[0] as { name?: string }).name ?? "Uncategorized";
+          }
+          return (cat as { name?: string } | null)?.name ?? "Uncategorized";
+        })();
+
+        acc[categoryName] = (acc[categoryName] || 0) + 1;
+        return acc;
+      }, {});
 
       // Get low stock count
       const { count: lowStockCount } = await supabase

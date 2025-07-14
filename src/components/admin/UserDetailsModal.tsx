@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -54,20 +54,21 @@ export function UserDetailsModal({
 }: UserDetailsModalProps) {
   const [userDetails, setUserDetails] = useState<UserWithStats | null>(null);
 
-  useEffect(() => {
-    if (isOpen && user) {
-      fetchUserDetails();
-    }
-  }, [isOpen, user]);
-
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
+    if (!user) return;
     try {
       const details = await adminUserService.getUserDetails(user.profile_id);
       setUserDetails(details);
     } catch (error) {
       console.error("Error fetching user details:", error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (isOpen && user) {
+      fetchUserDetails();
+    }
+  }, [isOpen, user, fetchUserDetails]);
 
   if (!user) return null;
 

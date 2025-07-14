@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -63,13 +63,8 @@ export function OrderDetailsModal({
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && order) {
-      fetchOrderDetails();
-    }
-  }, [isOpen, order]);
-
-  const fetchOrderDetails = async () => {
+  const fetchOrderDetails = useCallback(async () => {
+    if (!order) return;
     try {
       setLoading(true);
       const details = await orderService.getOrderById(order.id.toString());
@@ -79,7 +74,13 @@ export function OrderDetailsModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [order]);
+
+  useEffect(() => {
+    if (isOpen && order) {
+      fetchOrderDetails();
+    }
+  }, [isOpen, order, fetchOrderDetails]);
 
   if (!order) return null;
 

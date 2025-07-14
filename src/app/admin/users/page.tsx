@@ -20,12 +20,7 @@ import {
 } from "@/services/admin/adminUserServerService";
 
 interface AdminUsersPageProps {
-  searchParams: {
-    search?: string;
-    role?: string;
-    page?: string;
-    dateFrom?: string;
-  };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const getRoleColor = (role: string) => {
@@ -39,9 +34,16 @@ const getRoleColor = (role: string) => {
   }
 };
 
+// Helper to safely extract a single string value from query param
+const getParam = (value: string | string[] | undefined): string | undefined =>
+  Array.isArray(value) ? value[0] : value;
+
 export default async function AdminUsersPage({
   searchParams,
 }: AdminUsersPageProps) {
+  // Await the async props
+  const resolvedSearchParams = await searchParams;
+
   // Server-side auth check
   const currentUser = await getCurrentUser();
   if (!currentUser || currentUser.role !== "admin") {
@@ -50,12 +52,12 @@ export default async function AdminUsersPage({
 
   // Parse search params safely on server
   const filters: UserFilters = {
-    searchTerm: searchParams.search || undefined,
-    role: (searchParams.role as "admin" | "user") || undefined,
-    dateFrom: searchParams.dateFrom || undefined,
+    searchTerm: getParam(resolvedSearchParams.search),
+    role: getParam(resolvedSearchParams.role) as "admin" | "user" | undefined,
+    dateFrom: getParam(resolvedSearchParams.dateFrom),
   };
 
-  const currentPage = parseInt(searchParams.page || "1", 10);
+  const currentPage = parseInt(getParam(resolvedSearchParams.page) || "1", 10);
   const pageLimit = 20;
 
   // Fetch data on server side (already sanitized)

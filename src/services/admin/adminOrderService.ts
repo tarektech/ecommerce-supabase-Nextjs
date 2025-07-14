@@ -1,6 +1,28 @@
 import { supabase } from "@/lib/supabase/client";
 import { OrderType } from "@/types";
 
+// Strongly-typed helper interfaces
+interface OrderItemWithProductFromSupabase {
+  id: number;
+  order_id: number;
+  product_id: string;
+  quantity: number;
+  price: number;
+  products: {
+    product_id: string;
+    title: string;
+    image: string;
+  };
+}
+
+interface CustomerStat {
+  userId: string;
+  username: string;
+  email: string;
+  totalOrders: number;
+  totalSpent: number;
+}
+
 export interface OrderWithDetails extends Omit<OrderType, "order_items"> {
   profile?: {
     username: string;
@@ -42,13 +64,7 @@ export interface OrderAnalytics {
   averageOrderValue: number;
   ordersByStatus: Record<string, number>;
   recentOrders: OrderWithDetails[];
-  topCustomers: Array<{
-    userId: string;
-    username: string;
-    email: string;
-    totalOrders: number;
-    totalSpent: number;
-  }>;
+  topCustomers: CustomerStat[];
 }
 
 /**
@@ -178,7 +194,9 @@ export const adminOrderService = {
         ...data,
         profile: data.profiles,
         shipping_address: data.addresses,
-        order_items: data.order_items?.map((item: any) => ({
+        order_items: (
+          data.order_items as OrderItemWithProductFromSupabase[] | undefined
+        )?.map((item) => ({
           ...item,
           product: item.products,
         })),
@@ -279,7 +297,7 @@ export const adminOrderService = {
       }));
 
       // Top customers
-      const customerStats = allOrders.reduce(
+      const customerStats = allOrders.reduce<Record<string, CustomerStat>>(
         (acc, order) => {
           const userId = order.user_id;
           if (!acc[userId]) {
@@ -295,18 +313,12 @@ export const adminOrderService = {
           acc[userId].totalSpent += order.total;
           return acc;
         },
-        {} as Record<string, any>,
+        {},
       );
 
-      const topCustomers = Object.values(customerStats)
-        .sort((a: any, b: any) => b.totalSpent - a.totalSpent)
-        .slice(0, 10) as Array<{
-        userId: string;
-        username: string;
-        email: string;
-        totalOrders: number;
-        totalSpent: number;
-      }>;
+      const topCustomers: CustomerStat[] = Object.values(customerStats)
+        .sort((a, b) => b.totalSpent - a.totalSpent)
+        .slice(0, 10);
 
       return {
         totalOrders,
@@ -332,7 +344,7 @@ export const adminOrderService = {
   /**
    * Cancel an order
    */
-  async cancelOrder(orderId: number, _reason?: string): Promise<OrderType> {
+  async cancelOrder(orderId: number): Promise<OrderType> {
     try {
       const { data, error } = await supabase
         .from("orders")

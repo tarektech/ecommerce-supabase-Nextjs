@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,11 +71,7 @@ export default function AdminOrdersPage() {
   const [totalOrders, setTotalOrders] = useState(0);
   const pageLimit = 20;
 
-  useEffect(() => {
-    fetchOrders();
-  }, [filters, currentPage]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const data = await adminOrderService.getAllOrders(
@@ -91,7 +87,11 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, currentPage, pageLimit]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     try {

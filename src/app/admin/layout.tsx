@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </CardHeader>
           <CardContent>
             <p className="mb-4">
-              You don't have admin privileges to access this page.
+              You don&apos;t have admin privileges to access this page.
             </p>
             <Link href="/dashboard">
               <Button>Go to User Dashboard</Button>

@@ -6,7 +6,6 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import {
@@ -52,7 +51,6 @@ export default function AdminDashboard() {
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -122,7 +120,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <p className="mb-4">
-              You don't have admin privileges to access this page.
+              You don&apos;t have admin privileges to access this page.
             </p>
             <Link href="/dashboard">
               <Button>Go to User Dashboard</Button>

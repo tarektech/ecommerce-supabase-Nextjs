@@ -120,8 +120,6 @@ export function Sidebar() {
   useEffect(() => {
     if (!mounted) return;
 
-    let lastScrollY = window.scrollY;
-
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const demoBanner = document.querySelector(
@@ -137,8 +135,6 @@ export function Sidebar() {
         // Check if both banner and navbar are scrolled out of view
         setIsNavigationHidden(currentScrollY > totalHeaderHeight);
       }
-
-      lastScrollY = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
