@@ -27,7 +27,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-toast": "^1.2.13",
-    "@stagewise/toolbar-next": "^0.5.2",
+    "@stagewise/toolbar-next": "^0.6.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
     "@tanstack/react-form": "^1.10.0",

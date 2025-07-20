@@ -8,6 +8,9 @@ import { useTheme } from "next-themes";
 import { useSidebar } from "@/context/SidebarContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+
 export function Navbar() {
   const { totalItems } = useCart();
 
@@ -27,17 +30,40 @@ export function Navbar() {
   }
 
   return (
-    <nav className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60  z-60 w-full border-b backdrop-blur">
+    <nav className="border-border bg-background/95 supports-[backdrop-filter]:bg-background/60 z-60 w-full border-b backdrop-blur"> 
       <div className="mx-4 flex h-16 items-center">
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            className="mr-2 px-2 sm:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
+        <Button
+        variant="outline"
+        size="icon"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="bg-background/95 border-border/50  z-50 shadow-lg backdrop-blur-sm transition-all duration-200 hover:shadow-xl sm:hidden"
+        aria-label="Toggle sidebar"
+      >
+        <AnimatePresence mode="wait">
+          {isMobileMenuOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 90 }}
+              exit={{ rotate: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <X className="text-foreground h-5 w-5" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="menu"
+              initial={{ rotate: 90 }}
+              animate={{ rotate: 0 }}
+              exit={{ rotate: 90 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Menu className="text-foreground h-5 w-5" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Button>
           <Link href="/" className="flex cursor-pointer items-center">
             <h1 className="text-2xl font-bold">ShopClone</h1>
           </Link>

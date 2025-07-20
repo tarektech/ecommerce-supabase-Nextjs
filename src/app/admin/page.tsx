@@ -223,19 +223,19 @@ export default function AdminDashboard() {
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <Link href="/admin/products">
-              <Button className="w-full" variant="outline">
+              <Button className="w-full cursor-pointer" variant="outline">
                 <Package className="mr-2 h-4 w-4" />
                 Manage Products
               </Button>
             </Link>
             <Link href="/admin/orders">
-              <Button className="w-full" variant="outline">
+              <Button className="w-full cursor-pointer" variant="outline">
                 <ShoppingCart className="mr-2 h-4 w-4" />
                 Manage Orders
               </Button>
             </Link>
             <Link href="/admin/users">
-              <Button className="w-full" variant="outline">
+              <Button className="w-full cursor-pointer" variant="outline">
                 <Users className="mr-2 h-4 w-4" />
                 Manage Users
               </Button>

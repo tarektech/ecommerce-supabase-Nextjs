@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import {
   Home,
   Shirt,
@@ -39,6 +39,18 @@ import { CategoryType } from "@/types";
 import { useSidebar } from "@/context/SidebarContext";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { Motion } from "@/components/motion/motion";
+import {
+  sidebarVariants,
+  contentVariants,
+  staggerVariants,
+  itemVariants,
+  mobileButtonVariants,
+  overlayVariants,
+  searchVariants,
+  indicatorVariants,
+  collapseButtonVariants,
+} from "@/components/motion/animation-variants";
 
 // Default icons for each category
 const categoryIcons: Record<string, React.ElementType> = {
@@ -46,53 +58,6 @@ const categoryIcons: Record<string, React.ElementType> = {
   Clothing: Shirt,
   Accessories: Watch,
   Electronics: Smartphone,
-};
-
-// Animation variants
-const sidebarVariants = {
-  open: {
-    width: "18rem",
-  },
-  closed: {
-    width: "4rem",
-  },
-};
-
-const contentVariants = {
-  open: {
-    opacity: 1,
-    x: 0,
-  },
-  closed: {
-    opacity: 0,
-    x: -20,
-  },
-};
-
-const staggerVariants = {
-  open: {
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1,
-    },
-  },
-  closed: {
-    transition: {
-      staggerChildren: 0.02,
-      staggerDirection: -1,
-    },
-  },
-};
-
-const itemVariants = {
-  open: {
-    x: 0,
-    opacity: 1,
-  },
-  closed: {
-    x: -10,
-    opacity: 0,
-  },
 };
 
 export function Sidebar() {
@@ -195,25 +160,27 @@ export function Sidebar() {
       >
         <AnimatePresence mode="wait">
           {isMobileMenuOpen ? (
-            <motion.div
+            <Motion
               key="close"
-              initial={{ rotate: 0 }}
-              animate={{ rotate: 90 }}
-              exit={{ rotate: 0 }}
+              variants={mobileButtonVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
               transition={{ duration: 0.2 }}
             >
               <X className="text-foreground h-5 w-5" />
-            </motion.div>
+            </Motion>
           ) : (
-            <motion.div
+            <Motion
               key="menu"
-              initial={{ rotate: 90 }}
-              animate={{ rotate: 0 }}
-              exit={{ rotate: 90 }}
+              variants={mobileButtonVariants}
+              initial="open"
+              animate="closed"
+              exit="open"
               transition={{ duration: 0.2 }}
             >
               <Menu className="text-foreground h-5 w-5" />
-            </motion.div>
+            </Motion>
           )}
         </AnimatePresence>
       </Button>
@@ -221,10 +188,11 @@ export function Sidebar() {
       {/* Mobile overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <Motion
+            variants={overlayVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
@@ -233,10 +201,10 @@ export function Sidebar() {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.aside
+      <Motion
+        variants={sidebarVariants}
         initial={isCollapsed ? "closed" : "open"}
         animate={isCollapsed ? "closed" : "open"}
-        variants={sidebarVariants}
         transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
         className={cn(
           "bg-background/95 border-border/50 fixed left-0 z-40 flex flex-col overflow-auto border-r shadow-xl backdrop-blur-xl transition-all duration-300",
@@ -245,11 +213,14 @@ export function Sidebar() {
             ? "translate-x-0"
             : "-translate-x-full sm:translate-x-0",
         )}
+        style={{ width: isCollapsed ? "6rem" : "18rem" }}
       >
         {/* Header with logo and collapse button */}
         <div className="border-border/50 bg-muted/30 flex items-center justify-between border-b p-4">
-          <motion.div
+          <Motion
             variants={contentVariants}
+            initial={isCollapsed ? "closed" : "open"}
+            animate={isCollapsed ? "closed" : "open"}
             className="flex items-center space-x-2.5"
           >
             <div className="from-primary to-primary/80 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg">
@@ -258,41 +229,58 @@ export function Sidebar() {
               </span>
             </div>
             {!isCollapsed && (
-              <motion.div variants={itemVariants} className="flex flex-col">
+              <Motion
+                variants={itemVariants}
+                initial="closed"
+                animate="open"
+                className="flex flex-col"
+              >
                 <span className="text-foreground text-base font-semibold">
                   E-Store
                 </span>
                 <span className="text-muted-foreground text-xs">
                   Premium Shop
                 </span>
-              </motion.div>
+              </Motion>
             )}
-          </motion.div>
+          </Motion>
 
           {/* Desktop collapse button */}
           <Button
-            variant="ghost"
+            variant={isCollapsed ? "outline" : "ghost"}
             size="icon"
             onClick={toggleCollapse}
-            className="hover:bg-muted/50 hidden h-8 w-8 transition-all duration-200 sm:flex"
+            className={cn(
+              "hidden transition-all duration-200 sm:flex",
+              isCollapsed
+                ? "bg-primary/10 border-primary/20 hover:bg-primary/20 h-8 w-8"
+                : "hover:bg-muted/50 h-8 w-8",
+            )}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <motion.div
-              animate={{ rotate: isCollapsed ? 180 : 0 }}
+            <Motion
+              variants={collapseButtonVariants}
+              initial={isCollapsed ? "closed" : "open"}
+              animate={isCollapsed ? "closed" : "open"}
               transition={{ duration: 0.3 }}
             >
-              <ChevronLeft className="text-muted-foreground h-4 w-4" />
-            </motion.div>
+              {isCollapsed ? (
+                <ChevronRight className="text-primary h-4 w-4" />
+              ) : (
+                <ChevronLeft className="text-muted-foreground h-4 w-4" />
+              )}
+            </Motion>
           </Button>
         </div>
 
         {/* Search Bar */}
         <AnimatePresence>
           {!isCollapsed && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+            <Motion
+              variants={searchVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
               transition={{ duration: 0.3 }}
               className="border-border/30 border-b px-4 py-3"
             >
@@ -304,13 +292,13 @@ export function Sidebar() {
                   className="bg-muted/50 border-border/50 focus:bg-background w-full pl-9 text-sm transition-all duration-200"
                 />
               </div>
-            </motion.div>
+            </Motion>
           )}
         </AnimatePresence>
 
         {/* Navigation */}
         <ScrollArea className="flex-1 px-3 py-4">
-          <motion.nav
+          <Motion
             variants={staggerVariants}
             initial="closed"
             animate={isCollapsed ? "closed" : "open"}
@@ -318,17 +306,28 @@ export function Sidebar() {
           >
             {/* Admin Navigation */}
             {user && isAdmin && (
-              <motion.div variants={staggerVariants}>
+              <Motion
+                variants={staggerVariants}
+                initial="closed"
+                animate="open"
+              >
                 {!isCollapsed && (
-                  <motion.h3
+                  <Motion
                     variants={itemVariants}
+                    initial="closed"
+                    animate="open"
                     className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
                   >
                     Administration
-                  </motion.h3>
+                  </Motion>
                 )}
 
-                <motion.div variants={staggerVariants} className="space-y-1">
+                <Motion
+                  variants={staggerVariants}
+                  initial="closed"
+                  animate="open"
+                  className="space-y-1"
+                >
                   {[
                     { name: "Admin Dashboard", icon: Settings, href: "/admin" },
                     {
@@ -347,7 +346,12 @@ export function Sidebar() {
                     const Icon = item.icon;
 
                     return (
-                      <motion.div key={item.name} variants={itemVariants}>
+                      <Motion
+                        key={item.name}
+                        variants={itemVariants}
+                        initial="closed"
+                        animate="open"
+                      >
                         <Link
                           href={item.href}
                           onClick={() => setIsMobileMenuOpen(false)}
@@ -382,16 +386,16 @@ export function Sidebar() {
 
                             {/* Active indicator */}
                             {isActive && (
-                              <motion.div
-                                layoutId="activeAdminIndicator"
-                                className="absolute right-2 h-2 w-2 rounded-full bg-purple-600"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
+                              <Motion
+                                variants={indicatorVariants}
+                                initial="closed"
+                                animate="open"
                                 transition={{
                                   type: "spring",
                                   stiffness: 500,
                                   damping: 30,
                                 }}
+                                className="absolute right-2 h-2 w-2 rounded-full bg-purple-600"
                               />
                             )}
 
@@ -404,22 +408,24 @@ export function Sidebar() {
                             )}
                           </Button>
                         </Link>
-                      </motion.div>
+                      </Motion>
                     );
                   })}
-                </motion.div>
-              </motion.div>
+                </Motion>
+              </Motion>
             )}
 
             {/* Categories Navigation */}
-            <motion.div variants={staggerVariants}>
+            <Motion variants={staggerVariants} initial="closed" animate="open">
               {!isCollapsed && (
-                <motion.h3
+                <Motion
                   variants={itemVariants}
+                  initial="closed"
+                  animate="open"
                   className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
                 >
                   Categories
-                </motion.h3>
+                </Motion>
               )}
 
               {loading ? (
@@ -435,13 +441,23 @@ export function Sidebar() {
                   ))}
                 </div>
               ) : (
-                <motion.div variants={staggerVariants} className="space-y-1">
+                <Motion
+                  variants={staggerVariants}
+                  initial="closed"
+                  animate="open"
+                  className="space-y-1"
+                >
                   {displayCategories.map((category) => {
                     const isActive = pathname === category.href;
                     const Icon = category.icon;
 
                     return (
-                      <motion.div key={category.name} variants={itemVariants}>
+                      <Motion
+                        key={category.name}
+                        variants={itemVariants}
+                        initial="closed"
+                        animate="open"
+                      >
                         <Link
                           href={category.href}
                           onClick={() => setIsMobileMenuOpen(false)}
@@ -476,16 +492,16 @@ export function Sidebar() {
 
                             {/* Active indicator */}
                             {isActive && (
-                              <motion.div
-                                layoutId="activeIndicator"
-                                className="bg-primary absolute right-2 h-2 w-2 rounded-full"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
+                              <Motion
+                                variants={indicatorVariants}
+                                initial="closed"
+                                animate="open"
                                 transition={{
                                   type: "spring",
                                   stiffness: 500,
                                   damping: 30,
                                 }}
+                                className="bg-primary absolute right-2 h-2 w-2 rounded-full"
                               />
                             )}
 
@@ -498,13 +514,13 @@ export function Sidebar() {
                             )}
                           </Button>
                         </Link>
-                      </motion.div>
+                      </Motion>
                     );
                   })}
-                </motion.div>
+                </Motion>
               )}
-            </motion.div>
-          </motion.nav>
+            </Motion>
+          </Motion>
         </ScrollArea>
 
         {/* User section */}
@@ -513,8 +529,10 @@ export function Sidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 {!isCollapsed ? (
-                  <motion.div
+                  <Motion
                     variants={contentVariants}
+                    initial={isCollapsed ? "closed" : "open"}
+                    animate={isCollapsed ? "closed" : "open"}
                     className="bg-background/60 hover:bg-background/80 group border-border/30 flex cursor-pointer items-center rounded-xl border p-3 shadow-sm transition-all duration-200"
                   >
                     <Avatar className="ring-primary/20 h-9 w-9 ring-2">
@@ -537,7 +555,7 @@ export function Sidebar() {
                       />
                       <ChevronRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors duration-200" />
                     </div>
-                  </motion.div>
+                  </Motion>
                 ) : (
                   <div className="group flex cursor-pointer justify-center">
                     <div className="relative">
@@ -598,7 +616,7 @@ export function Sidebar() {
             </DropdownMenu>
           </div>
         )}
-      </motion.aside>
+      </Motion>
     </>
   );
 }
