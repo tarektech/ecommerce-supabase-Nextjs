@@ -7,10 +7,6 @@ import {
   Shirt,
   Watch,
   Smartphone,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
   Search,
   LogOut,
   LayoutDashboard,
@@ -18,12 +14,13 @@ import {
   Package,
   ShoppingCart,
   Users,
+  ChevronRight,
+  User,
+  ListOrdered,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,24 +29,33 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Sidebar as ShadcnSidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
 import { categoryService } from "@/services/category/categoryService";
 import { CategoryType } from "@/types";
-import { useSidebar } from "@/context/SidebarContext";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Motion } from "@/components/motion/motion";
 import {
-  sidebarVariants,
   contentVariants,
   staggerVariants,
   itemVariants,
-  mobileButtonVariants,
-  overlayVariants,
   searchVariants,
   indicatorVariants,
-  collapseButtonVariants,
 } from "@/components/motion/animation-variants";
 
 // Default icons for each category
@@ -60,53 +66,21 @@ const categoryIcons: Record<string, React.ElementType> = {
   Electronics: Smartphone,
 };
 
-export function Sidebar() {
-  const {
-    isMobileMenuOpen,
-    setIsMobileMenuOpen,
-    hideSidebar,
-    isCollapsed,
-    setIsCollapsed,
-  } = useSidebar();
+export default function Sidebar() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [isNavigationHidden, setIsNavigationHidden] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const pathname = usePathname();
   const router = useRouter();
+  const { state } = useSidebar();
+
+  const isCollapsed = state === "collapsed";
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Add scroll detection to track when navigation is hidden
-  useEffect(() => {
-    if (!mounted) return;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const demoBanner = document.querySelector(
-        '[class*="from-blue-600"]',
-      ) as HTMLElement;
-      const navbar = document.querySelector("nav") as HTMLElement;
-
-      if (demoBanner && navbar) {
-        const bannerHeight = demoBanner.offsetHeight;
-        const navbarHeight = navbar.offsetHeight;
-        const totalHeaderHeight = bannerHeight + navbarHeight;
-
-        // Check if both banner and navbar are scrolled out of view
-        setIsNavigationHidden(currentScrollY > totalHeaderHeight);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Check initial state
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [mounted]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -125,7 +99,7 @@ export function Sidebar() {
     }
   }, [mounted]);
 
-  if (!mounted || hideSidebar) {
+  if (!mounted) {
     return null;
   }
 
@@ -146,77 +120,19 @@ export function Sidebar() {
         ["All", "Electronics"].includes(category.name),
       );
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  // Admin navigation items
+  const adminNavItems = [
+    { name: "Admin Dashboard", icon: Settings, href: "/admin" },
+    { name: "Products", icon: Package, href: "/admin/products" },
+    { name: "Orders", icon: ShoppingCart, href: "/admin/orders" },
+    { name: "Users", icon: Users, href: "/admin/users" },
+  ];
 
   return (
-    <>
-      {/* Mobile hamburger button */}
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="bg-background/95 border-border/50 fixed top-4 left-4 z-50 shadow-lg backdrop-blur-sm transition-all duration-200 hover:shadow-xl sm:hidden"
-        aria-label="Toggle sidebar"
-      >
-        <AnimatePresence mode="wait">
-          {isMobileMenuOpen ? (
-            <Motion
-              key="close"
-              variants={mobileButtonVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              transition={{ duration: 0.2 }}
-            >
-              <X className="text-foreground h-5 w-5" />
-            </Motion>
-          ) : (
-            <Motion
-              key="menu"
-              variants={mobileButtonVariants}
-              initial="open"
-              animate="closed"
-              exit="open"
-              transition={{ duration: 0.2 }}
-            >
-              <Menu className="text-foreground h-5 w-5" />
-            </Motion>
-          )}
-        </AnimatePresence>
-      </Button>
-
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <Motion
-            variants={overlayVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm sm:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar */}
-      <Motion
-        variants={sidebarVariants}
-        initial={isCollapsed ? "closed" : "open"}
-        animate={isCollapsed ? "closed" : "open"}
-        transition={{ type: "tween", ease: "easeOut", duration: 0.3 }}
-        className={cn(
-          "bg-background/95 border-border/50 fixed left-0 z-40 flex flex-col overflow-auto border-r shadow-xl backdrop-blur-xl transition-all duration-300",
-          isNavigationHidden ? "top-0 h-screen" : "top-25 h-[calc(100vh-6rem)]",
-          isMobileMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full sm:translate-x-0",
-        )}
-        style={{ width: isCollapsed ? "6rem" : "18rem" }}
-      >
-        {/* Header with logo and collapse button */}
-        <div className="border-border/50 bg-muted/30 flex items-center justify-between border-b p-4">
+    <ShadcnSidebar collapsible="icon" className="z-[70] border-r">
+      {/* Header with logo */}
+      <SidebarHeader>
+        <div className="flex items-center justify-between">
           <Motion
             variants={contentVariants}
             initial={isCollapsed ? "closed" : "open"}
@@ -245,35 +161,14 @@ export function Sidebar() {
             )}
           </Motion>
 
-          {/* Desktop collapse button */}
-          <Button
-            variant={isCollapsed ? "outline" : "ghost"}
-            size="icon"
-            onClick={toggleCollapse}
-            className={cn(
-              "hidden transition-all duration-200 sm:flex",
-              isCollapsed
-                ? "bg-primary/10 border-primary/20 hover:bg-primary/20 h-8 w-8"
-                : "hover:bg-muted/50 h-8 w-8",
-            )}
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            <Motion
-              variants={collapseButtonVariants}
-              initial={isCollapsed ? "closed" : "open"}
-              animate={isCollapsed ? "closed" : "open"}
-              transition={{ duration: 0.3 }}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="text-primary h-4 w-4" />
-              ) : (
-                <ChevronLeft className="text-muted-foreground h-4 w-4" />
-              )}
-            </Motion>
-          </Button>
+          {!isCollapsed && (
+            <SidebarTrigger className="hover:bg-muted/50 ml-auto transition-colors duration-200" />
+          )}
         </div>
+      </SidebarHeader>
 
-        {/* Search Bar */}
+      {/* Search Bar */}
+      <div className="px-3">
         <AnimatePresence>
           {!isCollapsed && (
             <Motion
@@ -282,7 +177,7 @@ export function Sidebar() {
               animate="open"
               exit="closed"
               transition={{ duration: 0.3 }}
-              className="border-border/30 border-b px-4 py-3"
+              className="pb-2"
             >
               <div className="relative">
                 <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
@@ -295,328 +190,304 @@ export function Sidebar() {
             </Motion>
           )}
         </AnimatePresence>
+      </div>
 
-        {/* Navigation */}
-        <ScrollArea className="flex-1 px-3 py-4">
-          <Motion
-            variants={staggerVariants}
-            initial="closed"
-            animate={isCollapsed ? "closed" : "open"}
-            className="space-y-6"
-          >
-            {/* Admin Navigation */}
-            {user && isAdmin && (
-              <Motion
-                variants={staggerVariants}
-                initial="closed"
-                animate="open"
-              >
-                {!isCollapsed && (
+      <SidebarContent>
+        <Motion
+          variants={staggerVariants}
+          initial="closed"
+          animate={isCollapsed ? "closed" : "open"}
+          className="space-y-4"
+        >
+          {/* Admin Navigation */}
+          {user && isAdmin && (
+            <SidebarGroup>
+              {!isCollapsed && (
+                <Motion variants={itemVariants} initial="closed" animate="open">
+                  <SidebarGroupLabel className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                    Administration
+                  </SidebarGroupLabel>
+                </Motion>
+              )}
+              <SidebarGroupContent>
+                <SidebarMenu>
                   <Motion
-                    variants={itemVariants}
+                    variants={staggerVariants}
                     initial="closed"
                     animate="open"
-                    className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
                   >
-                    Administration
-                  </Motion>
-                )}
+                    {adminNavItems.map((item) => {
+                      const isActive = pathname === item.href;
+                      const Icon = item.icon;
 
-                <Motion
-                  variants={staggerVariants}
-                  initial="closed"
-                  animate="open"
-                  className="space-y-1"
-                >
-                  {[
-                    { name: "Admin Dashboard", icon: Settings, href: "/admin" },
-                    {
-                      name: "Products",
-                      icon: Package,
-                      href: "/admin/products",
-                    },
-                    {
-                      name: "Orders",
-                      icon: ShoppingCart,
-                      href: "/admin/orders",
-                    },
-                    { name: "Users", icon: Users, href: "/admin/users" },
-                  ].map((item) => {
-                    const isActive = pathname === item.href;
-                    const Icon = item.icon;
-
-                    return (
-                      <Motion
-                        key={item.name}
-                        variants={itemVariants}
-                        initial="closed"
-                        animate="open"
-                      >
-                        <Link
-                          href={item.href}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block"
+                      return (
+                        <Motion
+                          key={item.name}
+                          variants={itemVariants}
+                          initial="closed"
+                          animate="open"
                         >
-                          <Button
-                            variant={isActive ? "secondary" : "ghost"}
-                            className={cn(
-                              "group relative h-11 w-full cursor-pointer justify-start overflow-hidden transition-all duration-200",
-                              isCollapsed ? "justify-center px-2" : "",
-                              isActive
-                                ? "border border-purple-200 bg-purple-100 text-purple-700 shadow-sm"
-                                : "hover:bg-muted/70 hover:translate-x-1",
-                            )}
-                            title={isCollapsed ? item.name : undefined}
-                          >
-                            <Icon
+                          <SidebarMenuItem>
+                            <SidebarMenuButton
+                              asChild
+                              isActive={isActive}
                               className={cn(
-                                "h-4 w-4 flex-shrink-0 transition-all duration-200",
-                                isCollapsed ? "mr-0" : "mr-3",
+                                "group relative transition-all duration-200",
                                 isActive
-                                  ? "text-purple-700"
-                                  : "text-muted-foreground group-hover:text-foreground",
+                                  ? "border-primary/20 bg-primary/10 text-primary border"
+                                  : "hover:translate-x-1",
                               )}
-                            />
+                              tooltip={item.name}
+                            >
+                              <Link href={item.href}>
+                                <Icon
+                                  className={cn(
+                                    "h-4 w-4 transition-all duration-200",
+                                    isActive
+                                      ? "text-primary"
+                                      : "text-muted-foreground group-hover:text-foreground",
+                                  )}
+                                />
+                                {!isCollapsed && (
+                                  <span className="text-sm font-medium">
+                                    {item.name}
+                                  </span>
+                                )}
+                                {/* Active indicator */}
+                                {isActive && (
+                                  <Motion
+                                    variants={indicatorVariants}
+                                    initial="closed"
+                                    animate="open"
+                                    transition={{
+                                      type: "spring",
+                                      stiffness: 500,
+                                      damping: 30,
+                                    }}
+                                    className="bg-primary absolute right-2 h-2 w-2 rounded-full"
+                                  />
+                                )}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </Motion>
+                      );
+                    })}
+                  </Motion>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
 
-                            {!isCollapsed && (
-                              <span className="flex-1 text-left text-sm font-medium">
-                                {item.name}
-                              </span>
-                            )}
-
-                            {/* Active indicator */}
-                            {isActive && (
-                              <Motion
-                                variants={indicatorVariants}
-                                initial="closed"
-                                animate="open"
-                                transition={{
-                                  type: "spring",
-                                  stiffness: 500,
-                                  damping: 30,
-                                }}
-                                className="absolute right-2 h-2 w-2 rounded-full bg-purple-600"
-                              />
-                            )}
-
-                            {/* Tooltip for collapsed state */}
-                            {isCollapsed && (
-                              <div className="bg-foreground text-background invisible absolute left-full z-50 ml-2 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
-                                {item.name}
-                                <div className="bg-foreground absolute top-1/2 left-0 h-1.5 w-1.5 -translate-x-1 -translate-y-1/2 rotate-45 transform" />
-                              </div>
-                            )}
-                          </Button>
-                        </Link>
-                      </Motion>
-                    );
-                  })}
-                </Motion>
+          {/* Categories Navigation */}
+          <SidebarGroup>
+            {!isCollapsed && (
+              <Motion variants={itemVariants} initial="closed" animate="open">
+                <SidebarGroupLabel className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                  Categories
+                </SidebarGroupLabel>
               </Motion>
             )}
-
-            {/* Categories Navigation */}
-            <Motion variants={staggerVariants} initial="closed" animate="open">
-              {!isCollapsed && (
-                <Motion
-                  variants={itemVariants}
-                  initial="closed"
-                  animate="open"
-                  className="text-muted-foreground mb-3 px-3 text-xs font-medium tracking-wider uppercase"
-                >
-                  Categories
-                </Motion>
-              )}
-
-              {loading ? (
-                <div className="animate-pulse space-y-2 px-3">
-                  {[1, 2, 3].map((n) => (
-                    <div
-                      key={n}
-                      className={cn(
-                        "bg-muted rounded-lg",
-                        isCollapsed ? "h-10 w-10" : "h-10",
-                      )}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Motion
-                  variants={staggerVariants}
-                  initial="closed"
-                  animate="open"
-                  className="space-y-1"
-                >
-                  {displayCategories.map((category) => {
-                    const isActive = pathname === category.href;
-                    const Icon = category.icon;
-
-                    return (
-                      <Motion
-                        key={category.name}
-                        variants={itemVariants}
-                        initial="closed"
-                        animate="open"
-                      >
-                        <Link
-                          href={category.href}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block"
-                        >
-                          <Button
-                            variant={isActive ? "secondary" : "ghost"}
-                            className={cn(
-                              "group relative h-11 w-full cursor-pointer justify-start overflow-hidden transition-all duration-200",
-                              isCollapsed ? "justify-center px-2" : "",
-                              isActive
-                                ? "bg-primary/10 text-primary border-primary/20 border shadow-sm"
-                                : "hover:bg-muted/70 hover:translate-x-1",
-                            )}
-                            title={isCollapsed ? category.name : undefined}
-                          >
-                            <Icon
-                              className={cn(
-                                "h-4 w-4 flex-shrink-0 transition-all duration-200",
-                                isCollapsed ? "mr-0" : "mr-3",
-                                isActive
-                                  ? "text-primary"
-                                  : "text-muted-foreground group-hover:text-foreground",
-                              )}
-                            />
-
-                            {!isCollapsed && (
-                              <span className="flex-1 text-left text-sm font-medium">
-                                {category.name}
-                              </span>
-                            )}
-
-                            {/* Active indicator */}
-                            {isActive && (
-                              <Motion
-                                variants={indicatorVariants}
-                                initial="closed"
-                                animate="open"
-                                transition={{
-                                  type: "spring",
-                                  stiffness: 500,
-                                  damping: 30,
-                                }}
-                                className="bg-primary absolute right-2 h-2 w-2 rounded-full"
-                              />
-                            )}
-
-                            {/* Tooltip for collapsed state */}
-                            {isCollapsed && (
-                              <div className="bg-foreground text-background invisible absolute left-full z-50 ml-2 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
-                                {category.name}
-                                <div className="bg-foreground absolute top-1/2 left-0 h-1.5 w-1.5 -translate-x-1 -translate-y-1/2 rotate-45 transform" />
-                              </div>
-                            )}
-                          </Button>
-                        </Link>
-                      </Motion>
-                    );
-                  })}
-                </Motion>
-              )}
-            </Motion>
-          </Motion>
-        </ScrollArea>
-
-        {/* User section */}
-        {user && (
-          <div className="border-border/50 bg-muted/20 border-t p-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                {!isCollapsed ? (
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {loading ? (
+                  <div className="animate-pulse space-y-2">
+                    {[1, 2, 3].map((n) => (
+                      <div
+                        key={n}
+                        className={cn(
+                          "bg-muted rounded-lg",
+                          isCollapsed ? "h-10 w-10" : "h-10",
+                        )}
+                      />
+                    ))}
+                  </div>
+                ) : (
                   <Motion
-                    variants={contentVariants}
-                    initial={isCollapsed ? "closed" : "open"}
-                    animate={isCollapsed ? "closed" : "open"}
-                    className="bg-background/60 hover:bg-background/80 group border-border/30 flex cursor-pointer items-center rounded-xl border p-3 shadow-sm transition-all duration-200"
+                    variants={staggerVariants}
+                    initial="closed"
+                    animate="open"
                   >
-                    <Avatar className="ring-primary/20 h-9 w-9 ring-2">
+                    {displayCategories.map((category) => {
+                      const isActive = pathname === category.href;
+                      const Icon = category.icon;
+
+                      return (
+                        <Motion
+                          key={category.name}
+                          variants={itemVariants}
+                          initial="closed"
+                          animate="open"
+                        >
+                          <SidebarMenuItem>
+                            <SidebarMenuButton
+                              asChild
+                              isActive={isActive}
+                              className={cn(
+                                "group relative transition-all duration-200",
+                                isActive
+                                  ? "bg-primary/10 text-primary border-primary/20 border"
+                                  : "hover:translate-x-1",
+                              )}
+                              tooltip={category.name}
+                            >
+                              <Link href={category.href}>
+                                <Icon
+                                  className={cn(
+                                    "h-4 w-4 transition-all duration-200",
+                                    isActive
+                                      ? "text-primary"
+                                      : "text-muted-foreground group-hover:text-foreground",
+                                  )}
+                                />
+                                {!isCollapsed && (
+                                  <span className="text-sm font-medium">
+                                    {category.name}
+                                  </span>
+                                )}
+                                {/* Active indicator */}
+                                {isActive && (
+                                  <Motion
+                                    variants={indicatorVariants}
+                                    initial="closed"
+                                    animate="open"
+                                    transition={{
+                                      type: "spring",
+                                      stiffness: 500,
+                                      damping: 30,
+                                    }}
+                                    className="bg-primary absolute right-2 h-2 w-2 rounded-full"
+                                  />
+                                )}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </Motion>
+                      );
+                    })}
+                  </Motion>
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </Motion>
+      </SidebarContent>
+
+      {/* User section */}
+      {user && (
+        <SidebarFooter>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {!isCollapsed ? (
+                <Motion
+                  variants={contentVariants}
+                  initial={isCollapsed ? "closed" : "open"}
+                  animate={isCollapsed ? "closed" : "open"}
+                  className="bg-background/60 hover:bg-background/80 group border-border/30 flex cursor-pointer items-center rounded-xl border p-3 shadow-sm transition-all duration-200"
+                >
+                  <Avatar className="ring-primary/20 h-9 w-9 ring-2">
+                    <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br font-semibold">
+                      {user.email?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="ml-3 min-w-0 flex-1">
+                    <p className="text-foreground truncate text-sm font-medium">
+                      {user.email?.split("@")[0] || "User"}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {user.email}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className="h-2 w-2 rounded-full bg-green-500"
+                      title="Online"
+                    />
+                    <ChevronRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors duration-200" />
+                  </div>
+                </Motion>
+              ) : (
+                <SidebarMenuButton
+                  size="lg"
+                  className="group cursor-pointer"
+                  tooltip={`${user.email?.split("@")[0] || "User"}`}
+                >
+                  <div className="relative">
+                    <Avatar className="ring-primary/20 group-hover:ring-primary/40 h-8 w-8 ring-2 transition-all duration-200">
                       <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br font-semibold">
                         {user.email?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="ml-3 min-w-0 flex-1">
-                      <p className="text-foreground truncate text-sm font-medium">
-                        {user.email?.split("@")[0] || "User"}
-                      </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {user.email}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className="h-2 w-2 rounded-full bg-green-500"
-                        title="Online"
-                      />
-                      <ChevronRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors duration-200" />
-                    </div>
-                  </Motion>
-                ) : (
-                  <div className="group flex cursor-pointer justify-center">
-                    <div className="relative">
-                      <Avatar className="ring-primary/20 group-hover:ring-primary/40 h-10 w-10 ring-2 transition-all duration-200">
-                        <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br font-semibold">
-                          {user.email?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="border-background absolute -right-1 -bottom-1 h-3 w-3 rounded-full border-2 bg-green-500" />
-                    </div>
+                    <div className="border-background absolute -right-1 -bottom-1 h-3 w-3 rounded-full border-2 bg-green-500" />
                   </div>
-                )}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="center"
-                className="bg-background/95 border-border/50 w-56 backdrop-blur-xl"
-              >
-                <div className="flex items-center space-x-2 p-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br">
-                      {user.email?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">
-                      {user.email?.split("@")[0] || "User"}
-                    </span>
-                    <span className="text-muted-foreground truncate text-xs">
-                      {user.email}
-                    </span>
-                  </div>
+                </SidebarMenuButton>
+              )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              side="right"
+              sideOffset={8}
+              className="bg-background/95 border-border/50 z-[80] w-56 backdrop-blur-xl"
+            >
+              <div className="flex items-center space-x-2 p-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="from-primary to-primary/80 text-primary-foreground bg-gradient-to-br">
+                    {user.email?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">
+                    {user.email?.split("@")[0] || "User"}
+                  </span>
+                  <span className="text-muted-foreground truncate text-xs">
+                    {user.email}
+                  </span>
                 </div>
-                <DropdownMenuSeparator />
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="focus:bg-muted/70 cursor-pointer"
+                onClick={() => router.replace("/profile")}
+              >
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="focus:bg-muted/70 cursor-pointer"
+                onClick={() => router.replace("/cart")}
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                <span>Cart</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="focus:bg-muted/70 cursor-pointer"
+                onClick={() => router.replace("/dashboard")}
+              >
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </DropdownMenuItem>
+              {isAdmin && (
                 <DropdownMenuItem
                   className="focus:bg-muted/70 cursor-pointer"
-                  onClick={() => router.replace("/dashboard")}
+                  onClick={() => router.replace("/admin")}
                 >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Admin Panel</span>
                 </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem
-                    className="focus:bg-muted/70 cursor-pointer"
-                    onClick={() => router.replace("/admin")}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Admin Panel</span>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem
-                  onClick={signOut}
-                  className="focus:bg-muted/70 cursor-pointer transition-colors duration-200"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-      </Motion>
-    </>
+              )}
+              <DropdownMenuItem
+                onClick={signOut}
+                className="focus:bg-muted/70 cursor-pointer transition-colors duration-200"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sign out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarFooter>
+      )}
+
+      <SidebarRail />
+    </ShadcnSidebar>
   );
 }

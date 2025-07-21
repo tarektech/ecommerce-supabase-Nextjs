@@ -4,8 +4,8 @@ import { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/Navbar";
-import { Sidebar } from "@/components/Sidebar";
-import { SidebarProvider } from "@/context/SidebarContext";
+import Sidebar  from "@/components/Sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { TanStackQueryProvider } from "@/lib/providers/query-provider";
 import StagewiseToolbar from "@/StagewiseToolbar";
 import { Toaster } from "sonner";
@@ -42,12 +42,12 @@ export default function RootLayout({
                   disableTransitionOnChange
                 >
                   <SidebarProvider>
-                    <DemoBanner />
-                    <Navbar />
-                    <div className="flex">
-                      <Sidebar />
+                    <Sidebar />
+                    <SidebarInset>
+                      <DemoBanner />
+                      <Navbar />
                       <MainLayout>{children}</MainLayout>
-                    </div>
+                    </SidebarInset>
                   </SidebarProvider>
                 </ThemeProvider>
               </CartProvider>

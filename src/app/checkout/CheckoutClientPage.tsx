@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -12,7 +12,6 @@ import { ShippingForm } from "@/components/checkout/ShippingForm";
 import { PaymentForm } from "@/components/checkout/PaymentForm";
 import { ConfirmationStep } from "@/components/checkout/ConfirmationStep";
 import { StepIndicator } from "@/components/checkout/StepIndicator";
-import { useSidebar } from "@/context/SidebarContext";
 import { useCheckout } from "@/context/CheckoutContext";
 
 interface CheckoutClientPageProps {
@@ -25,7 +24,6 @@ export default function CheckoutClientPage({
   email,
 }: CheckoutClientPageProps) {
   const router = useRouter();
-  const { setHideSidebar } = useSidebar();
   const {
     currentStep,
     shippingAddress,
@@ -33,16 +31,6 @@ export default function CheckoutClientPage({
     saveShippingAddress,
     savePaymentInfo,
   } = useCheckout();
-
-  // Hide sidebar when component mounts
-  useEffect(() => {
-    setHideSidebar(true);
-
-    // Show sidebar again when component unmounts
-    return () => {
-      setHideSidebar(false);
-    };
-  }, [setHideSidebar]);
 
   const handlePaymentSubmit = (
     lastFourDigits: string,
@@ -58,7 +46,7 @@ export default function CheckoutClientPage({
 
   return (
     <div className="bg-background min-h-screen py-12">
-      <Card>
+      <Card className="mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle>Checkout</CardTitle>
           <CardDescription>Complete your purchase</CardDescription>

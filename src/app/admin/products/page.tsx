@@ -120,7 +120,10 @@ export default function AdminProductsPage() {
           </h1>
           <p className="text-muted-foreground">Manage your product catalog</p>
         </div>
-        <Button onClick={() => setShowCreateModal(true)}>
+        <Button
+          onClick={() => setShowCreateModal(true)}
+          className="cursor-pointer transition-transform hover:scale-105"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Product
         </Button>
@@ -222,7 +225,11 @@ export default function AdminProductsPage() {
 
               <div className="flex space-x-2">
                 <Link href={`/products/${product.product_id}`}>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-accent/80 flex-1 cursor-pointer transition-all hover:scale-105"
+                  >
                     <Eye className="mr-2 h-3 w-3" />
                     View
                   </Button>
@@ -231,7 +238,7 @@ export default function AdminProductsPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setEditingProduct(product)}
-                  className="flex-1"
+                  className="hover:bg-accent/80 flex-1 cursor-pointer transition-all hover:scale-105"
                 >
                   <Edit className="mr-2 h-3 w-3" />
                   Edit
@@ -240,7 +247,7 @@ export default function AdminProductsPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setDeletingProduct(product)}
-                  className="text-red-600 hover:text-red-700"
+                  className="cursor-pointer text-red-600 transition-all hover:scale-105 hover:bg-red-50 hover:text-red-700"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -263,7 +270,10 @@ export default function AdminProductsPage() {
                 : "Get started by adding your first product."}
             </p>
             {!searchTerm && (
-              <Button onClick={() => setShowCreateModal(true)}>
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                className="cursor-pointer transition-transform hover:scale-105"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Product
               </Button>
