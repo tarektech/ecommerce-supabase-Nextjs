@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react"; 
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
 import { useAuth } from "@/context/AuthContext";
@@ -178,7 +178,7 @@ export default function CategoryPage({
                 ) : (
                   <motion.div
                     key="products"
-                    className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                    className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

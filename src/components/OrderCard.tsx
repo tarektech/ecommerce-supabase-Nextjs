@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { orderService } from "@/services/order/orderService";
+import { format } from "date-fns";
 
 interface OrderCardProps {
   order: OrderType;
@@ -30,7 +31,7 @@ export function OrderCard({ order, onDelete }: OrderCardProps) {
           <div className="mt-2 flex items-center space-x-4 md:mt-0">
             <span className="text-muted-foreground text-sm">
               {order.created_at
-                ? new Date(order.created_at).toLocaleDateString()
+                ? format(new Date(order.created_at), "MMM dd, yyyy")
                 : "N/A"}
             </span>
             <span

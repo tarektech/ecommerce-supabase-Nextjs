@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { useCart } from "@/context/CartContext";
+import { ProductType } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Star, ShoppingCart, Heart, Share2, Minus, Plus } from "lucide-react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react"; 
+import { format } from "date-fns";
+
+import { useProductReviews } from "@/hooks/queries/use-reviews";
+
+
 import {
-  Star,
-  Heart,
-  Share2,
-  ShoppingCart,
-  Plus,
-  Minus,
   ChevronLeft,
   ChevronRight,
   Truck,
@@ -16,17 +23,8 @@ import {
   RotateCcw,
   Check,
 } from "lucide-react";
-import { ProductType } from "@/types";
-import { useCart } from "@/context/CartContext";
-import { useProductReviews } from "@/hooks/queries/use-reviews";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import Image from "next/image";
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -471,9 +469,10 @@ export default function ProductDetailsClient({
                                 {renderStars(review.rating, "sm")}
                                 {review.created_at && (
                                   <span className="text-muted-foreground text-sm">
-                                    {new Date(
-                                      review.created_at,
-                                    ).toLocaleDateString()}
+                                    {format(
+                                      new Date(review.created_at),
+                                      "MMM dd, yyyy",
+                                    )}
                                   </span>
                                 )}
                               </div>

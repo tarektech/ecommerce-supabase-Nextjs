@@ -4,7 +4,7 @@ import {
   Transition,
   Variants,
   HTMLMotionProps,
-} from "framer-motion";
+} from "motion/react"; 
 
 import React, { ReactNode } from "react";
 

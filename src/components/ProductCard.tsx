@@ -52,11 +52,11 @@ export function ProductCard({ product }: ProductCardProps) {
       return (
         <Star
           key={index}
-          className={`h-3.5 w-3.5 ${
+          className={`h-3 w-3 ${
             filled
-              ? "fill-yellow-400 text-yellow-400"
+              ? "fill-primary text-primary"
               : halfFilled
-                ? "fill-yellow-400/50 text-yellow-400"
+                ? "fill-primary/50 text-primary"
                 : "fill-muted text-muted-foreground/30"
           }`}
         />
@@ -66,17 +66,17 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card
-      className="group from-background/95 to-background/80 relative cursor-pointer overflow-hidden border-0 bg-gradient-to-br shadow-lg backdrop-blur-lg transition-all duration-500 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-2xl"
+      className="group border-border/60 bg-card/60 hover:border-primary/20 hover:shadow-primary/5 relative cursor-pointer overflow-hidden backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
       onClick={handleProductClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Container with Overlay */}
-      <div className="from-muted/30 to-muted/10 relative aspect-[4/3] overflow-hidden bg-gradient-to-br">
+      {/* Image Container */}
+      <div className="relative aspect-square overflow-hidden">
         {/* Sale Badge */}
         {isOnSale && (
-          <div className="absolute top-3 left-3 z-20">
-            <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-2.5 py-1.5 text-xs font-bold text-white shadow-lg">
+          <div className="absolute top-2 left-2 z-20">
+            <div className="bg-destructive text-destructive-foreground flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold shadow-sm">
               <Zap className="h-3 w-3" />
               SALE
             </div>
@@ -84,17 +84,17 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Wishlist Button */}
-        <div className="absolute top-3 right-3 z-20">
+        <div className="absolute top-2 right-2 z-20">
           <button
             onClick={handleWishlist}
-            className={`rounded-full p-2.5 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 ${
+            className={`rounded-full p-1.5 shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
               isWishlisted
-                ? "bg-red-500/90 text-white shadow-red-500/25"
-                : "bg-white/20 text-white hover:bg-white/30"
+                ? "bg-destructive/90 text-destructive-foreground"
+                : "bg-background/80 text-muted-foreground hover:bg-background/90 hover:text-foreground"
             }`}
           >
             <Heart
-              className={`h-4 w-4 ${isWishlisted ? "fill-current" : ""}`}
+              className={`h-3.5 w-3.5 ${isWishlisted ? "fill-current" : ""}`}
             />
           </button>
         </div>
@@ -104,16 +104,16 @@ export function ProductCard({ product }: ProductCardProps) {
           <Image
             src={product.image}
             alt={product.title}
-            width={400}
+            width={300}
             height={300}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
         ) : (
-          <div className="from-muted/50 to-muted/30 flex h-full w-full items-center justify-center bg-gradient-to-br">
+          <div className="bg-muted/50 flex h-full w-full items-center justify-center">
             <div className="text-center">
-              <Badge className="text-muted-foreground/40 mb-2 h-12 w-12" />
-              <span className="text-muted-foreground/60 text-sm font-medium">
+              <Badge className="text-muted-foreground/40 mb-2 h-8 w-8" />
+              <span className="text-muted-foreground/60 text-xs font-medium">
                 No Image
               </span>
             </div>
@@ -122,7 +122,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Quick Actions Overlay */}
         <div
-          className={`absolute inset-0 flex items-center justify-center gap-3 bg-black/40 backdrop-blur-sm transition-all duration-300 ${
+          className={`bg-background/80 absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-sm transition-all duration-300 ${
             isHovered ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -130,109 +130,97 @@ export function ProductCard({ product }: ProductCardProps) {
             size="sm"
             variant="secondary"
             onClick={handleQuickView}
-            className="border-0 bg-white/90 text-black shadow-lg backdrop-blur-md transition-all duration-200 hover:scale-105 hover:bg-white"
+            className="h-8 text-xs shadow-sm"
           >
-            <Eye className="mr-1.5 h-4 w-4" />
-            Quick View
+            <Eye className="mr-1 h-3 w-3" />
+            View
           </Button>
           <Button
             size="sm"
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            className="bg-primary/90 hover:bg-primary cursor-pointer border-0 text-white shadow-lg backdrop-blur-md transition-all duration-200 hover:scale-105"
+            className="h-8 cursor-pointer text-xs shadow-sm"
           >
-            <ShoppingCart className="mr-1.5 h-4 w-4" />
-            Add to Cart
+            <ShoppingCart className="mr-1 h-3 w-3" />
+            Add
           </Button>
         </div>
 
         {/* Stock Indicator */}
         {product.stock <= 5 && product.stock > 0 && (
-          <div className="absolute bottom-3 left-3">
-            <div className="rounded-full bg-orange-500/90 px-2.5 py-1 text-xs font-medium text-white shadow-lg backdrop-blur-md">
-              Only {product.stock} left
+          <div className="absolute bottom-2 left-2">
+            <div className="bg-accent text-accent-foreground rounded-md px-2 py-1 text-xs font-medium">
+              {product.stock} left
             </div>
           </div>
         )}
       </div>
 
       {/* Product Details */}
-      <CardContent className="space-y-4 p-5">
-        {/* Rating */}
+      <CardContent className="space-y-2 p-3">
+        {/* Rating & Stock */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <div className="flex items-center gap-0.5">{renderStars()}</div>
-            <span className="text-muted-foreground text-xs font-medium">
+            <span className="text-muted-foreground text-xs">
               {rating.toFixed(1)} ({reviewCount})
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-            <span className="text-xs font-medium text-green-600">In Stock</span>
+            <div className="bg-primary h-1 w-1 rounded-full"></div>
+            <span className="text-primary text-xs font-medium">In Stock</span>
           </div>
         </div>
 
         {/* Product Title */}
         <div>
-          <h3 className="text-foreground group-hover:text-primary line-clamp-2 text-lg leading-tight font-bold transition-colors duration-200">
+          <h3 className="text-foreground group-hover:text-primary line-clamp-1 text-sm font-semibold transition-colors duration-200">
             {product.title}
           </h3>
-          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm leading-relaxed">
+          <p className="text-muted-foreground line-clamp-2 text-xs">
             {product.description ||
-              "Premium quality product with exceptional features and modern design."}
+              "Premium quality product with exceptional features."}
           </p>
         </div>
 
         {/* Price Section */}
-        <div className="flex items-end justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-foreground text-2xl font-bold">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className="text-foreground text-lg font-bold">
               ${product.price.toFixed(2)}
             </span>
             {originalPrice && (
-              <span className="text-muted-foreground text-sm line-through">
+              <span className="text-muted-foreground text-xs line-through">
                 ${originalPrice.toFixed(2)}
               </span>
             )}
           </div>
           {isOnSale && (
-            <div className="rounded-full bg-green-100 px-2 py-1 text-xs font-bold text-green-600 dark:bg-green-900/20">
-              Save ${(originalPrice! - product.price).toFixed(2)}
+            <div className="bg-primary/10 text-primary rounded-md px-1.5 py-0.5 text-xs font-medium">
+              Save ${(originalPrice! - product.price).toFixed(0)}
             </div>
           )}
         </div>
 
         {/* Feature Badges */}
-        <div className="flex items-center gap-2 pt-2">
-          <span className="rounded-full border border-green-200/50 bg-gradient-to-r from-green-50 to-emerald-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:border-green-800/50 dark:from-green-900/20 dark:to-emerald-900/20 dark:text-green-400">
-            Free Shipping
+        <div className="flex items-center gap-1">
+          <span className="bg-primary/10 text-primary rounded-md px-1.5 py-0.5 text-xs font-medium">
+            Free Ship
           </span>
-          <span className="rounded-full border border-blue-200/50 bg-gradient-to-r from-blue-50 to-cyan-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:border-blue-800/50 dark:from-blue-900/20 dark:to-cyan-900/20 dark:text-blue-400">
-            30-Day Returns
+          <span className="bg-secondary/80 text-secondary-foreground rounded-md px-1.5 py-0.5 text-xs font-medium">
+            30-Day
           </span>
         </div>
 
-        {/* Action Buttons - Mobile Fallback */}
-        <div className="flex items-center gap-3 pt-3 md:hidden">
+        {/* Mobile Action Button */}
+        <div className="pt-1 sm:hidden">
           <Button
-            className="flex-1 cursor-pointer"
+            className="h-8 w-full cursor-pointer text-xs"
             onClick={handleAddToCart}
             disabled={product.stock === 0}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" />
+            <ShoppingCart className="mr-1.5 h-3 w-3" />
             {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleWishlist}
-            className="cursor-pointer"
-          >
-            <Heart
-              className={`h-4 w-4 ${
-                isWishlisted ? "fill-current text-red-500" : ""
-              }`}
-            />
           </Button>
         </div>
       </CardContent>

@@ -281,7 +281,12 @@ export function ProfileCard({
           <div className="text-muted-foreground space-y-1 text-sm">
             {createdAt && (
               <span className="block">
-                Account created: {new Date(createdAt).toLocaleDateString()}
+                Account created:{" "}
+                {new Date(createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })}
               </span>
             )}
             <span className="block">Profile ID: {user?.id}</span>

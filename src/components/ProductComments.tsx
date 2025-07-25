@@ -10,6 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
+import { format } from "date-fns";
 
 interface Comment {
   id: string;
@@ -299,7 +300,7 @@ export function ProductComments() {
                           {renderStars(comment.rating)}
                         </div>
                         <span className="text-muted-foreground text-sm">
-                          {new Date(comment.date).toLocaleDateString()}
+                          {format(new Date(comment.date), "MMM dd, yyyy")}
                         </span>
                       </div>
                     </div>

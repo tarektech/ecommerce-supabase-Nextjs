@@ -9,6 +9,17 @@ import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
 import { OrderType, ProfileType } from "@/types";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import {
+  subscribeToUserOrders,
+  unsubscribeFromUserOrders,
+  type OrderSubscriptionCallbacks,
+} from "@/services/order/orderSubscriptionService";
+import {
+  subscribeToUserProfile,
+  unsubscribeFromUserProfile,
+  type ProfileSubscriptionCallbacks,
+} from "@/services/profile/profileSubscriptionService";
 
 interface ProfileClientPageProps {
   initialProfile: ProfileType | null;
@@ -95,130 +106,47 @@ export default function ProfileClientPage({
     setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
   };
 
-  // Subscribe to realtime order updates
+  // Subscribe to realtime updates
   useEffect(() => {
-    let orderSubscription: ReturnType<typeof supabase.channel> | null = null;
-    let profileSubscription: ReturnType<typeof supabase.channel> | null = null;
+    let orderSubscription: RealtimeChannel | null = null;
+    let profileSubscription: RealtimeChannel | null = null;
 
     const setupSubscriptions = async () => {
       try {
-        // Subscribe to orders with error handling
-        orderSubscription = supabase
-          .channel("orders", {
-            config: {
-              presence: {
-                key: user.id,
-              },
-            },
-          })
-          .on(
-            "postgres_changes",
-            {
-              event: "*",
-              schema: "public",
-              table: "orders",
-              filter: `user_id=eq.${user.id}`,
-            },
-            async (payload) => {
-              try {
-                // Fetch updated orders
-                if (payload.new) {
-                  const order = payload.new as OrderType;
-                  setOrders((prevOrders) => {
-                    const index = prevOrders.findIndex(
-                      (o) => o.id === order.id,
-                    );
-                    if (index !== -1) {
-                      // Replace existing order
-                      const updated = [...prevOrders];
-                      updated[index] = order;
-                      return updated;
-                    }
-                    // Add new order
-                    return [...prevOrders, order];
-                  });
-                }
-                if (payload.old) {
-                  const order = payload.old as OrderType;
-                  setOrders((prevOrders) =>
-                    prevOrders.filter((o) => o.id !== order.id),
-                  );
-                }
-              } catch (error) {
-                console.error(
-                  "Error handling order subscription update:",
-                  error,
-                );
+        // Order subscription callbacks
+        const orderCallbacks: OrderSubscriptionCallbacks = {
+          onOrderUpdate: (order: OrderType) => {
+            setOrders((prevOrders) => {
+              const index = prevOrders.findIndex((o) => o.id === order.id);
+              if (index !== -1) {
+                // Replace existing order with updated data
+                const updated = [...prevOrders];
+                updated[index] = { ...updated[index], ...order };
+                return updated;
               }
-            },
-          )
-          .on("presence", { event: "sync" }, () => {
-            // Handle presence sync
-          })
-          .on("presence", { event: "join" }, () => {
-            // Handle presence join
-          })
-          .on("presence", { event: "leave" }, () => {
-            // Handle presence leave
-          })
-          .subscribe((status, err) => {
-            if (status === "SUBSCRIBED") {
-              console.log("Orders subscription established");
-            } else if (status === "CHANNEL_ERROR") {
-              console.error("Orders subscription error:", err);
-            } else if (status === "TIMED_OUT") {
-              console.warn("Orders subscription timed out, retrying...");
-            }
-          });
+              // If order not found, don't add it (should not happen for updates)
+              return prevOrders;
+            });
+          },
+          onOrderDelete: (order: OrderType) => {
+            setOrders((prevOrders) =>
+              prevOrders.filter((o) => o.id !== order.id),
+            );
+          },
+        };
 
-        // Subscribe to profile updates with error handling
-        profileSubscription = supabase
-          .channel("profiles", {
-            config: {
-              presence: {
-                key: user.id,
-              },
-            },
-          })
-          .on(
-            "postgres_changes",
-            {
-              event: "*",
-              schema: "public",
-              table: "profiles",
-              filter: `profile_id=eq.${user.id}`,
-            },
-            async (payload) => {
-              try {
-                if (payload.new) {
-                  const profile = payload.new as ProfileType;
-                  setUsername(profile.username || "");
-                  setEmail(profile.email || "");
-                  setAvatarUrl(profile.avatar_url || "");
-                }
-              } catch (error) {
-                console.error(
-                  "Error handling profile subscription update:",
-                  error,
-                );
-              }
-            },
-          )
-          .on("presence", { event: "sync" }, () => {
-            // Handle presence sync
-          })
-          .subscribe((status, err) => {
-            if (status === "SUBSCRIBED") {
-              console.log("Profile subscription established");
-              toast.success("Profile subscription established");
-            } else if (status === "CHANNEL_ERROR") {
-              console.error("Profile subscription error:", err);
-              toast.error("Profile subscription error");
-            } else if (status === "TIMED_OUT") {
-              console.warn("Profile subscription timed out, retrying...");
-              toast.error("Profile subscription timed out, retrying...");
-            }
-          });
+        // Profile subscription callbacks
+        const profileCallbacks: ProfileSubscriptionCallbacks = {
+          onProfileUpdate: (profile: ProfileType) => {
+            setUsername(profile.username || "");
+            setEmail(profile.email || "");
+            setAvatarUrl(profile.avatar_url || "");
+          },
+        };
+
+        // Setup subscriptions
+        orderSubscription = subscribeToUserOrders(user.id, orderCallbacks);
+        profileSubscription = subscribeToUserProfile(user.id, profileCallbacks);
       } catch (error) {
         console.error("Error setting up subscriptions:", error);
       }
@@ -228,12 +156,8 @@ export default function ProfileClientPage({
 
     return () => {
       try {
-        if (orderSubscription) {
-          supabase.removeChannel(orderSubscription);
-        }
-        if (profileSubscription) {
-          supabase.removeChannel(profileSubscription);
-        }
+        unsubscribeFromUserOrders(orderSubscription);
+        unsubscribeFromUserProfile(profileSubscription);
       } catch (error) {
         console.error("Error cleaning up subscriptions:", error);
       }
