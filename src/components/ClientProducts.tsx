@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "motion/react"; 
+import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts, FilterOptions } from "@/hooks/queries/use-products";

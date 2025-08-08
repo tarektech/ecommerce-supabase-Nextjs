@@ -150,7 +150,7 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, {user?.email}</p>
         </div>
-        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+        <Badge variant="secondary" className="bg-primary/15 text-primary">
           <Settings className="mr-1 h-3 w-3" />
           Admin
         </Badge>
@@ -306,13 +306,13 @@ export default function AdminDashboard() {
             )}
 
             {stats.orders.pending > 0 && (
-              <div className="flex items-center rounded-lg border border-blue-200 bg-blue-50 p-3">
-                <Activity className="mr-2 h-4 w-4 text-blue-600" />
+              <div className="border-primary/30 bg-primary/10 flex items-center rounded-lg border p-3">
+                <Activity className="text-primary mr-2 h-4 w-4" />
                 <div>
-                  <p className="text-sm font-medium text-blue-800">
+                  <p className="text-primary text-sm font-medium">
                     Pending Orders
                   </p>
-                  <p className="text-xs text-blue-600">
+                  <p className="text-primary text-xs">
                     {stats.orders.pending} orders are waiting for processing
                   </p>
                 </div>

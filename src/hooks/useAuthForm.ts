@@ -1,12 +1,12 @@
-'use client'
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 interface AuthFormState {
   email: string;
   password: string;
-  confirmPassword?: string;
+  confirmPassword: string;
 }
 
 interface UseAuthFormProps {
@@ -35,9 +35,9 @@ export function useAuthForm({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<AuthFormState>({
-    email: '',
-    password: '',
-    ...(isSignUp ? { confirmPassword: '' } : {}),
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,18 +60,18 @@ export function useAuthForm({
     setError(null);
 
     if (!formData.email || !formData.password) {
-      setError('Email and password are required');
+      setError("Email and password are required");
       return;
     }
 
     if (isSignUp) {
       if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
+        setError("Passwords do not match");
         return;
       }
 
       if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters');
+        setError("Password must be at least 6 characters");
         return;
       }
     }
@@ -83,12 +83,12 @@ export function useAuthForm({
       } else {
         await signIn(formData.email, formData.password);
       }
-      router.push('/');
+      router.push("/");
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : `An error occurred during sign ${isSignUp ? 'up' : 'in'}`;
+          : `An error occurred during sign ${isSignUp ? "up" : "in"}`;
       setError(errorMessage);
       if (isSignUp) {
         console.error(error);
@@ -108,5 +108,5 @@ export function useAuthForm({
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
     handleSubmit,
-  };
+  } ;
 }

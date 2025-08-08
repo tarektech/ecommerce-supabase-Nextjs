@@ -1,4 +1,4 @@
-import { AddressType } from "@/types";
+import { AddressType, OrderType } from "@/types";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
@@ -47,6 +47,31 @@ export const orderService = {
         paymentIntentId,
       });
 
+      // Idempotency: if a paymentId exists, try to find an existing order first
+      let existingOrder: OrderType | null = null;
+      if (paymentIntentId) {
+        const { data: foundOrders, error: findError } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("payment_id", paymentIntentId)
+          .eq("user_id", userId)
+          .limit(1);
+        if (
+          !findError &&
+          Array.isArray(foundOrders) &&
+          foundOrders.length > 0
+        ) {
+          existingOrder = foundOrders[0];
+        }
+      }
+
+      if (existingOrder) {
+        console.log(
+          "Existing order found for payment_id, returning existing order",
+        );
+        return existingOrder;
+      }
+
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert([
@@ -62,9 +87,35 @@ export const orderService = {
         .single();
 
       if (orderError) {
-        console.error("Order creation error:", orderError);
-        toast.error(`Failed to create order: ${orderError.message}`);
-        throw new Error(`Order creation failed: ${orderError.message}`);
+        // Handle duplicate key (unique constraint) gracefully by fetching existing
+        const maybeCode = orderError?.code;
+        if (maybeCode === "23505" && paymentIntentId) {
+          const { data: foundOrders } = await supabase
+            .from("orders")
+            .select("*")
+            .eq("payment_id", paymentIntentId)
+            .eq("user_id", userId)
+            .limit(1);
+          if (Array.isArray(foundOrders) && foundOrders.length > 0) {
+            console.warn(
+              "Duplicate payment_id detected. Returning existing order",
+            );
+            return foundOrders[0];
+          }
+        }
+
+        console.error("Order creation error", {
+          message: orderError?.message,
+          code: orderError?.code,
+          details: orderError?.details,
+          hint: orderError?.hint,
+        });
+        toast.error(
+          `Failed to create order: ${orderError?.message ?? "Unknown error"}`,
+        );
+        throw new Error(
+          `Order creation failed: ${orderError?.message ?? "Unknown error"}`,
+        );
       }
 
       if (!order) {

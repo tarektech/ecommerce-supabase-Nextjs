@@ -7,7 +7,6 @@ import { Navbar } from "@/components/Navbar";
 import Sidebar  from "@/components/Sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { TanStackQueryProvider } from "@/lib/providers/query-provider";
-import StagewiseToolbar from "@/StagewiseToolbar";
 import { Toaster } from "sonner";
 import { MainLayout } from "@/components/MainLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -66,8 +65,7 @@ export default function RootLayout({
             },
           }}
         />
-
-        {process.env.NODE_ENV === "development" && <StagewiseToolbar />}
+        
       </body>
     </html>
   );

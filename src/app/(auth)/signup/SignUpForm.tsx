@@ -20,8 +20,10 @@ export default function SignUpForm() {
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
     handleSubmit,
-  } = useAuthForm();
+  } = useAuthForm({isSignUp: true});
   return (
+    
+
     <form onSubmit={handleSubmit}>
       <CardContent className="space-y-4">
         {error && (
