@@ -14,11 +14,17 @@ export const reviewService = {
 
       if (error) {
         console.error('Error fetching reviews:', error);
-        toast.error('Failed to fetch reviews');
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+        toast.error(error.message || 'Failed to fetch reviews');
         return [];
       }
 
-      return data as ReviewType[];
+      return (data as ReviewType[]) || [];
     } catch (error) {
       console.error('Error in getReviewsByProduct:', error);
       toast.error('Something went wrong');
@@ -64,16 +70,22 @@ export const reviewService = {
         .from('reviews')
         .insert({
           product_id: productId,
-          profile_id: user.id,
+          user_id: user.id,
           rating,
           comment,
         })
-        .select('*, profile:profiles(*)')
+        .select('*')
         .single();
 
       if (error) {
         console.error('Error creating review:', error);
-        toast.error('Failed to create review');
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+        toast.error(error.message || 'Failed to create review');
         return null;
       }
 
@@ -105,8 +117,8 @@ export const reviewService = {
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
-        .eq('profile_id', user.id) // Ensure user owns the review
-        .select('*, profile:profiles(*)')
+        .eq('user_id', user.id) // Ensure user owns the review
+        .select('*')
         .single();
 
       if (error) {
@@ -135,7 +147,7 @@ export const reviewService = {
         .from('reviews')
         .delete()
         .eq('id', id)
-        .eq('profile_id', user.id); // Ensure user owns the review
+        .eq('user_id', user.id); // Ensure user owns the review
 
       if (error) {
         console.error('Error deleting review:', error);

@@ -1,8 +1,7 @@
-import { productService } from '@/services/product/productService';
-import { getProducts } from '@/services/product/getProducts';
-import { ProductType } from '@/types';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { useState, useMemo } from 'react';
+import { productService } from '@/services/product/productService'
+import { ProductType } from '@/types'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { useState, useMemo } from 'react'
 
 // Filter Options Interface
 export interface FilterOptions {
@@ -100,13 +99,13 @@ export function useProducts(options?: UseQueryOptions<ProductType[]>) {
     categoryFilter: 'all',
   });
 
-  const query = useQuery({
-    queryKey: productKeys.lists(),
-    queryFn: async () => {
-      const data = await getProducts();
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
-    },
+	const query = useQuery({
+		queryKey: productKeys.lists(),
+		queryFn: async () => {
+			const data = await productService.getProducts()
+			// Ensure we always return an array
+			return Array.isArray(data) ? data : []
+		},
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     retry: (failureCount, error) => {
@@ -254,12 +253,12 @@ export function useFilteredProducts(
   });
 
   // Use the base products query without additional filtering
-  const productsQuery = useQuery({
-    queryKey: productKeys.lists(),
-    queryFn: async () => {
-      const data = await getProducts();
-      return Array.isArray(data) ? data : [];
-    },
+	const productsQuery = useQuery({
+		queryKey: productKeys.lists(),
+		queryFn: async () => {
+			const data = await productService.getProducts()
+			return Array.isArray(data) ? data : []
+		},
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     retry: (failureCount, error) => {

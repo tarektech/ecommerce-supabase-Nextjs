@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/ProductCard";
-import { useProducts, FilterOptions } from "@/hooks/queries/use-products";
+import { useProducts, FilterOptions } from '@/hooks/queries'
 import { ProductType } from "@/types";
 import { ErrorState } from "@/components/ErrorState";
 import { ErrorBoundary } from "@/components/ErrorBoundary";

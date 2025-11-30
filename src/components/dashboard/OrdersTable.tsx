@@ -11,7 +11,7 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { OrderType } from "@/types";
-import { useOrders } from "@/hooks/queries/use-orders";
+import { useOrders } from '@/hooks/queries'
 import { getClientUser } from "@/lib/supabase/clientUtils";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";

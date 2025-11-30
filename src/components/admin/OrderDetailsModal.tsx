@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,8 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { User, MapPin, Calendar, Package, DollarSign } from "lucide-react";
 import { OrderWithDetails } from "@/services/admin/adminOrderService";
-import { orderService } from "@/services/order/orderService";
-import { OrderItemType } from "@/types";
+import { useOrder } from "@/hooks/queries";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -24,19 +22,6 @@ interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   order: OrderWithDetails;
-}
-
-interface OrderDetails {
-  order_items: Array<
-    OrderItemType & {
-      product: {
-        product_id: string;
-        title: string;
-        image?: string;
-        price: number;
-      };
-    }
-  >;
 }
 
 const getStatusColor = (status: string) => {
@@ -60,27 +45,10 @@ export function OrderDetailsModal({
   onClose,
   order,
 }: OrderDetailsModalProps) {
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchOrderDetails = useCallback(async () => {
-    if (!order) return;
-    try {
-      setLoading(true);
-      const details = await orderService.getOrderById(order.id.toString());
-      setOrderDetails(details);
-    } catch (error) {
-      console.error("Error fetching order details:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [order]);
-
-  useEffect(() => {
-    if (isOpen && order) {
-      fetchOrderDetails();
-    }
-  }, [isOpen, order, fetchOrderDetails]);
+  // Use the query hook to fetch order details
+  const { data: orderDetails, isLoading: loading } = useOrder(
+    isOpen && order ? order.id.toString() : "",
+  );
 
   if (!order) return null;
 
@@ -226,10 +194,10 @@ export function OrderDetailsModal({
                       className="bg-card flex items-center gap-4 rounded-lg border p-4 shadow-sm"
                     >
                       <div className="bg-muted h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
-                        {item.product.image ? (
+                        {item.product?.image ? (
                           <Image
                             src={item.product.image}
-                            alt={item.product.title}
+                            alt={item.product?.title || "Product"}
                             width={64}
                             height={64}
                             className="h-full w-full object-cover"
@@ -243,7 +211,7 @@ export function OrderDetailsModal({
 
                       <div className="flex-1">
                         <h4 className="text-foreground font-medium">
-                          {item.product.title}
+                          {item.product?.title || "Product"}
                         </h4>
                         <p className="text-muted-foreground text-sm">
                           Quantity: {item.quantity}

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FilterOptions } from "@/hooks/queries/use-products";
+import { FilterOptions } from '@/hooks/queries'
 
 interface ProductFilterProps {
   filters: FilterOptions;

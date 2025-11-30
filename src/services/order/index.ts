@@ -1,13 +1,8 @@
-// Client-side functions only
-
-export { createOrder } from "./createOrder";
-export { getOrders } from "./getOrders";
-export { getOrderById } from "./getOrderById";
-export { updateOrderStatus } from "./updateOrderStatus";
+export * from './orderService'
 
 // Subscription services
 export {
-  subscribeToUserOrders,
-  unsubscribeFromUserOrders,
-  type OrderSubscriptionCallbacks,
-} from "./orderSubscriptionService";
+	subscribeToUserOrders,
+	unsubscribeFromUserOrders,
+	type OrderSubscriptionCallbacks,
+} from './orderSubscriptionService'

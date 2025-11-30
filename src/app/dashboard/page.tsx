@@ -1,11 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ProductType, OrderType } from "@/types";
-import { productService } from "@/services/product/productService";
-import { orderService } from "@/services/order/orderService";
+import { useProducts, useOrders } from "@/hooks/queries";
 import Link from "next/link";
 import { OrderCard } from "@/components/OrderCard";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
@@ -13,40 +11,15 @@ import Image from "next/image";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const [orders, setOrders] = useState<OrderType[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
     "analytics" | "products" | "orders"
   >("analytics");
 
-  // Handler to remove order from local state after deletion
-  const handleOrderDeleted = (deletedOrderId: number) => {
-    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
-  };
+  // Use query hooks instead of manual state management
+  const { data: products, isLoading: productsLoading } = useProducts();
+  const { data: orders, isLoading: ordersLoading } = useOrders(user?.id || "");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-
-      setLoading(true);
-      try {
-        // Fetch products
-        const productsData = await productService.getProducts();
-        setProducts(productsData);
-
-        // Fetch orders
-        const ordersData = await orderService.getOrders(user.id);
-        setOrders(ordersData);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user]);
+  const loading = productsLoading || ordersLoading;
 
   if (!user) {
     return (
@@ -114,12 +87,14 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Analytics Tab */}
-            {activeTab === "analytics" && <DashboardCharts orders={orders} />}
+            {activeTab === "analytics" && (
+              <DashboardCharts orders={orders || []} />
+            )}
 
             {/* Products Tab */}
             {activeTab === "products" && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {products.length > 0 ? (
+                {products && products.length > 0 ? (
                   products.map((product) => (
                     <Card key={product.product_id} className="overflow-hidden">
                       <div className="h-48 bg-gray-100">
@@ -168,13 +143,9 @@ export default function DashboardPage() {
             {/* Orders Tab */}
             {activeTab === "orders" && (
               <div className="space-y-6">
-                {orders.length > 0 ? (
+                {orders && orders.length > 0 ? (
                   orders.map((order) => (
-                    <OrderCard
-                      key={order.id}
-                      order={order}
-                      onDelete={handleOrderDeleted}
-                    />
+                    <OrderCard key={order.id} order={order} />
                   ))
                 ) : (
                   <div className="flex flex-col items-center justify-center px-4 py-12">

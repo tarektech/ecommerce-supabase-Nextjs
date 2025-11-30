@@ -7,12 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, ShoppingCart, Heart, Share2, Minus, Plus } from "lucide-react";
+  import { ShoppingCart, Heart, Share2, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react"; 
-import { format } from "date-fns";
-
-import { useProductReviews } from "@/hooks/queries/use-reviews";
 
 
 import {
@@ -23,8 +20,7 @@ import {
   RotateCcw,
   Check,
 } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
+import { ReviewTab } from "./_components/review-tab";
 
 type ProductDetailsClientProps = {
   product: ProductType;
@@ -40,21 +36,16 @@ export default function ProductDetailsClient({
   const [isFavorited, setIsFavorited] = useState(false);
 
   // Get reviews for this product
-  const { data: reviews = [], isLoading: reviewsLoading } = useProductReviews(
-    product.product_id,
-  );
+  // const { data: reviews = [], isLoading: reviewsLoading } = useGetProductReviews(
+  //   product.product_id,
+  // );
 
   // Generate multiple images from the single image (mock data for demo)
   const productImages = product.image
     ? [product.image, product.image, product.image, product.image]
     : ["/placeholder-product.jpg"];
 
-  // Calculate review stats
-  const averageRating =
-    reviews.length > 0
-      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
-      : 4.5;
-  const reviewCount = reviews.length || 123; // fallback for demo
+ 
 
   const handleAddToCart = async () => {
     try {
@@ -90,32 +81,10 @@ export default function ProductDetailsClient({
     );
   };
 
-  const renderStars = (rating: number, size: "sm" | "md" = "md") => {
-    const sizeClass = size === "sm" ? "w-3 h-3" : "w-4 h-4";
-    return (
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`${sizeClass} ${
-              star <= rating
-                ? "fill-yellow-400 text-yellow-400"
-                : "text-muted-foreground"
-            }`}
-          />
-        ))}
-      </div>
-    );
-  };
+  
 
   // Mock rating distribution for demo
-  const ratingDistribution = [
-    { stars: 5, percentage: 68 },
-    { stars: 4, percentage: 20 },
-    { stars: 3, percentage: 8 },
-    { stars: 2, percentage: 3 },
-    { stars: 1, percentage: 1 },
-  ];
+  
 
   return (
     <div className="bg-background min-h-screen">
@@ -235,18 +204,14 @@ export default function ProductDetailsClient({
                 {product.title}
               </motion.h1>
 
-              <motion.div
+              {/* <motion.div
                 className="mb-4 flex items-center gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                {renderStars(averageRating)}
-                <span className="text-muted-foreground text-sm">
-                  {averageRating.toFixed(1)} ({reviewCount.toLocaleString()}{" "}
-                  reviews)
-                </span>
-              </motion.div>
+                <RenderStars rating={product.rating || 0} size="sm" />
+              </motion.div> */}
 
               <motion.div
                 className="mb-6 flex items-center gap-3"
@@ -383,7 +348,7 @@ export default function ProductDetailsClient({
           <Tabs defaultValue="description" className="mb-12">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews ({reviewCount})</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
             </TabsList>
 
             <TabsContent value="description" className="mt-6">
@@ -406,97 +371,7 @@ export default function ProductDetailsClient({
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-6">
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="mb-6 text-center">
-                      <div className="mb-2 text-4xl font-bold">
-                        {averageRating.toFixed(1)}
-                      </div>
-                      {renderStars(averageRating)}
-                      <p className="text-muted-foreground mt-2 text-sm">
-                        Based on {reviewCount.toLocaleString()} reviews
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      {ratingDistribution.map((item) => (
-                        <div
-                          key={item.stars}
-                          className="flex items-center gap-3"
-                        >
-                          <span className="w-6 text-sm">{item.stars}★</span>
-                          <Progress
-                            value={item.percentage}
-                            className="flex-1"
-                          />
-                          <span className="text-muted-foreground w-10 text-sm">
-                            {item.percentage}%
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="space-y-4 lg:col-span-2">
-                  {reviewsLoading ? (
-                    <Card>
-                      <CardContent className="p-6">
-                        <div className="animate-pulse">
-                          <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
-                          <div className="h-4 w-1/2 rounded bg-gray-200"></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : reviews.length > 0 ? (
-                    reviews.map((review) => (
-                      <Card key={review.id}>
-                        <CardContent className="p-6">
-                          <div className="flex items-start gap-4">
-                            <Avatar>
-                              <div className="bg-primary/10 flex h-full w-full items-center justify-center">
-                                <span className="text-sm font-medium">
-                                  {review.user_id.charAt(0).toUpperCase()}
-                                </span>
-                              </div>
-                            </Avatar>
-                            <div className="flex-1">
-                              <div className="mb-2 flex items-center gap-2">
-                                <h4 className="font-medium">
-                                  User {review.user_id.slice(0, 8)}
-                                </h4>
-                                {renderStars(review.rating, "sm")}
-                                {review.created_at && (
-                                  <span className="text-muted-foreground text-sm">
-                                    {format(
-                                      new Date(review.created_at),
-                                      "MMM dd, yyyy",
-                                    )}
-                                  </span>
-                                )}
-                              </div>
-                              {review.comment && (
-                                <p className="text-muted-foreground">
-                                  {review.comment}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    <Card>
-                      <CardContent className="p-6 text-center">
-                        <p className="text-muted-foreground">
-                          No reviews yet. Be the first to review this product!
-                        </p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </div>
+                <ReviewTab product={product} />
             </TabsContent>
           </Tabs>
         </motion.div>

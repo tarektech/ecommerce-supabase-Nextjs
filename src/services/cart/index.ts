@@ -1,9 +1,1 @@
-export { getActiveCart } from './getActiveCart';
-export { createCart } from './createCart';
-export { getOrCreateCart } from './getOrCreateCart';
-export { getCartItems } from './getCartItems';
-export { addItemToCart } from './addItemToCart';
-export { updateCartItemQuantity } from './updateCartItemQuantity';
-export { removeCartItem } from './removeCartItem';
-export { clearCart } from './clearCart';
-export { findCartItemByProductId } from './findCartItemByProductId';
+export * from './cartService'

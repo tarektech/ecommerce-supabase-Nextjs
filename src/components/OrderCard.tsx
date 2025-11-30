@@ -3,8 +3,9 @@ import { OrderItemType, OrderType } from "@/types";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { orderService } from "@/services/order/orderService";
+import { useDeleteOrder } from "@/hooks/queries";
 import { format } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
 
 interface OrderCardProps {
   order: OrderType;
@@ -12,9 +13,15 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onDelete }: OrderCardProps) {
+  const { user } = useAuth();
+  const deleteOrder = useDeleteOrder();
+
   const handleDeleteOrder = async () => {
     try {
-      await orderService.deleteOrder(order.id.toString());
+      await deleteOrder.mutateAsync({
+        orderId: order.id.toString(),
+        userId: user?.id,
+      });
       toast.success("Order deleted");
       onDelete?.(order.id);
     } catch (error) {
@@ -55,8 +62,9 @@ export function OrderCard({ order, onDelete }: OrderCardProps) {
                 size="sm"
                 className="ml-2 cursor-pointer"
                 onClick={handleDeleteOrder}
+                disabled={deleteOrder.isPending}
               >
-                Delete Order
+                {deleteOrder.isPending ? "Deleting..." : "Delete Order"}
               </Button>
             )}
           </div>

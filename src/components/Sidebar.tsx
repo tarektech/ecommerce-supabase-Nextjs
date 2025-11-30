@@ -45,8 +45,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
-import { categoryService } from "@/services/category/categoryService";
-import { CategoryType } from "@/types";
+import { useCategories } from "@/hooks/queries";
 import { usePathname, useRouter } from "next/navigation";
 import { Motion } from "@/components/motion/motion";
 import {
@@ -66,8 +65,6 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 export default function Sidebar() {
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
@@ -75,28 +72,14 @@ export default function Sidebar() {
   const router = useRouter();
   const { state } = useSidebar();
 
+  // Use the TanStack Query hook instead of manual state management
+  const { data: categories, isLoading: loading } = useCategories();
+
   const isCollapsed = state === "collapsed";
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await categoryService.getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (mounted) {
-      fetchCategories();
-    }
-  }, [mounted]);
 
   if (!mounted) {
     return null;
@@ -105,7 +88,7 @@ export default function Sidebar() {
   // Mapping of categories from DB to display with icons and hrefs
   const categoryItems = [
     { name: "All", icon: Home, href: "/" },
-    ...categories.map((category) => ({
+    ...(categories || []).map((category) => ({
       name: category.name,
       icon: categoryIcons[category.name] || Smartphone,
       href: `/${category.name.toLowerCase()}`,
