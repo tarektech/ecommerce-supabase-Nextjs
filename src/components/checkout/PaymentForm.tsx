@@ -1,81 +1,25 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner";
+"use client";
+
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
+import { useCheckout } from "@/context/CheckoutContext";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
-interface PaymentFormProps {
-  onBack: () => void;
-  onSubmit: (
-    lastFourDigits: string,
-    cardholderName: string,
-    expiryDate: string,
-  ) => void;
-}
-
-export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
-  const { user } = useAuth();
+export default function PaymentForm() {
   const { cartItems } = useCart();
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardholderName, setCardholderName] = useState(
-    user?.user_metadata?.full_name || "",
-  );
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const router = useRouter();
+  const { shippingAddress, setPolarCheckout } = useCheckout();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Format card number with spaces every 4 digits
-  const formatCardNumber = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, "");
-    // Limit to 16 digits
-    const limitedDigits = digits.slice(0, 16);
-    // Add spaces every 4 digits
-    return limitedDigits.replace(/(\d{4})(?=\d)/g, "$1 ");
-  };
-
-  // Format expiry date as MM/YY
-  const formatExpiryDate = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, "");
-    // Limit to 4 digits
-    const limitedDigits = digits.slice(0, 4);
-    // Add slash after 2 digits
-    if (limitedDigits.length >= 2) {
-      return limitedDigits.slice(0, 2) + "/" + limitedDigits.slice(2);
-    }
-    return limitedDigits;
-  };
-
-  // Format CVV to numeric only
-  const formatCVV = (value: string) => {
-    // Remove all non-digits and limit to 4 digits
-    return value.replace(/\D/g, "").slice(0, 4);
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value);
-    setCardNumber(formatted);
-  };
-
-  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatExpiryDate(e.target.value);
-    setExpiryDate(formatted);
-  };
-
-  const handleCVVChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCVV(e.target.value);
-    setCvv(formatted);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!user) {
-      toast.error("You must be logged in to place an order");
+  const createPolarCheckout = async () => {
+    if (!shippingAddress) {
+      toast.error("Shipping address is required");
       return;
     }
 
@@ -84,112 +28,150 @@ export const PaymentForm = ({ onBack, onSubmit }: PaymentFormProps) => {
       return;
     }
 
-    // Validate credit card information
-    if (!cardNumber || !cardholderName || !expiryDate || !cvv) {
-      toast.error("Please fill in all payment details");
-      return;
-    }
-
-    // Validate card number (should be 16 digits when spaces are removed)
-    const cleanCardNumber = cardNumber.replace(/\s/g, "");
-    if (cleanCardNumber.length !== 16) {
-      toast.error("Card number must be 16 digits");
-      return;
-    }
-
-    // Validate expiry date format
-    if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
-      toast.error("Expiry date must be in MM/YY format");
-      return;
-    }
-
-    // Validate CVV length
-    if (cvv.length < 3 || cvv.length > 4) {
-      toast.error("CVV must be 3 or 4 digits");
-      return;
-    }
+    setIsLoading(true);
+    setError(null);
 
     try {
-      // Get last four digits of the card number
-      const lastFourDigits = cleanCardNumber.slice(-4);
+      // Prepare checkout data
+      const checkoutData = {
+        items: cartItems.map((item) => ({
+          product_id: item.product_id,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        shippingAddress: {
+          street: shippingAddress.street,
+          city: shippingAddress.city,
+          zipCode: shippingAddress.zipCode,
+          country: shippingAddress.country,
+        },
+        customerEmail: user?.email || undefined,
+      };
 
-      // Submit the payment info
-      onSubmit(lastFourDigits, cardholderName, expiryDate);
+      // Call our API to create Polar checkout session
+      const response = await fetch("/api/polar/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(checkoutData),
+      });
 
-      // You would implement your new payment processing logic here
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create checkout session");
+      }
 
-      toast.success("Payment processed successfully");
+      const data = await response.json();
 
-      // Navigate to confirmation page
-      const checkoutId = `${Date.now()}`;
-      router.push(`/checkout/confirmation?checkout_id=${checkoutId}`);
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      toast.error("Failed to process payment. Please try again.");
+      // Save checkout info to context
+      setPolarCheckout(data.checkoutId, data.checkoutUrl);
+      setCheckoutUrl(data.checkoutUrl);
+    } catch (err) {
+      console.error("Error creating checkout:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create checkout";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="cardNumber">Card Number</Label>
-          <Input
-            id="cardNumber"
-            placeholder="1234 5678 9012 3456"
-            value={cardNumber}
-            onChange={handleCardNumberChange}
-            maxLength={19} // 16 digits + 3 spaces
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="cardholderName">Cardholder Name</Label>
-          <Input
-            id="cardholderName"
-            placeholder="John Doe"
-            value={cardholderName}
-            onChange={(e) => setCardholderName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="expiryDate">Expiry Date</Label>
-            <Input
-              id="expiryDate"
-              placeholder="MM/YY"
-              value={expiryDate}
-              onChange={handleExpiryDateChange}
-              maxLength={5} // MM/YY format
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="cvv">CVV</Label>
-            <Input
-              id="cvv"
-              placeholder="123"
-              value={cvv}
-              onChange={handleCVVChange}
-              maxLength={4} // 3-4 digits
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onBack}>
-          Back
-        </Button>
-        <Button type="submit" className="cursor-pointer">
-          Complete Payment
-        </Button>
-      </div>
-    </form>
+  // Calculate total
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
   );
-};
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Order Summary</h3>
+
+            <div className="space-y-2">
+              {cartItems.map((item) => (
+                <div
+                  key={item.product_id}
+                  className="flex justify-between text-sm"
+                >
+                  <span>
+                    {item.title} x {item.quantity}
+                  </span>
+                  <span className="font-medium">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="border-t pt-4">
+              <div className="flex justify-between text-base font-semibold">
+                <span>Total:</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {error && (
+        <Card className="border-destructive">
+          <CardContent className="pt-6">
+            <p className="text-destructive text-sm">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!checkoutUrl ? (
+        <div className="space-y-4">
+          <p className="text-muted-foreground text-sm">
+            Click the button below to proceed to secure payment powered by
+            Polar.
+          </p>
+          <Button
+            onClick={createPolarCheckout}
+            disabled={isLoading || cartItems.length === 0}
+            className="w-full"
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating checkout session...
+              </>
+            ) : (
+              "Proceed to Payment"
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <p className="text-muted-foreground text-sm">
+            You will be redirected to Polar&apos;s secure checkout page.
+          </p>
+          <Button
+            onClick={() => {
+              window.location.href = checkoutUrl;
+            }}
+            className="w-full"
+            size="lg"
+          >
+            Continue to Polar Checkout
+          </Button>
+        </div>
+      )}
+
+      <div className="text-muted-foreground bg-muted rounded-lg p-4 text-xs">
+        <p className="font-medium">Secure Payment</p>
+        <p className="mt-1">
+          Your payment is processed securely by Polar. We never store your
+          complete card details.
+        </p>
+      </div>
+    </div>
+  );
+}

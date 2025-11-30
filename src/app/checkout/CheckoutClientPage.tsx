@@ -8,8 +8,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { ShippingForm } from "@/components/checkout/ShippingForm";
-import { PaymentForm } from "@/components/checkout/PaymentForm";
+import ShippingForm from "@/components/checkout/ShippingForm";
+import PaymentForm from "@/components/checkout/PaymentForm";
 import { ConfirmationStep } from "@/components/checkout/ConfirmationStep";
 import { StepIndicator } from "@/components/checkout/StepIndicator";
 import { useCheckout } from "@/context/CheckoutContext";
@@ -24,25 +24,7 @@ export default function CheckoutClientPage({
   email,
 }: CheckoutClientPageProps) {
   const router = useRouter();
-  const {
-    currentStep,
-    shippingAddress,
-    setCurrentStep,
-    saveShippingAddress,
-    savePaymentInfo,
-  } = useCheckout();
-
-  const handlePaymentSubmit = (
-    lastFourDigits: string,
-    cardholderName: string,
-    expiryDate: string,
-  ) => {
-    savePaymentInfo({
-      cardholderName,
-      lastFourDigits,
-      expiryDate,
-    });
-  };
+  const { currentStep, shippingAddress, saveShippingAddress } = useCheckout();
 
   return (
     <div className="bg-background min-h-screen py-12">
@@ -81,17 +63,19 @@ export default function CheckoutClientPage({
 
           {currentStep === "shipping" && (
             <ShippingForm
-              username={username}
-              email={email}
-              onSubmit={saveShippingAddress}
+              username={username || ""}
+              email={email || ""}
+              onSubmit={(data) =>
+                saveShippingAddress({
+                  street: data.street_address,
+                  city: data.city,
+                  zipCode: data.postal_code,
+                  country: data.country,
+                })
+              }
             />
           )}
-          {currentStep === "payment" && shippingAddress && (
-            <PaymentForm
-              onBack={() => setCurrentStep("shipping")}
-              onSubmit={handlePaymentSubmit}
-            />
-          )}
+          {currentStep === "payment" && shippingAddress && <PaymentForm />}
           {currentStep === "confirmation" && (
             <ConfirmationStep
               email={email}

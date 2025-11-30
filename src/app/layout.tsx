@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/Navbar";
-import Sidebar  from "@/components/Sidebar";
+import Sidebar from "@/components/Sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { TanStackQueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "sonner";
@@ -29,7 +29,7 @@ export default function RootLayout({
         <title>My App</title>
         <meta name="description" content="My App is a..." />
       </head>
-      <body className="bg-background min-h-screen">
+      <body className="bg-background min-h-screen" suppressHydrationWarning>
         <ErrorBoundary>
           <TanStackQueryProvider>
             <AuthProvider>
@@ -54,7 +54,7 @@ export default function RootLayout({
           </TanStackQueryProvider>
         </ErrorBoundary>
         <Toaster
-          theme="light" // or "dark" or "system"
+          theme="system"
           toastOptions={{
             unstyled: false,
             classNames: {
@@ -65,7 +65,6 @@ export default function RootLayout({
             },
           }}
         />
-        
       </body>
     </html>
   );

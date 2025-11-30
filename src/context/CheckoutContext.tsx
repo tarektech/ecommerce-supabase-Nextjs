@@ -24,9 +24,12 @@ interface CheckoutContextType {
   currentStep: CheckoutStep;
   shippingAddress: ShippingAddress | null;
   paymentInfo: PaymentInfo | null;
+  polarCheckoutId: string | null;
+  polarCheckoutUrl: string | null;
   setCurrentStep: (step: CheckoutStep) => void;
   saveShippingAddress: (address: ShippingAddress) => void;
   savePaymentInfo: (info: PaymentInfo) => void;
+  setPolarCheckout: (checkoutId: string, checkoutUrl: string) => void;
   resetCheckout: () => void;
 }
 
@@ -41,6 +44,8 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
   const [shippingAddress, setShippingAddress] =
     useState<ShippingAddress | null>(null);
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
+  const [polarCheckoutId, setPolarCheckoutIdState] = useState<string | null>(null);
+  const [polarCheckoutUrl, setPolarCheckoutUrlState] = useState<string | null>(null);
 
   // Save shipping address
   const saveShippingAddress = (address: ShippingAddress) => {
@@ -54,11 +59,19 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
     setCurrentStep('confirmation');
   };
 
+  // Save Polar checkout information
+  const setPolarCheckout = (checkoutId: string, checkoutUrl: string) => {
+    setPolarCheckoutIdState(checkoutId);
+    setPolarCheckoutUrlState(checkoutUrl);
+  };
+
   // Reset checkout data
   const resetCheckout = () => {
     setCurrentStep('shipping');
     setShippingAddress(null);
     setPaymentInfo(null);
+    setPolarCheckoutIdState(null);
+    setPolarCheckoutUrlState(null);
   };
 
   return (
@@ -67,9 +80,12 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
         currentStep,
         shippingAddress,
         paymentInfo,
+        polarCheckoutId,
+        polarCheckoutUrl,
         setCurrentStep,
         saveShippingAddress,
         savePaymentInfo,
+        setPolarCheckout,
         resetCheckout,
       }}
     >

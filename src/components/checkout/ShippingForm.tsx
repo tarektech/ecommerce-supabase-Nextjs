@@ -1,177 +1,151 @@
-import React, { useRef } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-interface ShippingFormProps {
-  username: string | null;
-  email: string | null;
-  onSubmit: (shippingAddress: {
-    street: string;
-    city: string;
-    zipCode: string;
-    country: string;
-  }) => void;
-}
+const formSchema = z.object({
+  username: z.string().min(1),
+  email: z.string().email(),
+  street_address: z.string().min(1),
+  city: z.string().min(1),
+  postal_code: z.string().min(1),
+  country: z.string().min(1),
+});
 
-export const ShippingForm = ({
+export default function ShippingForm({
   username,
   email,
   onSubmit,
-}: ShippingFormProps) => {
-  const addressRef = useRef<HTMLInputElement>(null);
-  const cityRef = useRef<HTMLInputElement>(null);
-  const postalCodeRef = useRef<HTMLInputElement>(null);
-  const countryRef = useRef<HTMLInputElement>(null);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Basic validation
-    if (
-      !addressRef.current?.value ||
-      !cityRef.current?.value ||
-      !postalCodeRef.current?.value ||
-      !countryRef.current?.value
-    ) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    // Validate postal code format
-    if (!/^\d{5}(-\d{4})?$/.test(postalCodeRef.current.value)) {
-      toast.error("Invalid postal code format (e.g., 12345 or 12345-6789)");
-      return;
-    }
-
-    onSubmit({
-      street: addressRef.current.value,
-      city: cityRef.current.value,
-      zipCode: postalCodeRef.current.value,
-      country: countryRef.current.value,
-    });
-  };
+}: {
+  username: string;
+  email: string;
+  onSubmit: (data: z.infer<typeof formSchema>) => void;
+}) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: username || "",
+      email: email || "",
+      street_address: "",
+      city: "",
+      postal_code: "",
+      country: "",
+    },
+  });
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-900/30 p-6 backdrop-blur-sm">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label
-              htmlFor="fullName"
-              className="text-sm font-medium text-zinc-200"
-            >
-              Full Name
-            </Label>
-            <Input
-              type="text"
-              id="fullName"
-              value={username || ""}
-              disabled
-              required
-              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
-            />
-            <p className="text-muted-foreground text-xs">
-              {username || "No username available"}
-            </p>
-          </div>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mx-auto max-w-3xl space-y-8 py-10"
+      >
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input placeholder={username} disabled type="text" {...field} />
+              </FormControl>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="text-sm font-medium text-zinc-200"
-            >
-              Email
-            </Label>
-            <Input
-              type="email"
-              id="email"
-              value={email || ""}
-              disabled
-              required
-              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
-            />
-          </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="address"
-              className="text-sm font-medium text-zinc-200"
-            >
-              Street Address
-            </Label>
-            <Input
-              type="text"
-              id="address"
-              ref={addressRef}
-              placeholder="123 Main St, Apt 4B"
-              required
-              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
-            />
-          </div>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder={email} disabled type="email" {...field} />
+              </FormControl>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="city"
-                className="text-sm font-medium text-zinc-200"
-              >
-                City
-              </Label>
-              <Input
-                type="text"
-                id="city"
-                ref={cityRef}
-                placeholder="New York"
-                required
-                className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="postalCode"
-                className="text-sm font-medium text-zinc-200"
-              >
-                Postal Code
-              </Label>
-              <Input
-                type="text"
-                id="postalCode"
-                ref={postalCodeRef}
-                placeholder="12345"
-                maxLength={5}
-                required
-                className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
-              />
-            </div>
-          </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="country"
-              className="text-sm font-medium text-zinc-200"
-            >
-              Country
-            </Label>
-            <Input
-              type="text"
-              id="country"
-              ref={countryRef}
-              placeholder="United States"
-              required
-              className="border-zinc-700 bg-zinc-800/50 text-zinc-200 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500"
-            />
-          </div>
-        </div>
+        <FormField
+          control={form.control}
+          name="street_address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Street Address</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="123 Main St, Apt 4B"
+                  type="text"
+                  {...field}
+                />
+              </FormControl>
 
-        <Button
-          type="submit"
-          className="mt-6 w-full cursor-pointer rounded-md bg-orange-500 px-4 py-2 font-medium text-white transition-colors hover:bg-orange-600"
-        >
-          Continue to Payment
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="city"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>City</FormLabel>
+              <FormControl>
+                <Input placeholder="New York" type="text" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="postal_code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Postal Code</FormLabel>
+              <FormControl>
+                <Input placeholder="12345" type="text" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="country"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Country</FormLabel>
+              <FormControl>
+                <Input placeholder="United States" type="text" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="cursor-pointer">
+          Submit
         </Button>
       </form>
-    </div>
+    </Form>
   );
-};
+}

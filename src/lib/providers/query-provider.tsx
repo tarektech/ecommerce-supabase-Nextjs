@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, type ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useState, type ReactNode } from "react";
 
 export function TanStackQueryProvider({ children }: { children: ReactNode }) {
+  const isDevelopment = process.env.NODE_ENV === "development";
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -16,13 +17,15 @@ export function TanStackQueryProvider({ children }: { children: ReactNode }) {
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   );
 
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* {isDevelopment && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )} */}
     </QueryClientProvider>
   );
 }
