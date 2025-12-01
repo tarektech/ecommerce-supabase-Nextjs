@@ -1,4 +1,4 @@
-import { AddressType, OrderType } from "@/types";
+import { AddressType, OrderType, OrderStatus } from "@/types";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
@@ -6,6 +6,24 @@ interface OrderItemInput {
   product_id: string;
   quantity: number;
   price: number;
+}
+
+/**
+ * Map Polar payment status to order_status enum
+ */
+export function mapPolarStatusToOrderStatus(polarStatus: string): OrderStatus {
+	switch (polarStatus.toLowerCase()) {
+		case 'paid':
+			return 'processing'
+		case 'pending':
+			return 'pending'
+		case 'failed':
+		case 'canceled':
+		case 'cancelled':
+			return 'cancelled'
+		default:
+			return 'pending'
+	}
 }
 
 interface CreateOrderParams {

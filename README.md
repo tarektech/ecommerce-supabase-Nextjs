@@ -47,7 +47,11 @@ Before you begin, ensure you have the following installed on your system:
    ```
    NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
    NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
+   POLAR_ACCESS_TOKEN="your-polar-access-token"
+   POLAR_WEBHOOK_SECRET="your-polar-webhook-secret"
    ```
+   
+   Note: `POLAR_ACCESS_TOKEN` and `POLAR_WEBHOOK_SECRET` are server-side only and should not be exposed to the client.
 
 ## Development
 
@@ -111,10 +115,6 @@ src/
 │   │   ├── ProductFormModal.tsx
 │   │   └── UserDetailsModal.tsx
 │   ├── checkout/                # Checkout flow components
-│   │   ├── ConfirmationStep.tsx
-│   │   ├── PaymentForm.tsx
-│   │   ├── ShippingForm.tsx
-│   │   └── StepIndicator.tsx
 │   ├── dashboard/               # Dashboard components
 │   │   ├── DashboardCharts.tsx
 │   │   ├── OrderHistoryChart.tsx
@@ -140,7 +140,6 @@ src/
 ├── context/                     # React context providers
 │   ├── AuthContext.tsx          # Authentication state
 │   ├── CartContext.tsx          # Shopping cart state
-│   ├── CheckoutContext.tsx      # Checkout flow state
 │   └── SidebarContext.tsx       # Sidebar state
 ├── hooks/                       # Custom React hooks
 │   ├── queries/                 # TanStack Query hooks
